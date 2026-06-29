@@ -1,0 +1,399 @@
+.aq-strip {
+  width: 100%;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  border: 1px solid #c8d0dc;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.05);
+}
+
+.aq-meta {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 20px;
+  font-size: 12px;
+}
+.aq-meta .place { opacity: 0.75; }
+.aq-meta .pollutants { display: flex; gap: 4px; }
+.aq-meta .pollutants button {
+  font: inherit;
+  font-size: 11px;
+  padding: 5px 12px;
+  border: none;
+  cursor: pointer;
+  border-radius: 6px;
+  opacity: 0.55;
+  background: transparent;
+}
+.aq-meta .pollutants button.active { opacity: 1; font-weight: 600; }
+.aq-meta .pollutants:empty { display: none; }
+
+.aq-body { padding: 20px 24px 16px; }
+
+.aq-zones {
+  display: grid;
+  grid-template-columns: 1.05fr 1.55fr 0.8fr;
+  gap: 28px;
+  align-items: stretch;
+}
+.zone-card {
+  border-radius: 8px;
+  padding: 18px 20px 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-height: 168px;
+  background: #fff;
+  border: 1px solid #e2e8f0;
+}
+
+.zone-label {
+  font-size: 13px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: #1a2030;
+}
+
+.zone-main {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 72px;
+}
+
+/* Day grid — shared rows so dots / labels / dates align */
+.zone-main--days { align-items: center; justify-content: center; }
+.strip-annual .zone-main--days { min-height: 108px; }
+.day-panel {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.daqi-legend-spacer {
+  height: 26px;
+  flex-shrink: 0;
+}
+.day-stack { width: 100%; }
+.day-stack--with-divider {
+  position: relative;
+  --day-separator: 40px;
+  --day-past-width: calc(3 * 56px + 2 * 22px);
+  --day-split-width: calc(var(--day-past-width) + var(--day-separator) + 56px);
+}
+.day-col-divider {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1px dotted #a8b2be;
+  pointer-events: none;
+  z-index: 1;
+  left: calc((100% - var(--day-split-width)) / 2 + var(--day-past-width) + var(--day-separator) / 2);
+  transform: translateX(-50%);
+}
+.day-row--split-today {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+}
+.day-past-group {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+}
+.day-today-separator {
+  width: var(--day-separator, 40px);
+  flex-shrink: 0;
+}
+.day-visual-row,
+.day-name-row,
+.day-date-row {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 22px;
+  width: 100%;
+}
+.day-name-row { margin-top: 10px; }
+.day-date-row { margin-top: 6px; }
+.day-slot {
+  width: 56px;
+  flex: 0 0 56px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+.day-slot--visual { height: 52px; }
+.day-stack--ladders .day-slot--visual { height: 96px; }
+.day-slot--name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #3d4658;
+  line-height: 1.2;
+}
+.day-slot--date {
+  font-size: 12px;
+  color: #7a8494;
+  line-height: 1.2;
+}
+.daqi-blob {
+  height: 16px;
+  border-radius: 8px;
+  min-width: 22px;
+}
+.daqi-blob--lg { height: 20px; border-radius: 10px; min-width: 28px; }
+.daqi-blob.empty { width: 28px; background: #e2e8f0; }
+.daqi-dot {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+}
+.daqi-dot--lg { width: 44px; height: 44px; }
+.daqi-dot--xl { width: 52px; height: 52px; }
+
+.daqi-stack {
+  display: flex;
+  flex-direction: column-reverse;
+  gap: 3px;
+  width: 28px;
+}
+.daqi-seg {
+  flex: 1;
+  border-radius: 3px;
+  min-height: 4px;
+}
+
+.daqi-legend-wrap {
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.zone-recent .daqi-legend-wrap {
+  margin-top: auto;
+  padding-top: 4px;
+}
+.strip-stack .aq-body {
+  padding-bottom: 40px;
+}
+.strip-stack .zone-recent-block {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+  align-self: stretch;
+}
+.strip-stack .zone-recent-block .zone-card {
+  width: 100%;
+  flex: 1;
+  min-height: 168px;
+}
+.strip-stack .daqi-legend-wrap--outside {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  margin-top: 0;
+  padding-top: 0;
+  flex-shrink: 0;
+}
+  /* DAQI legend — compact pill (daqi-vs-caqi ColorLegend) */
+.daqi-legend {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 8px;
+  padding: 4px 7px;
+  background: #f5f6f8;
+  border-radius: 10px;
+  flex-wrap: nowrap;
+}
+.daqi-legend-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+.daqi-legend-dots { display: flex; gap: 1px; }
+.daqi-legend-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid rgba(0,0,0,0.1);
+}
+.daqi-legend-label {
+  font-size: 7px;
+  font-weight: 500;
+  color: #6a7385;
+  white-space: nowrap;
+}
+
+/* WHO visualisations */
+.who-vert-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 5px;
+}
+.who-vert-track-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.who-annual-val {
+  font-size: 10px;
+  font-weight: 600;
+  color: #3d4658;
+  white-space: nowrap;
+  line-height: 1;
+  text-align: center;
+  width: 24px;
+  display: block;
+}
+.who-grid .who-annual-val { font-size: 9px; }
+.who-guideline-col {
+  position: relative;
+  flex-shrink: 0;
+  min-width: 30px;
+}
+.who-guideline-tag {
+  position: absolute;
+  left: 0;
+  font-size: 8px;
+  color: #7a8494;
+  white-space: nowrap;
+  line-height: 1;
+  transform: translateY(-50%);
+}
+
+.who-line-h {
+  position: absolute;
+  left: 0;
+  right: 0;
+  height: 0;
+  border-top: 2px dashed rgba(90, 110, 125, 0.55);
+  pointer-events: none;
+  z-index: 2;
+}
+.who-line-h--dotted {
+  border-top-style: dotted;
+}
+.who-line-v {
+  position: absolute;
+  top: -4px;
+  bottom: -4px;
+  width: 0;
+  border-left: 2px dashed rgba(90, 110, 125, 0.55);
+  pointer-events: none;
+  z-index: 2;
+}
+
+/* Vertical WHO pill */
+.who-vert-cell { display: flex; flex-direction: column; align-items: center; }
+.who-vert-track {
+  position: relative;
+  width: 32px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.who-vert-pill {
+  width: 24px;
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 4px;
+}
+.who-vert-above { width: 100%; flex-shrink: 0; }
+.who-vert-below { width: 100%; flex-shrink: 0; }
+
+.who-chart {
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  gap: 20px;
+  width: 100%;
+}
+.who-bar-group {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+.who-bar-meta { text-align: center; font-size: 11px; }
+.who-bar-name { display: block; font-weight: 600; color: #6a7385; font-size: 10px; }
+.who-bar-ratio { display: block; font-weight: 700; font-size: 13px; color: #1a3148; margin-top: 2px; }
+
+.who-single-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 32px;
+  width: 100%;
+}
+.who-ratio-big {
+  font-size: 32px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
+  color: #1a3148;
+  line-height: 1;
+}
+.who-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  width: 100%;
+}
+.who-grid-row {
+  display: flex;
+  justify-content: space-around;
+  gap: 12px;
+}
+.who-grid-cell {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+  max-width: 130px;
+}
+
+.aq-foot { padding: 4px 24px 14px; }
+.aq-foot button {
+  font: inherit;
+  font-size: 11px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  opacity: 0.5;
+  padding: 4px 0;
+}
+.aq-foot button:hover { opacity: 0.8; }
+.aq-foot .guidance {
+  display: none;
+  font-size: 12px;
+  line-height: 1.55;
+  padding: 8px 0 0;
+  opacity: 0.7;
+  max-width: 640px;
+}
+.aq-foot.open .guidance { display: block; }
+.aq-foot.open button { opacity: 1; font-weight: 500; }
+
+.strip-cerner .aq-meta,
+.strip-annual .aq-meta,
+.strip-stack .aq-meta {
+  background: #1a4a78;
+  color: #fff;
+}
+.strip-cerner .aq-meta .pollutants button { color: #fff; }
+.strip-cerner .aq-meta .pollutants button.active { background: rgba(255,255,255,0.2); }
+
+.zone-main { min-height: 88px; }

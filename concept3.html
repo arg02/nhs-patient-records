@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Design 3 — Iteration workspace</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/aq-widget.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #e4e7ec;
+      font-family: "DM Sans", sans-serif;
+      color: #2a3142;
+      padding: 48px 40px 80px;
+      min-height: 100vh;
+    }
+
+    .page-hd { max-width: 1120px; margin: 0 auto 32px; }
+    .page-hd h1 {
+      font-size: 28px;
+      font-weight: 600;
+      color: #1a2030;
+    }
+    .page-hd p {
+      margin-top: 8px;
+      font-size: 13px;
+      color: #6a7385;
+      max-width: 720px;
+      line-height: 1.55;
+    }
+    .page-hd a { color: #1a4a78; }
+
+    .workspace {
+      max-width: 1120px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 56px;
+    }
+
+    .workspace-section {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .section-tag {
+      font-size: 10px;
+      letter-spacing: 0.16em;
+      text-transform: uppercase;
+      color: #8a929e;
+    }
+    .section-tag strong {
+      font-weight: 600;
+      color: #4a5568;
+      font-style: normal;
+    }
+
+    .iteration-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 48px;
+    }
+
+    .iteration-item {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+  </style>
+</head>
+<body>
+  <header class="page-hd">
+    <h1>Design 3 — DAQI ladders</h1>
+    <p>
+      Baseline widget at the top. New iterations are added below as we refine the layout.
+      <a href="index.html">All concepts</a>
+    </p>
+  </header>
+
+  <div class="workspace">
+    <section class="workspace-section" aria-labelledby="baseline-label">
+      <div class="section-tag" id="baseline-label"><strong>3.0</strong> — baseline (variable WHO line height)</div>
+      <div id="baseline"></div>
+      <div id="page-error" hidden style="margin-top:12px;padding:12px 16px;background:#fde8e8;border:1px solid #f5c2c2;border-radius:8px;font-size:13px;color:#7a1f1f;"></div>
+    </section>
+
+    <section class="workspace-section" aria-labelledby="iterations-label">
+      <div class="section-tag" id="iterations-label"><strong>Iterations</strong></div>
+      <div id="iterations" class="iteration-stack">
+        <div class="iteration-item">
+          <div class="section-tag"><strong>3.1</strong> — shared WHO dotted line; excess above line proportional to × WHO</div>
+          <div id="iteration-3-1"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+  <script type="module">
+    import { mockPatientExposure } from './js/air-quality.js';
+    import { createStackWidget, createStackWidgetV31 } from './js/stack-widget.js';
+
+    const errorEl = document.getElementById('page-error');
+
+    function showError(err) {
+      console.error(err);
+      errorEl.hidden = false;
+      errorEl.textContent = `Widget failed to load: ${err.message}. Try a hard refresh (Cmd+Shift+R).`;
+    }
+
+    try {
+      const data = mockPatientExposure();
+      document.getElementById('baseline').appendChild(createStackWidget(data));
+      document.getElementById('iteration-3-1').appendChild(createStackWidgetV31(data));
+    } catch (err) {
+      showError(err);
+    }
+  </script>
+</body>
+</html>
