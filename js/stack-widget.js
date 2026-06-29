@@ -1,11 +1,11 @@
 import { HEALTH_ADVICE } from './air-quality.js';
 import {
   whoAnnualChart,
-  whoAnnualChartAligned,
   recentCardHtml,
   forecastCardHtml,
   daqiLegendHtml,
 } from './widget-render.js';
+import { whoAnnualChartAligned } from './who-chart-v31.js';
 
 const DEFAULT_SPECIES = 'pm25';
 const LADDER_SIZE = { height: 96, width: 34 };
