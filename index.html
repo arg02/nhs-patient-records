@@ -178,6 +178,7 @@
     }
     .day-slot--visual { height: 52px; }
     .day-stack--ladders .day-slot--visual { height: 96px; }
+    .day-stack--circles .day-slot--visual { height: 96px; }
     .day-slot--name {
       font-size: 13px;
       font-weight: 600;
@@ -214,6 +215,30 @@
       flex: 1;
       border-radius: 3px;
       min-height: 4px;
+    }
+
+    .daqi-circle-stack {
+      display: flex;
+      flex-direction: column-reverse;
+      align-items: center;
+      justify-content: space-between;
+      width: 28px;
+    }
+    .daqi-circle-band {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+    }
+    .daqi-circle-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      border: 1px solid rgba(0, 0, 0, 0.1);
+      opacity: 0.45;
+    }
+    .daqi-circle-dot--on {
+      opacity: 1;
     }
 
     .daqi-legend-wrap {
@@ -253,8 +278,8 @@
     .daqi-legend {
       display: inline-flex;
       align-items: flex-end;
-      gap: 8px;
-      padding: 4px 7px;
+      gap: 10px;
+      padding: 5px 9px;
       background: #f5f6f8;
       border-radius: 10px;
       flex-wrap: nowrap;
@@ -263,17 +288,17 @@
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 2px;
+      gap: 3px;
     }
-    .daqi-legend-dots { display: flex; gap: 1px; }
+    .daqi-legend-dots { display: flex; gap: 4px; }
     .daqi-legend-dot {
-      width: 7px;
-      height: 7px;
+      width: 9px;
+      height: 9px;
       border-radius: 50%;
       border: 1px solid rgba(0,0,0,0.1);
     }
     .daqi-legend-label {
-      font-size: 7px;
+      font-size: 9px;
       font-weight: 500;
       color: #6a7385;
       white-space: nowrap;
@@ -284,24 +309,70 @@
       display: flex;
       align-items: flex-end;
       gap: 5px;
+      grid-column: 1 / -1;
+    }
+    .who-vert-cell {
+      display: grid;
+      grid-template-columns: auto 32px;
+      column-gap: 5px;
+      justify-content: center;
+    }
+    .who-vert-labels {
+      grid-column: 2;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 12px;
+      justify-self: center;
+    }
+    .who-vert-labels--under {
+      margin-bottom: 0;
+      margin-top: 10px;
+    }
+    .who-vert-labels .who-ratio-tag {
+      margin-top: 0;
     }
     .who-vert-track-col {
       display: flex;
       flex-direction: column;
       align-items: center;
-      gap: 4px;
+      gap: 2px;
+    }
+    .who-val-header {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 1px;
+      white-space: nowrap;
     }
     .who-annual-val {
-      font-size: 10px;
-      font-weight: 600;
-      color: #3d4658;
-      white-space: nowrap;
+      font-size: 11px;
+      font-weight: 700;
+      color: #1a3148;
       line-height: 1;
-      text-align: center;
-      width: 24px;
-      display: block;
+      letter-spacing: -0.01em;
     }
-    .who-grid .who-annual-val { font-size: 9px; }
+    .who-annual-unit {
+      font-size: 6px;
+      font-weight: 500;
+      color: #9aa3b0;
+      line-height: 1;
+      letter-spacing: 0.02em;
+    }
+    .who-ratio-tag {
+      grid-column: 2;
+      justify-self: center;
+      margin-top: 10px;
+      font-size: 11px;
+      font-weight: 600;
+      color: #5a6478;
+      line-height: 1;
+      letter-spacing: 0.02em;
+    }
+    .who-grid .who-annual-val { font-size: 11px; }
+    .who-grid .who-annual-unit { font-size: 7px; }
+    .who-grid .who-ratio-tag { font-size: 9px; }
     .who-guideline-col {
       position: relative;
       flex-shrink: 0;
@@ -337,7 +408,6 @@
     }
 
     /* Vertical WHO pill */
-    .who-vert-cell { display: flex; flex-direction: column; align-items: center; }
     .who-vert-track {
       position: relative;
       width: 32px;
@@ -371,7 +441,67 @@
     }
     .who-bar-meta { text-align: center; font-size: 11px; }
     .who-bar-name { display: block; font-weight: 600; color: #6a7385; font-size: 10px; }
+    .who-bar-name--under {
+      grid-column: 2;
+      justify-self: center;
+      margin-top: 4px;
+      text-align: center;
+      width: 100%;
+    }
     .who-bar-ratio { display: block; font-weight: 700; font-size: 13px; color: #1a3148; margin-top: 2px; }
+
+    /* 3.1 / 3.2 aligned charts — "WHO" left of line, value right of bar */
+    .who-chart--aligned { gap: 38px; padding: 0 26px; }
+    .who-chart--aligned .who-vert-cell {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+    .who-chart--aligned .who-vert-row {
+      position: relative;
+      display: flex;
+      align-items: flex-end;
+      justify-content: center;
+    }
+    .who-chart--aligned .who-side {
+      position: absolute;
+      bottom: 0;
+      width: 0;
+    }
+    .who-chart--aligned .who-side--left { right: calc(50% + 22px); }
+    .who-chart--aligned .who-side--right { left: calc(50% + 22px); }
+    .who-chart--aligned .who-guideline-tag {
+      left: auto;
+      right: 0;
+      font-weight: 700;
+      font-size: 8px;
+      letter-spacing: 0.06em;
+      color: #6a7385;
+    }
+    .who-guideline-val {
+      position: absolute;
+      left: 0;
+      font-size: 7px;
+      color: #9aa3b0;
+      white-space: nowrap;
+      line-height: 1;
+    }
+    /* Centre WHO label + value on the dotted line (line centre ≈ whoLinePx + 1px) */
+    .who-chart--aligned .who-guideline-tag,
+    .who-chart--aligned .who-guideline-val {
+      transform: translateY(calc(50% - 1px));
+    }
+
+    /* 3.2 — light-grey non-bold concentration, bold black ratio above the bar */
+    .who-chart--v32 .who-annual-val {
+      font-size: 9px;
+      font-weight: 500;
+      color: #9aa3b0;
+    }
+    .who-chart--v32 .who-ratio-tag {
+      font-weight: 700;
+      color: #000000;
+    }
 
     .who-single-row {
       display: flex;
@@ -507,7 +637,7 @@
       strip.className = `aq-strip strip-${variant}`;
       strip.innerHTML = `
         <div class="aq-meta">
-          <div><strong>Air at home</strong><span class="place"> · ${data.patient.name} · SE1</span></div>
+          <div><strong>Air Quality at patient's home</strong><span class="place"> · ${data.patient.name} · SE1</span></div>
           <div class="pollutants" data-pollutants></div>
         </div>
         <div class="aq-body">

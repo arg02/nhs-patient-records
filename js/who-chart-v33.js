@@ -3,10 +3,18 @@ import {
   POLLUTANT_WHO_STYLES,
   WHO_ANNUAL,
   whoAnnualComparison,
-} from './air-quality.js?v=5';
+} from './air-quality.js?v=6';
 
 const VERT_TRACK_PX = 72;
 const WHO_LINE_RATIO = 0.52;
+
+/** Alternative pollution profile — high NO2 / PM10, lower PM2.5 / O3 */
+const ALT_ANNUAL = {
+  pm25: 7,
+  pm10: 45,
+  no2: 38,
+  o3: 48,
+};
 
 function pollutantLabel(species) {
   return POLLUTANTS.find((p) => p.key === species)?.label ?? species;
@@ -22,17 +30,6 @@ function whoRatioShort(annualMean, species) {
 
 function pollutantStyles(species) {
   return POLLUTANT_WHO_STYLES[species] ?? { above: '#6a7385', below: '#eceef2' };
-}
-
-function whoValueHeader(annualValue) {
-  return `
-    <div class="who-vert-labels">
-      <div class="who-val-header">
-        <span class="who-annual-val">${Math.round(annualValue)}</span>
-        <span class="who-annual-unit">µg/m³</span>
-      </div>
-    </div>
-  `;
 }
 
 function whoExcessRatio(annual, who) {
@@ -56,7 +53,8 @@ function whoAlignedLayout(annual, trackPx = VERT_TRACK_PX) {
   };
 }
 
-function whoVerticalPillAligned(species, annualValue, layout, showWhoLabel = false) {
+/** 3.3 — same layout as 3.2; ratio coloured per pollutant; alternative profile */
+function whoVerticalPillV33(species, annualValue, layout, showWhoLabel = false) {
   const who = WHO_ANNUAL[species];
   const { above, below } = pollutantStyles(species);
   const { trackPx, whoLinePx, excessZonePx, maxExcess } = layout;
@@ -67,7 +65,9 @@ function whoVerticalPillAligned(species, annualValue, layout, showWhoLabel = fal
 
   return `
     <div class="who-vert-cell">
-      ${whoValueHeader(annualValue, species)}
+      <div class="who-vert-labels">
+        <span class="who-ratio-tag" style="color:${above}">${whoRatioShort(annualValue, species)}</span>
+      </div>
       <div class="who-vert-row">
         ${showWhoLabel ? `<div class="who-side who-side--left" style="height:${trackPx}px">
           <span class="who-guideline-tag" style="bottom:${whoLinePx}px">WHO</span>
@@ -83,19 +83,25 @@ function whoVerticalPillAligned(species, annualValue, layout, showWhoLabel = fal
           <span class="who-guideline-val" style="bottom:${whoLinePx}px">${who}µg/m³</span>
         </div>
       </div>
-      <span class="who-ratio-tag">${whoRatioShort(annualValue, species)}</span>
+      <div class="who-vert-labels who-vert-labels--under">
+        <div class="who-val-header">
+          <span class="who-annual-val">${Math.round(annualValue)}</span>
+          <span class="who-annual-unit">µg/m³</span>
+        </div>
+      </div>
       <span class="who-bar-name who-bar-name--under">${pollutantLabel(species)}</span>
     </div>
   `;
 }
 
-/** 3.1 — shared WHO dotted line; above-WHO height proportional to × WHO */
-export function whoAnnualChartAligned(annual, trackPx = VERT_TRACK_PX) {
-  const layout = whoAlignedLayout(annual, trackPx);
+/** Ignores the passed annual and renders the hardcoded alternative profile. */
+export function whoAnnualChartV33(_annual, trackPx = VERT_TRACK_PX) {
+  const profile = ALT_ANNUAL;
+  const layout = whoAlignedLayout(profile, trackPx);
   const bars = POLLUTANTS.map((p, i) => `
     <div class="who-bar-group">
-      ${whoVerticalPillAligned(p.key, annual[p.key], layout, i === 0)}
+      ${whoVerticalPillV33(p.key, profile[p.key], layout, i === 0)}
     </div>
   `).join('');
-  return `<div class="who-chart who-chart--aligned">${bars}</div>`;
+  return `<div class="who-chart who-chart--aligned who-chart--v32 who-chart--v33">${bars}</div>`;
 }

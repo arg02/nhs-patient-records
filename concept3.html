@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/aq-widget.css">
+  <link rel="stylesheet" href="css/aq-widget.css?v=11">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -96,13 +96,29 @@
           <div class="section-tag"><strong>3.1</strong> — shared WHO dotted line; excess above line proportional to × WHO</div>
           <div id="iteration-3-1"></div>
         </div>
+        <div class="iteration-item">
+          <div class="section-tag"><strong>3.2</strong> — ratio above the bar, concentration below the bar</div>
+          <div id="iteration-3-2"></div>
+        </div>
+        <div class="iteration-item">
+          <div class="section-tag"><strong>3.3</strong> — alternative pollution profile (different concentrations)</div>
+          <div id="iteration-3-3"></div>
+        </div>
+        <div class="iteration-item">
+          <div class="section-tag"><strong>3.4</strong> — full CAQI circle stacks for Recent &amp; Forecast</div>
+          <div id="iteration-3-4"></div>
+        </div>
+        <div class="iteration-item">
+          <div class="section-tag"><strong>3.5</strong> — WHO-line pill bars for Recent &amp; Forecast; full CAQI scale</div>
+          <div id="iteration-3-5"></div>
+        </div>
       </div>
     </section>
   </div>
 
   <script type="module">
-    import { mockPatientExposure } from './js/air-quality.js';
-    import { createStackWidget, createStackWidgetV31 } from './js/stack-widget.js';
+    import { mockPatientExposure } from './js/air-quality.js?v=6';
+    import { createStackWidget, createStackWidgetV31, createStackWidgetV32, createStackWidgetV33, createStackWidgetV34, createStackWidgetV35 } from './js/stack-widget.js?v=11';
 
     const errorEl = document.getElementById('page-error');
 
@@ -112,10 +128,19 @@
       errorEl.textContent = `Widget failed to load: ${err.message}. Try a hard refresh (Cmd+Shift+R).`;
     }
 
+    window.addEventListener('error', (event) => showError(event.error ?? new Error(event.message)));
+    window.addEventListener('unhandledrejection', (event) => {
+      showError(event.reason instanceof Error ? event.reason : new Error(String(event.reason)));
+    });
+
     try {
       const data = mockPatientExposure();
       document.getElementById('baseline').appendChild(createStackWidget(data));
       document.getElementById('iteration-3-1').appendChild(createStackWidgetV31(data));
+      document.getElementById('iteration-3-2').appendChild(createStackWidgetV32(data));
+      document.getElementById('iteration-3-3').appendChild(createStackWidgetV33(data));
+      document.getElementById('iteration-3-4').appendChild(createStackWidgetV34(data));
+      document.getElementById('iteration-3-5').appendChild(createStackWidgetV35(data));
     } catch (err) {
       showError(err);
     }

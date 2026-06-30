@@ -103,6 +103,15 @@ export function whoAnnualComparison(annualMean, species) {
   };
 }
 
+/** Display ratio without "WHO" suffix (e.g. "3.6×") */
+export function whoRatioShort(annualMean, species) {
+  const cmp = whoAnnualComparison(annualMean, species);
+  if (!cmp) return '—';
+  if (cmp.above) return `${cmp.ratio.toFixed(1)}×`;
+  if (cmp.ratio >= 0.99 && cmp.ratio <= 1.01) return 'At guideline';
+  return `${cmp.ratio.toFixed(1)}×`;
+}
+
 export function formatDateChip(date) {
   return date.toLocaleDateString('en-GB', { day: 'numeric', month: 'short' });
 }
@@ -116,6 +125,26 @@ export function recentDaysForConcept2(recentDays) {
   const moderatePm25 = { 3: 42, 2: 49 };
   return recentDays.map((d) => {
     const pm25 = moderatePm25[d.offset];
+    if (pm25 == null) return d;
+    return { ...d, daily: { ...d.daily, pm25 } };
+  });
+}
+
+/** 3.0–3.2 demo — ascending DAQI levels across recent days (pm25 → levels 2, 4, 6, 8) */
+export function recentDaysForLadder(recentDays) {
+  const pm25ByOffset = { 3: 15, 2: 38, 1: 50, 0: 62 };
+  return recentDays.map((d) => {
+    const pm25 = pm25ByOffset[d.offset];
+    if (pm25 == null) return d;
+    return { ...d, daily: { ...d.daily, pm25 } };
+  });
+}
+
+/** 3.3 demo — varied DAQI levels across recent days (pm25 → levels 2, 5, 7, 9) */
+export function recentDaysForV33(recentDays) {
+  const pm25ByOffset = { 3: 15, 2: 45, 1: 56, 0: 68 };
+  return recentDays.map((d) => {
+    const pm25 = pm25ByOffset[d.offset];
     if (pm25 == null) return d;
     return { ...d, daily: { ...d.daily, pm25 } };
   });

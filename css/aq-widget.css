@@ -64,6 +64,7 @@
   justify-content: center;
   min-height: 72px;
 }
+.zone-long .zone-main { min-height: 128px; }
 
 /* Day grid — shared rows so dots / labels / dates align */
 .zone-main--days { align-items: center; justify-content: center; }
@@ -122,6 +123,8 @@
   width: 100%;
 }
 .day-name-row { margin-top: 10px; }
+.day-band-row { margin-top: 6px; }
+.day-band-row,
 .day-date-row { margin-top: 6px; }
 .day-slot {
   width: 56px;
@@ -133,6 +136,13 @@
 }
 .day-slot--visual { height: 52px; }
 .day-stack--ladders .day-slot--visual { height: 96px; }
+/* 10-dot DAQI stacks: 122px natural + top breathing room */
+.day-stack--circles:not(.day-stack--who-circles) .day-slot--visual {
+  height: 130px;
+  align-items: flex-end;
+  padding-bottom: 2px;
+}
+.day-stack--circles .day-slot--visual { overflow: visible; }
 .day-slot--name {
   font-size: 13px;
   font-weight: 600;
@@ -171,6 +181,33 @@
   min-height: 4px;
 }
 
+.daqi-circle-stack {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 8px;
+  width: 28px;
+  flex-shrink: 0;
+}
+.daqi-circle-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  flex-shrink: 0;
+}
+.daqi-circle-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  opacity: 0.45;
+  flex-shrink: 0;
+}
+.daqi-circle-dot--on {
+  opacity: 1;
+}
+
 .daqi-legend-wrap {
   display: flex;
   justify-content: center;
@@ -195,6 +232,13 @@
   flex: 1;
   min-height: 168px;
 }
+/* Circle-stack variants need taller cards — 13-dot CAQI stacks are tallest */
+.strip-stack .zone-card:has(.day-stack--circles:not(.day-stack--who-circles)) {
+  min-height: 242px;
+}
+.strip-stack .zone-card:has(.day-stack--who-circles) {
+  min-height: 254px;
+}
 .strip-stack .daqi-legend-wrap--outside {
   position: absolute;
   top: calc(100% + 10px);
@@ -208,8 +252,8 @@
 .daqi-legend {
   display: inline-flex;
   align-items: flex-end;
-  gap: 8px;
-  padding: 4px 7px;
+  gap: 10px;
+  padding: 5px 9px;
   background: #f5f6f8;
   border-radius: 10px;
   flex-wrap: nowrap;
@@ -218,20 +262,190 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 2px;
+  gap: 3px;
 }
-.daqi-legend-dots { display: flex; gap: 1px; }
+.daqi-legend-dots { display: flex; gap: 4px; }
 .daqi-legend-dot {
-  width: 7px;
-  height: 7px;
+  width: 9px;
+  height: 9px;
   border-radius: 50%;
   border: 1px solid rgba(0,0,0,0.1);
 }
 .daqi-legend-label {
-  font-size: 7px;
+  font-size: 9px;
   font-weight: 500;
   color: #6a7385;
   white-space: nowrap;
+}
+
+/* 3.4 — full CAQI legend (daqi-vs-caqi ColorLegend CAQI_KEY) */
+.who-legend-wrap {
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.strip-stack .who-legend-wrap--outside {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  margin-top: 0;
+  padding-top: 0;
+  flex-shrink: 0;
+}
+.who-legend {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 12px;
+  padding: 5px 10px;
+  background: #f5f6f8;
+  border-radius: 10px;
+  flex-wrap: nowrap;
+}
+.who-legend--caqi-full {
+  gap: 10px;
+  padding: 5px 9px;
+}
+.who-legend-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.who-legend-dots { display: flex; gap: 4px; }
+.who-legend-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+.who-legend-label {
+  font-size: 9px;
+  font-weight: 500;
+  color: #6a7385;
+  white-space: nowrap;
+}
+
+/* 3.4 — CAQI vertical circle stacks (slightly tighter dots to fit 13 levels) */
+.who-circle-stack {
+  display: flex;
+  flex-direction: column-reverse;
+  align-items: center;
+  gap: 6px;
+  width: 28px;
+  flex-shrink: 0;
+}
+.who-circle-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  flex-shrink: 0;
+}
+.who-circle-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  opacity: 0.45;
+  flex-shrink: 0;
+}
+.who-circle-dot--on {
+  opacity: 1;
+}
+/* 13-dot CAQI stacks: 131px natural + top breathing room */
+.day-stack--who-circles .day-slot--visual {
+  height: 142px;
+  align-items: flex-end;
+  padding-bottom: 2px;
+}
+
+/* 3.5 — CAQI WHO-line pill bars (Recent & Forecast) */
+.who-caqi-pill-wrap {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+  margin: 0 auto;
+}
+.who-caqi-pill {
+  border-radius: 12px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  min-height: 4px;
+}
+.who-caqi-zone {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  flex-shrink: 0;
+}
+/* Level 1 at pill base (matches .daqi-stack column-reverse ladder) */
+.who-caqi-zone--below {
+  flex-direction: column-reverse;
+}
+.who-caqi-seg {
+  width: 100%;
+  flex-shrink: 0;
+}
+.who-caqi-seg--faded {
+  opacity: 0.55;
+}
+.who-caqi-seg:not(.who-caqi-seg--on) {
+  opacity: 0.45;
+}
+.who-line-h--caqi {
+  left: -2px;
+  right: -2px;
+}
+.day-stack--caqi-pills .day-slot--visual { height: 96px; }
+.day-band-row {
+  display: flex;
+  justify-content: space-around;
+  gap: 4px;
+}
+.day-stack--caqi-pills .day-slot--band {
+  text-align: center;
+  min-height: 14px;
+}
+.who-caqi-band-label {
+  font-size: 8px;
+  font-weight: 600;
+  color: #5a6478;
+  white-space: nowrap;
+}
+/* 3.5 — full CAQI legend (mirrors .daqi-legend spacing) */
+.caqi-legend-v35 {
+  display: inline-flex;
+  align-items: flex-end;
+  gap: 10px;
+  padding: 5px 9px;
+  background: #f5f6f8;
+  border-radius: 10px;
+  flex-wrap: nowrap;
+}
+.caqi-legend-v35-band {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+}
+.caqi-legend-v35-dots { display: flex; gap: 4px; }
+.caqi-legend-v35-dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+.caqi-legend-v35-label {
+  font-size: 9px;
+  font-weight: 500;
+  color: #6a7385;
+  white-space: nowrap;
+}
+.who-legend-wrap--caqi-full {
+  overflow-x: auto;
 }
 
 /* WHO visualisations */
@@ -239,24 +453,70 @@
   display: flex;
   align-items: flex-end;
   gap: 5px;
+  grid-column: 1 / -1;
+}
+.who-vert-cell {
+  display: grid;
+  grid-template-columns: auto 32px;
+  column-gap: 5px;
+  justify-content: center;
+}
+.who-vert-labels {
+  grid-column: 2;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  margin-bottom: 12px;
+  justify-self: center;
+}
+.who-vert-labels--under {
+  margin-bottom: 0;
+  margin-top: 10px;
+}
+.who-vert-labels .who-ratio-tag {
+  margin-top: 0;
 }
 .who-vert-track-col {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
+}
+.who-val-header {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 1px;
+  white-space: nowrap;
 }
 .who-annual-val {
-  font-size: 10px;
-  font-weight: 600;
-  color: #3d4658;
-  white-space: nowrap;
+  font-size: 11px;
+  font-weight: 700;
+  color: #1a3148;
   line-height: 1;
-  text-align: center;
-  width: 24px;
-  display: block;
+  letter-spacing: -0.01em;
 }
-.who-grid .who-annual-val { font-size: 9px; }
+.who-annual-unit {
+  font-size: 6px;
+  font-weight: 500;
+  color: #9aa3b0;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+.who-ratio-tag {
+  grid-column: 2;
+  justify-self: center;
+  margin-top: 10px;
+  font-size: 11px;
+  font-weight: 600;
+  color: #5a6478;
+  line-height: 1;
+  letter-spacing: 0.02em;
+}
+.who-grid .who-annual-val { font-size: 11px; }
+.who-grid .who-annual-unit { font-size: 7px; }
+.who-grid .who-ratio-tag { font-size: 9px; }
 .who-guideline-col {
   position: relative;
   flex-shrink: 0;
@@ -295,7 +555,6 @@
 }
 
 /* Vertical WHO pill */
-.who-vert-cell { display: flex; flex-direction: column; align-items: center; }
 .who-vert-track {
   position: relative;
   width: 32px;
@@ -329,7 +588,67 @@
 }
 .who-bar-meta { text-align: center; font-size: 11px; }
 .who-bar-name { display: block; font-weight: 600; color: #6a7385; font-size: 10px; }
+.who-bar-name--under {
+  grid-column: 2;
+  justify-self: center;
+  margin-top: 4px;
+  text-align: center;
+  width: 100%;
+}
 .who-bar-ratio { display: block; font-weight: 700; font-size: 13px; color: #1a3148; margin-top: 2px; }
+
+/* 3.1 / 3.2 aligned charts — "WHO" left of line, value right of bar */
+.who-chart--aligned { gap: 38px; padding: 0 26px; }
+.who-chart--aligned .who-vert-cell {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+.who-chart--aligned .who-vert-row {
+  position: relative;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.who-chart--aligned .who-side {
+  position: absolute;
+  bottom: 0;
+  width: 0;
+}
+.who-chart--aligned .who-side--left { right: calc(50% + 22px); }
+.who-chart--aligned .who-side--right { left: calc(50% + 22px); }
+.who-chart--aligned .who-guideline-tag {
+  left: auto;
+  right: 0;
+  font-weight: 700;
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  color: #6a7385;
+}
+.who-guideline-val {
+  position: absolute;
+  left: 0;
+  font-size: 7px;
+  color: #9aa3b0;
+  white-space: nowrap;
+  line-height: 1;
+}
+/* Centre WHO label + value on the dotted line (line centre ≈ whoLinePx + 1px) */
+.who-chart--aligned .who-guideline-tag,
+.who-chart--aligned .who-guideline-val {
+  transform: translateY(calc(50% - 1px));
+}
+
+/* 3.2 — light-grey non-bold concentration, bold black ratio above the bar */
+.who-chart--v32 .who-annual-val {
+  font-size: 9px;
+  font-weight: 500;
+  color: #9aa3b0;
+}
+.who-chart--v32 .who-ratio-tag {
+  font-weight: 700;
+  color: #000000;
+}
 
 .who-single-row {
   display: flex;
