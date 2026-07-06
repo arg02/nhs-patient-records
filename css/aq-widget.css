@@ -649,6 +649,9 @@
   font-weight: 700;
   color: #000000;
 }
+.who-chart--v32col .who-ratio-tag--coloured {
+  font-weight: 700;
+}
 
 .who-single-row {
   display: flex;

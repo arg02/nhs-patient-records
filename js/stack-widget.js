@@ -7,6 +7,7 @@ import {
 } from './widget-render.js?v=5';
 import { whoAnnualChartAligned } from './who-chart-v31.js?v=5';
 import { whoAnnualChartV32 } from './who-chart-v32.js?v=7';
+import { whoAnnualChartV32Col } from './who-chart-v32col.js?v=1';
 import { whoAnnualChartV33 } from './who-chart-v33.js?v=6';
 import { whoAnnualChartV34 } from './who-chart-v34.js?v=1';
 import { recentDaysForV34, forecastForV34 } from './who-data-v34.js?v=2';
@@ -112,6 +113,21 @@ export function createStackWidgetV32(data, { species = DEFAULT_SPECIES } = {}) {
   `);
   updateStack(strip, data, species, { longTermChart: whoAnnualChartV32, recentDays: recentDaysForLadder(data.recentDays) });
   strip._update = () => updateStack(strip, data, species, { longTermChart: whoAnnualChartV32, recentDays: recentDaysForLadder(data.recentDays) });
+  return strip;
+}
+
+/** 3.2 coloured — ratio above bar in pollutant AirBase colour */
+export function createStackWidgetV32Col(data, { species = DEFAULT_SPECIES } = {}) {
+  const strip = shell(data, `
+    <section class="zone-card zone-long" data-long></section>
+    <div class="zone-recent-block" data-recent-block>
+      <section class="zone-card zone-recent" data-recent></section>
+      <div class="daqi-legend-wrap daqi-legend-wrap--outside" data-recent-legend></div>
+    </div>
+    <section class="zone-card zone-forecast" data-forecast></section>
+  `);
+  updateStack(strip, data, species, { longTermChart: whoAnnualChartV32Col, recentDays: recentDaysForLadder(data.recentDays) });
+  strip._update = () => updateStack(strip, data, species, { longTermChart: whoAnnualChartV32Col, recentDays: recentDaysForLadder(data.recentDays) });
   return strip;
 }
 
