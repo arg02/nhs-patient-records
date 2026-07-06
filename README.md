@@ -12,7 +12,8 @@ Prototype widgets exploring how long-term WHO exposure, recent daily air quality
 |------|-----|---------|
 | **All concepts** | [index.html](index.html) | Concepts 1–3 side by side |
 | **Design 3 workspace** | [concept3.html](concept3.html) | Iterations 3.0–3.5 on the DAQI-ladder design |
-| **Design 3.2 coloured ×** | [concept32.html](concept32.html) | Fork of 3.2 with pollutant-coloured ratio labels |
+| **Design 3.2 workspace** | [concept32.html](concept32.html) | Fork of 3.2 — coloured ratios, pollutant key strip, ERG credit |
+| **NHS data guide** | [nhs-data-guide.html](nhs-data-guide.html) | Integration guide for exposure service, DAQI, and forecast |
 
 ---
 
@@ -52,7 +53,8 @@ Detailed iteration history lives in [concept3.html](concept3.html) and [concept3
 | **3.0** | Variable WHO line height per bar; concentration above bar | DAQI ladders |
 | **3.1** | Shared WHO dotted line; above-WHO height ∝ (annual − WHO) / WHO | DAQI ladders |
 | **3.2** | Ratio **above** bar, concentration **below**; WHO label left, µg/m³ right | DAQI ladders |
-| **3.2c** | Same as 3.2 but × ratio in pollutant AirBase colour | DAQI ladders — see [concept32.html](concept32.html) |
+| **3.2a** | Coloured × ratios; pollutant key strip; WHO µg/m³ on bars; year label; ERG credit (dark logo) | DAQI ladders — see [concept32.html](concept32.html) |
+| **3.2b** | Same as 3.2a | Same; light-blue ERG logo under Forecast |
 | **3.3** | Alternative annual profile; coloured × ratios | DAQI **circle stacks** (varied demo levels) |
 | **3.4** | Reuses 3.3 long-term chart | Full **13-level CAQI** circle stacks + five-group legend |
 | **3.5** | Reuses 3.2 aligned chart | Full CAQI **WHO-line pill bars** (horizontal colour strips) + legend |
@@ -91,15 +93,15 @@ Long-term concentration pills are intentionally different — height is proporti
 
 ## Data sources
 
-All patient data is **mocked** in [`js/air-quality.js`](js/air-quality.js) via `mockPatientExposure()`. There is no live API integration yet.
+All patient data is **mocked** in [`js/air-quality.js`](js/air-quality.js) via `mockPatientExposure()`. See [nhs-data-guide.html](nhs-data-guide.html) for how NHS implementers should integrate live data.
 
 | Data | Source / basis |
 |------|----------------|
 | **UK DAQI colours & daily thresholds** | [daqi-vs-caqi](https://github.com/arg02/daqi-vs-caqi) — `colorScales.ts` (DEFRA/DAQI ladder, indices 1–10) |
 | **WHO annual guidelines** | WHO air quality guidelines (µg/m³): PM₂.₅ 5, PM₁₀ 15, NO₂ 10, O₃ 60 |
-| **Long-term bar colours** | [AirBase](https://www.eea.europa.eu/themes/air/air-quality-index) homepage palette — solid above WHO, light fill below |
+| **Long-term bar colours** | Pollutant-specific palette — solid above WHO guideline, light fill below |
 | **CAQI scale (3.4 / 3.5)** | [daqi-vs-caqi](https://github.com/arg02/daqi-vs-caqi) CAQI(false)I — 13 levels in five groups: Meets WHO, Above WHO, Moderate, High, V.High |
-| **Forecast band** | CityAir-style text band → representative DAQI level via `FORECAST_BAND_DAQI` |
+| **Forecast band** | [London Air forecast](https://londonair.org.uk/data/londonair/LondonAirForecast.asp) (ERG) — band → representative DAQI level via `FORECAST_BAND_DAQI` |
 | **Patient** | Fictional: Eleanor Marsh, SE1 |
 
 Demo overrides (not “real” readings) are applied per variant for visual variety — e.g. `recentDaysForLadder()`, `recentDaysForV33()`, `who-data-v34.js`, `who-data-v35.js`.
@@ -111,7 +113,9 @@ Demo overrides (not “real” readings) are applied per variant for visual vari
 ```
 ├── index.html              # Concepts 1–3 showcase
 ├── concept3.html           # Design 3 iteration workspace (3.0–3.5)
-├── concept32.html          # Design 3.2 coloured-ratio fork
+├── concept32.html          # Design 3.2 coloured-ratio fork (3.2a / 3.2b)
+├── nhs-data-guide.html     # NHS implementer integration guide
+├── images/                 # ERG logos for forecast credit
 ├── css/aq-widget.css       # Shared widget styles
 ├── js/
 │   ├── air-quality.js      # DAQI/WHO constants, mock data, helpers
@@ -119,7 +123,8 @@ Demo overrides (not “real” readings) are applied per variant for visual vari
 │   ├── stack-widget.js     # createStackWidget* factory functions
 │   ├── who-chart-v31.js    # 3.1 aligned WHO long-term chart
 │   ├── who-chart-v32.js    # 3.2 long-term layout
-│   ├── who-chart-v32col.js # 3.2c coloured ratios
+│   ├── who-chart-v32a.js   # 3.2a coloured ratios, on-bar WHO labels
+│   ├── erg-credit.js       # ERG forecast data source credit
 │   ├── who-chart-v33.js    # 3.3 alternative profile
 │   ├── who-caqi-v34.js     # CAQI scale (re-exports v35)
 │   ├── who-recent-v34.js   # 3.4 circle stacks + legend
@@ -143,6 +148,7 @@ Then open:
 - http://localhost:8765/index.html
 - http://localhost:8765/concept3.html
 - http://localhost:8765/concept32.html
+- http://localhost:8765/nhs-data-guide.html
 
 `serve.py` sends `Cache-Control: no-store` so CSS/JS changes show on a normal refresh. Use hard refresh (`Cmd+Shift+R`) if switching between deployed and local copies.
 
@@ -160,13 +166,13 @@ node scripts/verify-fill-logic.mjs
 
 2. **Aligned WHO line (3.1+)** — A shared horizontal dotted line lets clinicians compare *relative* exceedance across pollutants on one row, rather than each bar having its own WHO line position (3.0).
 
-3. **Label placement (3.2)** — Ratio above the bar, concentration below, keeps the two numbers visually separated. “WHO” appears once on the left; per-pollutant guideline µg/m³ sits to the right of each bar.
+3. **Label placement (3.2)** — Ratio above the bar, concentration below, keeps the two numbers visually separated. “WHO” appears once on the left; per-pollutant guideline µg/m³ sits to the right of each bar (3.2) or on the bar (3.2a).
 
-4. **Coloured × ratios (3.3 / 3.2c)** — The multiplier uses each pollutant’s AirBase “above WHO” colour to tie the headline stat to the bar.
+4. **Coloured × ratios (3.3 / 3.2a)** — The multiplier uses each pollutant’s “above WHO” bar colour to tie the headline stat to the bar.
 
 5. **Circle stacks vs pill bars** — 3.4 uses discrete dots (like the DAQI legend) for Recent/Forecast; 3.5 extends the long-term “striped pill” metaphor to daily columns with a full CAQI scale and WHO line at the Meets-WHO boundary.
 
-6. **Legend placement** — DAQI/CAQI keys sit **outside** the Recent card (below it) so the three panels stay equal height and the key reads as shared scale reference.
+6. **Legend placement** — DAQI/CAQI keys sit **outside** the Recent card (below it) so the three panels stay equal height and the key reads as shared scale reference. Design 3.2a adds a pollutant key below Long-term and ERG credit below Forecast.
 
 7. **No backend** — Pure static site for GitHub Pages; easy to share and iterate in design reviews.
 

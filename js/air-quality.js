@@ -18,7 +18,7 @@ export const DAQI_THRESHOLDS = {
   o3: [0, 51, 101, 121, 141, 161, 181, 201, 221, 241],
 };
 
-/** AirBase homepage — above WHO (solid) and below WHO (light fill) */
+/** Long-term bar colours — solid above WHO guideline, light fill below */
 export const POLLUTANT_WHO_STYLES = {
   no2: { above: '#EBA602', below: '#FDF6E6' },
   pm10: { above: '#8000FF', below: '#F2E5FF' },
@@ -194,13 +194,25 @@ export function mockPatientExposure() {
     patient: {
       name: 'Eleanor Marsh',
       address: '14 Walworth Road, Southwark, London SE1 6EE',
+      postcode: 'SE1 6EE',
     },
+    annualYear: 2022,
     annual,
     realtime,
     recentDays,
     forecast,
     fetchedAt: new Date(),
   };
+}
+
+/** DAQI index 1–10 for a day — highest level across all pollutants */
+export function daqiLevelForDay(day) {
+  let max = 0;
+  for (const p of POLLUTANTS) {
+    const level = daqiLevel(day.daily[p.key], p.key);
+    if (level != null && level > max) max = level;
+  }
+  return max || null;
 }
 
 export const HEALTH_ADVICE = {

@@ -7,7 +7,8 @@ import {
 } from './widget-render.js?v=5';
 import { whoAnnualChartAligned } from './who-chart-v31.js?v=5';
 import { whoAnnualChartV32 } from './who-chart-v32.js?v=7';
-import { whoAnnualChartV32Col } from './who-chart-v32col.js?v=1';
+import { whoAnnualChartV32A, pollutantKeyStripHtml } from './who-chart-v32a.js?v=1';
+import { ergCreditHtml } from './erg-credit.js?v=1';
 import { whoAnnualChartV33 } from './who-chart-v33.js?v=6';
 import { whoAnnualChartV34 } from './who-chart-v34.js?v=1';
 import { recentDaysForV34, forecastForV34 } from './who-data-v34.js?v=2';
@@ -116,18 +117,78 @@ export function createStackWidgetV32(data, { species = DEFAULT_SPECIES } = {}) {
   return strip;
 }
 
-/** 3.2 coloured — ratio above bar in pollutant AirBase colour */
-export function createStackWidgetV32Col(data, { species = DEFAULT_SPECIES } = {}) {
-  const strip = shell(data, `
-    <section class="zone-card zone-long" data-long></section>
-    <div class="zone-recent-block" data-recent-block>
-      <section class="zone-card zone-recent" data-recent></section>
-      <div class="daqi-legend-wrap daqi-legend-wrap--outside" data-recent-legend></div>
+/** 3.2a — coloured ratios, pollutant key below long-term, WHO values on bars, ERG credit below forecast */
+function updateStackV32A(strip, data, species = DEFAULT_SPECIES, { ergLogo = 'blue' } = {}) {
+  const year = data.annualYear ?? 2022;
+  strip.querySelector('[data-long]').innerHTML = `
+    <div class="zone-label">Long-term <span class="zone-year">${year}</span></div>
+    <div class="zone-main">${whoAnnualChartV32A(data.annual)}</div>
+  `;
+  strip.querySelector('[data-long-key]').innerHTML = pollutantKeyStripHtml();
+  const recentEl = strip.querySelector('[data-recent]');
+  recentEl.innerHTML = recentCardHtml(recentDaysForLadder(data.recentDays), species, {
+    visual: 'ladders',
+    ladderSize: LADDER_SIZE,
+    legendOutside: true,
+  });
+  recentEl.querySelectorAll('.daqi-legend-wrap').forEach((el) => el.remove());
+  strip.querySelector('[data-recent-legend]').innerHTML = daqiLegendHtml();
+  strip.querySelector('[data-forecast]').innerHTML = forecastCardHtml(data.forecast, species, {
+    type: 'ladder',
+    ladderSize: LADDER_SIZE,
+  });
+  strip.querySelector('[data-forecast-credit]').innerHTML = ergCreditHtml(ergLogo);
+}
+
+function shellV32A(data, zonesHtml) {
+  const guidanceText = `${HEALTH_ADVICE.annual} ${HEALTH_ADVICE.recent}`;
+  const strip = document.createElement('div');
+  strip.className = 'aq-strip strip-stack strip-stack--v32a';
+  strip.innerHTML = `
+    <div class="aq-meta">
+      <div><strong>Air Quality at patient's home</strong><span class="place"> · ${data.patient.name} · SE1</span></div>
+      <div class="pollutants" data-pollutants></div>
     </div>
+    <div class="aq-body">
+      <div class="aq-zones">${zonesHtml}</div>
+    </div>
+    <div class="aq-foot" data-foot>
+      <button type="button" data-guidance-toggle>Clinical guidance</button>
+      <div class="guidance">${guidanceText}</div>
+    </div>
+  `;
+  strip.querySelector('[data-pollutants]').remove();
+  bindGuidance(strip);
+  return strip;
+}
+
+const ZONES_V32A = `
+  <div class="zone-long-block" data-long-block>
+    <section class="zone-card zone-long" data-long></section>
+    <div class="pollutant-key-wrap pollutant-key-wrap--outside" data-long-key></div>
+  </div>
+  <div class="zone-recent-block" data-recent-block>
+    <section class="zone-card zone-recent" data-recent></section>
+    <div class="daqi-legend-wrap daqi-legend-wrap--outside" data-recent-legend></div>
+  </div>
+  <div class="zone-forecast-block" data-forecast-block>
     <section class="zone-card zone-forecast" data-forecast></section>
-  `);
-  updateStack(strip, data, species, { longTermChart: whoAnnualChartV32Col, recentDays: recentDaysForLadder(data.recentDays) });
-  strip._update = () => updateStack(strip, data, species, { longTermChart: whoAnnualChartV32Col, recentDays: recentDaysForLadder(data.recentDays) });
+    <div class="erg-credit-wrap erg-credit-wrap--outside" data-forecast-credit></div>
+  </div>
+`;
+
+export function createStackWidgetV32A(data, { species = DEFAULT_SPECIES } = {}) {
+  const strip = shellV32A(data, ZONES_V32A);
+  updateStackV32A(strip, data, species, { ergLogo: 'blue' });
+  strip._update = () => updateStackV32A(strip, data, species, { ergLogo: 'blue' });
+  return strip;
+}
+
+/** 3.2b — same as 3.2a but light-blue ERG logo under Forecast */
+export function createStackWidgetV32B(data, { species = DEFAULT_SPECIES } = {}) {
+  const strip = shellV32A(data, ZONES_V32A);
+  updateStackV32A(strip, data, species, { ergLogo: 'lightBlue' });
+  strip._update = () => updateStackV32A(strip, data, species, { ergLogo: 'lightBlue' });
   return strip;
 }
 

@@ -93,7 +93,7 @@ function pollutantStyles(species) {
   return POLLUTANT_WHO_STYLES[species] ?? { above: '#6a7385', below: '#eceef2' };
 }
 
-/** Vertical pill — AirBase colours: light below WHO, solid above WHO */
+/** Vertical pill — pollutant colours: light below WHO, solid above WHO */
 function whoVerticalPill(species, annualValue, trackPx = VERT_TRACK_PX) {
   const who = WHO_ANNUAL[species];
   const { above, below } = pollutantStyles(species);

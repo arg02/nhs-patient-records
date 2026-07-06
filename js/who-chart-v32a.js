@@ -3,14 +3,10 @@ import {
   POLLUTANT_WHO_STYLES,
   WHO_ANNUAL,
   whoAnnualComparison,
-} from './air-quality.js?v=6';
+} from './air-quality.js?v=7';
 
 const VERT_TRACK_PX = 72;
 const WHO_LINE_RATIO = 0.52;
-
-function pollutantLabel(species) {
-  return POLLUTANTS.find((p) => p.key === species)?.label ?? species;
-}
 
 function whoRatioShort(annualMean, species) {
   const cmp = whoAnnualComparison(annualMean, species);
@@ -58,8 +54,8 @@ function renderPlainPill(belowH, aboveH, belowColor, aboveColor) {
   };
 }
 
-/** 3.2 coloured — ratio above bar in pollutant colour; concentration below */
-function whoVerticalPillV32Col(species, annualValue, layout, showWhoLabel = false) {
+/** 3.2a — coloured ratio above bar; WHO µg/m³ on bar; names in key strip below panel */
+function whoVerticalPillV32A(species, annualValue, layout, showWhoLabel = false) {
   const who = WHO_ANNUAL[species];
   const { above, below } = pollutantStyles(species);
   const { trackPx, whoLinePx, excessZonePx, maxExcess } = layout;
@@ -77,12 +73,10 @@ function whoVerticalPillV32Col(species, annualValue, layout, showWhoLabel = fals
         ${showWhoLabel ? `<div class="who-side who-side--left" style="height:${trackPx}px">
           <span class="who-guideline-tag" style="bottom:${whoLinePx}px">WHO</span>
         </div>` : ''}
-        <div class="who-vert-track" style="height:${trackPx}px">
+        <div class="who-vert-track who-vert-track--onbar-labels" style="height:${trackPx}px">
           <div class="who-line-h who-line-h--dotted" style="bottom:${whoLinePx}px"></div>
           ${pillHtml}
-        </div>
-        <div class="who-side who-side--right" style="height:${trackPx}px">
-          <span class="who-guideline-val" style="bottom:${whoLinePx}px">${who}µg/m³</span>
+          <span class="who-onbar-val" style="bottom:${whoLinePx}px">${who}µg/m³</span>
         </div>
       </div>
       <div class="who-vert-labels who-vert-labels--under">
@@ -91,17 +85,30 @@ function whoVerticalPillV32Col(species, annualValue, layout, showWhoLabel = fals
           <span class="who-annual-unit">µg/m³</span>
         </div>
       </div>
-      <span class="who-bar-name who-bar-name--under">${pollutantLabel(species)}</span>
     </div>
   `;
 }
 
-export function whoAnnualChartV32Col(annual, trackPx = VERT_TRACK_PX) {
+export function whoAnnualChartV32A(annual, trackPx = VERT_TRACK_PX) {
   const layout = whoAlignedLayout(annual, trackPx);
   const bars = POLLUTANTS.map((p, i) => `
     <div class="who-bar-group">
-      ${whoVerticalPillV32Col(p.key, annual[p.key], layout, i === 0)}
+      ${whoVerticalPillV32A(p.key, annual[p.key], layout, i === 0)}
     </div>
   `).join('');
-  return `<div class="who-chart who-chart--aligned who-chart--v32 who-chart--v32col">${bars}</div>`;
+  return `<div class="who-chart who-chart--aligned who-chart--v32 who-chart--v32a">${bars}</div>`;
+}
+
+/** Pollutant colour + name key strip (below long-term panel) */
+export function pollutantKeyStripHtml() {
+  const items = POLLUTANTS.map((p) => {
+    const { above } = pollutantStyles(p.key);
+    return `
+      <div class="pollutant-key-item">
+        <span class="pollutant-key-swatch" style="background:${above}"></span>
+        <span class="pollutant-key-label">${p.label}</span>
+      </div>
+    `;
+  }).join('');
+  return `<div class="pollutant-key" role="list" aria-label="Pollutant key">${items}</div>`;
 }

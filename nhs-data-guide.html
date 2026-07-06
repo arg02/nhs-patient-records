@@ -1,0 +1,342 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>NHS Air Quality Data Integration Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #e4e7ec;
+      font-family: "DM Sans", sans-serif;
+      color: #2a3142;
+      padding: 48px 40px 96px;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .page {
+      max-width: 760px;
+      margin: 0 auto;
+    }
+
+    .page-hd { margin-bottom: 40px; }
+    .page-hd h1 {
+      font-size: 28px;
+      font-weight: 600;
+      color: #1a2030;
+      line-height: 1.25;
+    }
+    .page-hd .lede {
+      margin-top: 12px;
+      font-size: 15px;
+      color: #4a5568;
+      max-width: 640px;
+    }
+    .page-hd .nav {
+      margin-top: 16px;
+      font-size: 13px;
+    }
+    .page-hd a { color: #1a4a78; }
+
+    h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a2030;
+      margin: 40px 0 12px;
+      padding-top: 8px;
+      border-top: 1px solid #d0d6e0;
+    }
+    h2:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+
+    h3 {
+      font-size: 14px;
+      font-weight: 600;
+      color: #2a3142;
+      margin: 24px 0 8px;
+    }
+
+    p, li { font-size: 14px; color: #3d4658; }
+    p { margin-bottom: 12px; }
+    ul, ol { margin: 0 0 16px 20px; }
+    li { margin-bottom: 6px; }
+
+    .callout {
+      background: #fff;
+      border: 1px solid #d0d6e0;
+      border-radius: 8px;
+      padding: 16px 20px;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    .callout strong { color: #1a2030; }
+
+    pre {
+      background: #1a2030;
+      color: #e8ecf2;
+      border-radius: 8px;
+      padding: 16px 18px;
+      overflow-x: auto;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 12px 0 16px;
+    }
+    pre .key { color: #7eb8f7; }
+    pre .str { color: #a8d4a0; }
+    pre .num { color: #f0c080; }
+    pre .comment { color: #8a929e; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 12px 0 16px;
+      background: #fff;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid #d0d6e0;
+    }
+    th, td {
+      padding: 10px 14px;
+      text-align: left;
+      border-bottom: 1px solid #e8ecf2;
+    }
+    th {
+      background: #f4f6f9;
+      font-weight: 600;
+      color: #1a2030;
+    }
+    tr:last-child td { border-bottom: none; }
+
+    code {
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      background: #eef1f5;
+      padding: 2px 6px;
+      border-radius: 4px;
+    }
+
+    .formula {
+      background: #f8f9fb;
+      border-left: 3px solid #1a4a78;
+      padding: 12px 16px;
+      margin: 12px 0;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12px;
+      line-height: 1.7;
+    }
+  </style>
+</head>
+<body>
+  <article class="page">
+    <header class="page-hd">
+      <h1>NHS Air Quality Data Integration Guide</h1>
+      <p class="lede">
+        How to populate the three-panel air quality widget (Long-term · Recent · Forecast) from the exposure service and London Air forecast. Written for NHS implementers integrating with Cerner or similar EHR systems.
+      </p>
+      <p class="nav">
+        <a href="index.html">All concepts</a> ·
+        <a href="concept3.html">Design 3 workspace</a> ·
+        <a href="concept32.html">Design 3.2 workspace</a>
+      </p>
+    </header>
+
+    <h2>Exposure service API</h2>
+    <p>
+      Call the exposure service once per patient home location. A single request from <strong>three days ago through today</strong> provides everything needed for the Long-term and Recent panels.
+    </p>
+
+    <h3>Example request</h3>
+    <p>Patient <strong>Eleanor Marsh</strong>, postcode sector <strong>SE1</strong>, hourly data from −3 days to now:</p>
+    <pre><span class="comment">GET /api/v1/exposure?postcode=SE1&amp;from=-3d&amp;to=now&amp;resolution=hourly</span>
+Accept: application/json
+Authorization: Bearer &lt;token&gt;</pre>
+
+    <h3>Example response</h3>
+    <pre>{
+  <span class="key">"patient"</span>: {
+    <span class="key">"postcode"</span>: <span class="str">"SE1"</span>
+  },
+  <span class="key">"annualYear"</span>: <span class="num">2022</span>,
+  <span class="key">"annual"</span>: {
+    <span class="key">"pm25"</span>: <span class="num">18.2</span>,
+    <span class="key">"pm10"</span>: <span class="num">28.4</span>,
+    <span class="key">"no2"</span>: <span class="num">22.1</span>,
+    <span class="key">"o3"</span>: <span class="num">74.5</span>
+  },
+  <span class="key">"recentDays"</span>: [
+    {
+      <span class="key">"offset"</span>: <span class="num">3</span>,
+      <span class="key">"date"</span>: <span class="str">"2026-07-03"</span>,
+      <span class="key">"hourly"</span>: {
+        <span class="key">"pm25"</span>: [<span class="num">20.1</span>, <span class="num">21.4</span>, <span class="comment">/* … 24 values … */</span>],
+        <span class="key">"pm10"</span>: [<span class="num">36.2</span>, <span class="num">38.1</span>, <span class="comment">/* … */</span>],
+        <span class="key">"no2"</span>: [<span class="num">26.8</span>, <span class="num">29.1</span>, <span class="comment">/* … */</span>],
+        <span class="key">"o3"</span>: [<span class="num">70.2</span>, <span class="num">73.5</span>, <span class="comment">/* … */</span>]
+      }
+    },
+    {
+      <span class="key">"offset"</span>: <span class="num">2</span>,
+      <span class="key">"date"</span>: <span class="str">"2026-07-04"</span>,
+      <span class="key">"hourly"</span>: { <span class="comment">/* pm25, pm10, no2, o3 — 24 hourly values each */</span> }
+    },
+    {
+      <span class="key">"offset"</span>: <span class="num">1</span>,
+      <span class="key">"date"</span>: <span class="str">"2026-07-05"</span>,
+      <span class="key">"hourly"</span>: { <span class="comment">/* … */</span> }
+    },
+    {
+      <span class="key">"offset"</span>: <span class="num">0</span>,
+      <span class="key">"date"</span>: <span class="str">"2026-07-06"</span>,
+      <span class="key">"hourly"</span>: { <span class="comment">/* … includes partial day up to now */</span> }
+    }
+  ],
+  <span class="key">"fetchedAt"</span>: <span class="str">"2026-07-06T10:30:00Z"</span>
+}</pre>
+
+    <div class="callout">
+      <strong>What this response provides:</strong>
+      <ul style="margin-top:8px;margin-bottom:0">
+        <li><code>annual</code> + <code>annualYear</code> — Long-term panel (year label, e.g. 2022)</li>
+        <li><code>recentDays[].hourly</code> — compute daily DAQI banding for −3d, −2d, −1d, and today</li>
+      </ul>
+    </div>
+
+    <h2>Calculating DAQI banding (Recent panel)</h2>
+    <p>
+      UK Daily Air Quality Index (DAQI) uses pollutant-specific thresholds. Thresholds and colours match the
+      <a href="https://github.com/arg02/daqi-vs-caqi">daqi-vs-caqi</a> reference implementation
+      (<code>colorScales.ts</code>).
+    </p>
+
+    <h3>Step 1 — Daily mean per pollutant</h3>
+    <p>For each day and each pollutant, average the hourly values returned by the exposure service:</p>
+    <div class="formula">dailyMean = sum(hourlyValues) / count(validHourlyValues)</div>
+    <p>Ignore null or missing hours. For “today”, use only hours received so far.</p>
+
+    <h3>Step 2 — DAQI index per pollutant</h3>
+    <p>Compare each daily mean against the lower-bound thresholds for that pollutant. The index is the highest band whose threshold the value meets or exceeds (levels 1–10):</p>
+    <table>
+      <thead>
+        <tr><th>Pollutant</th><th>Thresholds (µg/m³) for levels 1–10</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>PM₂.₅</td><td>0, 12, 24, 36, 42, 48, 54, 59, 65, 71</td></tr>
+        <tr><td>PM₁₀</td><td>0, 17, 34, 51, 59, 67, 76, 85, 93, 102</td></tr>
+        <tr><td>NO₂</td><td>0, 68, 135, 201, 268, 335, 401, 468, 535, 601</td></tr>
+        <tr><td>O₃</td><td>0, 51, 101, 121, 141, 161, 181, 201, 221, 241</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Step 3 — Take the highest index across pollutants</h3>
+    <p>For each day, the displayed DAQI level is the <strong>maximum</strong> index across PM₂.₅, PM₁₀, NO₂, and O₃. This follows the UK approach of reporting the pollutant driving the overall band.</p>
+    <div class="formula">dayLevel = max(daqiLevel(pm25), daqiLevel(pm10), daqiLevel(no2), daqiLevel(o3))</div>
+
+    <h3>Step 4 — Render the ladder</h3>
+    <p>
+      Display a 10-segment vertical ladder per day. <strong>Fill rule:</strong> segments 1 through <code>dayLevel</code> are coloured; segments above <code>dayLevel</code> are grey. Show the DAQI key strip below the Recent panel (Low · Moderate · High · V.High).
+    </p>
+
+    <h2>Forecast data source</h2>
+    <p>
+      Forecast banding comes from the Environmental Research Group (ERG) London Air forecast — not the exposure service.
+    </p>
+    <ul>
+      <li><strong>URL:</strong> <a href="https://londonair.org.uk/data/londonair/LondonAirForecast.asp">londonair.org.uk/data/londonair/LondonAirForecast.asp</a></li>
+      <li><strong>Use banding level only</strong> — do not use a numeric index from the forecast page</li>
+      <li><strong>Credit:</strong> display ERG logo below the Forecast panel (see Design 3.2a/3.2b)</li>
+    </ul>
+
+    <h3>Band → display index mapping</h3>
+    <p>Map the text band to the <strong>highest index in that band</strong>, then fill all segments below:</p>
+    <table>
+      <thead>
+        <tr><th>Forecast band</th><th>Display index</th><th>Segments filled</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Low</td><td>3</td><td>1, 2, 3</td></tr>
+        <tr><td>Moderate</td><td>6</td><td>1–6</td></tr>
+        <tr><td>High</td><td>9</td><td>1–9</td></tr>
+        <tr><td>V.High</td><td>10</td><td>1–10</td></tr>
+      </tbody>
+    </table>
+    <p>Apply the same fill rule as Recent: colour segments 1..index, grey above.</p>
+
+    <h2>Long-term bar mathematics (Designs 3.1 / 3.2)</h2>
+    <p>
+      The long-term panel compares annual mean concentrations to WHO air quality guidelines. It uses a <strong>separate scale</strong> from DAQI — do not mix annual WHO comparison with daily index levels.
+    </p>
+
+    <h3>WHO guidelines (µg/m³)</h3>
+    <table>
+      <thead>
+        <tr><th>Pollutant</th><th>WHO annual guideline</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>PM₂.₅</td><td>5</td></tr>
+        <tr><td>PM₁₀</td><td>15</td></tr>
+        <tr><td>NO₂</td><td>10</td></tr>
+        <tr><td>O₃</td><td>60</td></tr>
+      </tbody>
+    </table>
+
+    <h3>Bar height</h3>
+    <p>The WHO dotted line is fixed at <strong>52%</strong> of the bar track height.</p>
+
+    <p><strong>Below the line</strong> (concentration up to the WHO guideline):</p>
+    <div class="formula">if annual ≥ WHO:  belowHeight = 52% of track
+else:             belowHeight = (annual / WHO) × 52%</div>
+
+    <p><strong>Above the line</strong> (excess over WHO):</p>
+    <div class="formula">excessRatio = (annual − WHO) / WHO
+aboveHeight = (excessRatio / maxExcessAcrossPollutants) × 48% of track</div>
+
+    <p>The pollutant with the largest excess ratio fills the zone above the line; others scale proportionally.</p>
+
+    <h3>Display conventions</h3>
+    <ul>
+      <li>Show annual concentrations as <strong>integers</strong> (µg/m³)</li>
+      <li>Show ratio as <strong>3.6×</strong> — no “WHO” suffix on the multiplier</li>
+      <li>Label the year from <code>annualYear</code> (e.g. <strong>2022</strong>)</li>
+      <li>Use pollutant bar colours (solid above WHO, light fill below); names in the key strip below the panel</li>
+    </ul>
+
+    <h2>Panel-by-panel summary</h2>
+
+    <h3>Long-term</h3>
+    <ul>
+      <li><strong>Data:</strong> <code>annual</code> object + <code>annualYear</code> from exposure service</li>
+      <li><strong>Render:</strong> four vertical bars (PM₂.₅, PM₁₀, NO₂, O₃), shared WHO dotted line at 52%, ratio above bar, concentration below</li>
+      <li><strong>Key strip:</strong> pollutant colour swatches + names below the panel</li>
+    </ul>
+
+    <h3>Recent</h3>
+    <ul>
+      <li><strong>Data:</strong> <code>recentDays[].hourly</code> from exposure service (−3d through today)</li>
+      <li><strong>Process:</strong> daily mean per pollutant → DAQI index per pollutant → max across pollutants</li>
+      <li><strong>Render:</strong> four day columns (−3d, −2d, −1d, Today) with 10-segment DAQI ladders</li>
+      <li><strong>Key strip:</strong> DAQI band legend below the panel</li>
+    </ul>
+
+    <h3>Forecast</h3>
+    <ul>
+      <li><strong>Data:</strong> text band from <a href="https://londonair.org.uk/data/londonair/LondonAirForecast.asp">London Air forecast</a></li>
+      <li><strong>Process:</strong> map band to display index (Low→3, Moderate→6, High→9, V.High→10)</li>
+      <li><strong>Render:</strong> single DAQI ladder for tomorrow; band name and date below</li>
+      <li><strong>Credit:</strong> ERG logo below the panel</li>
+    </ul>
+
+    <h2>Widget header</h2>
+    <p>Use the title <strong>“Air Quality at patient's home”</strong> followed by patient name and location sector (e.g. <code>· Eleanor Marsh · SE1</code>).</p>
+
+    <div class="callout">
+      <strong>Prototype note:</strong> This repository uses mock data in <code>js/air-quality.js</code> for design review. Replace <code>mockPatientExposure()</code> with live API calls following the patterns above before clinical deployment.
+    </div>
+  </article>
+</body>
+</html>

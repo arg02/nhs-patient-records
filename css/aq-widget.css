@@ -649,8 +649,118 @@
   font-weight: 700;
   color: #000000;
 }
-.who-chart--v32col .who-ratio-tag--coloured {
+.who-chart--v32a .who-ratio-tag--coloured {
   font-weight: 700;
+}
+
+/* 3.2a — WHO µg/m³ on bar, below dotted line */
+.who-vert-track--onbar-labels {
+  position: relative;
+}
+.who-onbar-val {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%) translateY(calc(50% + 2px));
+  font-size: 7px;
+  font-weight: 600;
+  color: #2a3142;
+  white-space: nowrap;
+  line-height: 1;
+  z-index: 2;
+  pointer-events: none;
+}
+
+.zone-year {
+  font-weight: 500;
+  color: #6a7385;
+  letter-spacing: 0.04em;
+  margin-left: 6px;
+}
+
+/* Pollutant key strip — below long-term panel */
+.pollutant-key-wrap {
+  display: flex;
+  justify-content: center;
+  flex-shrink: 0;
+}
+.strip-stack .zone-long-block {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+  align-self: stretch;
+}
+.strip-stack .zone-long-block .zone-card {
+  width: 100%;
+  flex: 1;
+}
+.strip-stack .pollutant-key-wrap--outside {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+}
+.pollutant-key {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px 20px;
+  padding: 4px 8px;
+}
+.pollutant-key-item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+.pollutant-key-swatch {
+  width: 10px;
+  height: 10px;
+  border-radius: 2px;
+  flex-shrink: 0;
+}
+.pollutant-key-label {
+  font-size: 10px;
+  font-weight: 600;
+  color: #4a5568;
+  letter-spacing: 0.02em;
+}
+
+/* ERG credit — below forecast panel */
+.strip-stack .zone-forecast-block {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  position: relative;
+  align-self: stretch;
+}
+.strip-stack .zone-forecast-block .zone-card {
+  width: 100%;
+  flex: 1;
+}
+.strip-stack .erg-credit-wrap--outside {
+  position: absolute;
+  top: calc(100% + 10px);
+  left: 0;
+  right: 0;
+  display: flex;
+  justify-content: center;
+}
+.erg-credit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+.erg-credit-label {
+  font-size: 9px;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: #8a929e;
+}
+.erg-credit-logo {
+  height: 22px;
+  width: auto;
+  object-fit: contain;
 }
 
 .who-single-row {

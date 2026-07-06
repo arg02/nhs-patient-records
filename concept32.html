@@ -7,7 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/aq-widget.css?v=12">
+  <link rel="stylesheet" href="css/aq-widget.css?v=13">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -77,8 +77,9 @@
   <header class="page-hd">
     <h1>Design 3.2 — Coloured × ratio</h1>
     <p>
-      Iteration workspace forked from 3.2 (ratio above, concentration below). Long-term × labels use each pollutant’s AirBase bar colour.
-      <a href="concept3.html">Design 3 workspace</a> · <a href="index.html">All concepts</a>
+      Iteration workspace forked from 3.2 (ratio above, concentration below). Long-term × labels use each pollutant’s bar colour.
+      Pollutant names sit in a key strip below the long-term panel; WHO guideline values appear on the bars.
+      <a href="concept3.html">Design 3 workspace</a> · <a href="nhs-data-guide.html">NHS data guide</a> · <a href="index.html">All concepts</a>
     </p>
   </header>
 
@@ -92,8 +93,12 @@
       <div class="section-tag" id="iterations-label"><strong>Iterations</strong></div>
       <div id="iterations" class="iteration-stack">
         <div class="iteration-item">
-          <div class="section-tag"><strong>3.2c</strong> — × above bar in pollutant colour (same data as 3.2)</div>
-          <div id="iteration-3-2c"></div>
+          <div class="section-tag"><strong>3.2a</strong> — pollutant key strip, on-bar WHO values, dark-blue ERG credit</div>
+          <div id="iteration-3-2a"></div>
+        </div>
+        <div class="iteration-item">
+          <div class="section-tag"><strong>3.2b</strong> — same as 3.2a, light-blue ERG logo under Forecast</div>
+          <div id="iteration-3-2b"></div>
         </div>
       </div>
       <div id="page-error" hidden style="margin-top:12px;padding:12px 16px;background:#fde8e8;border:1px solid #f5c2c2;border-radius:8px;font-size:13px;color:#7a1f1f;"></div>
@@ -101,8 +106,8 @@
   </div>
 
   <script type="module">
-    import { mockPatientExposure } from './js/air-quality.js?v=6';
-    import { createStackWidgetV32, createStackWidgetV32Col } from './js/stack-widget.js?v=12';
+    import { mockPatientExposure } from './js/air-quality.js?v=7';
+    import { createStackWidgetV32, createStackWidgetV32A, createStackWidgetV32B } from './js/stack-widget.js?v=13';
 
     const errorEl = document.getElementById('page-error');
 
@@ -120,7 +125,8 @@
     try {
       const data = mockPatientExposure();
       document.getElementById('reference').appendChild(createStackWidgetV32(data));
-      document.getElementById('iteration-3-2c').appendChild(createStackWidgetV32Col(data));
+      document.getElementById('iteration-3-2a').appendChild(createStackWidgetV32A(data));
+      document.getElementById('iteration-3-2b').appendChild(createStackWidgetV32B(data));
     } catch (err) {
       showError(err);
     }
