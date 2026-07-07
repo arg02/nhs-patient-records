@@ -7,7 +7,8 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/aq-widget.css?v=11">
+  <link rel="stylesheet" href="css/aq-widget.css?v=39">
+  <link rel="stylesheet" href="css/site-nav.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -74,11 +75,19 @@
   </style>
 </head>
 <body>
+  <nav class="site-nav" aria-label="Prototype navigation">
+    <div class="site-nav__inner">
+      <a href="index.html" class="site-nav__link">All concepts</a>
+      <a href="concept3.html" class="site-nav__link site-nav__link--active" aria-current="page">Design 3 iterations</a>
+      <a href="concept32.html" class="site-nav__link">Design 3.2 iterations</a>
+      <a href="nhs-data-guide.html" class="site-nav__link">NHS data integration guide</a>
+    </div>
+  </nav>
+
   <header class="page-hd">
     <h1>Design 3 — DAQI ladders</h1>
     <p>
       Baseline widget at the top. New iterations are added below as we refine the layout.
-      <a href="concept32.html">3.2 coloured × workspace</a> · <a href="nhs-data-guide.html">NHS data guide</a> · <a href="index.html">All concepts</a>
     </p>
   </header>
 
@@ -118,7 +127,7 @@
 
   <script type="module">
     import { mockPatientExposure } from './js/air-quality.js?v=6';
-    import { createStackWidget, createStackWidgetV31, createStackWidgetV32, createStackWidgetV33, createStackWidgetV34, createStackWidgetV35 } from './js/stack-widget.js?v=11';
+    import { createStackWidget, createStackWidgetV31, createStackWidgetV32, createStackWidgetV33, createStackWidgetV34, createStackWidgetV35 } from './js/stack-widget.js?v=31';
 
     const errorEl = document.getElementById('page-error');
 

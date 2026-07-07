@@ -21,6 +21,148 @@ const DAQI_KEY = [
   { label: 'V.High', colors: ['#000000'] },
 ];
 
+/** Match .daqi-stack in aq-widget.css — gap between DAQI index segments */
+const DAQI_LADDER_GAP = 3;
+const DAQI_LADDER_SEGMENTS = 10;
+
+/** Pixel geometry for a DAQI ladder — lines sit between segments 3|4, 6|7, 9|10 */
+export function daqiLadderGeometry(height, { gap = DAQI_LADDER_GAP, segments = DAQI_LADDER_SEGMENTS } = {}) {
+  const segH = (height - (segments - 1) * gap) / segments;
+  const step = segH + gap;
+  const boundaryPx = (afterSeg) => afterSeg * step;
+  const toPct = (px) => (px / height) * 100;
+  const line34 = boundaryPx(3);
+  const line67 = boundaryPx(6);
+  const line910 = boundaryPx(9);
+  const lowTop = 3 * segH + 2 * gap;
+  return {
+    line34Pct: toPct(line34),
+    line67Pct: toPct(line67),
+    line910Pct: toPct(line910),
+    lowCenterPct: toPct(lowTop / 2),
+  };
+}
+
+/** CSS custom properties for band-axis lines + labels (shared values) */
+export function daqiLadderBandStyle(height, opts) {
+  const g = daqiLadderGeometry(height, opts);
+  return `--ladder-h:${height}px;--line-34:${g.line34Pct}%;--line-67:${g.line67Pct}%;--line-910:${g.line910Pct}%;--low-center:${g.lowCenterPct}%`;
+}
+
+export function bandAxisLabelsHtml() {
+  return `
+    <span class="recent-band-label recent-band-label--on-line recent-band-label--vhigh" style="color:${DAQI_COLORS[9]}">V.High</span>
+    <span class="recent-band-label recent-band-label--on-line recent-band-label--high" style="color:${DAQI_COLORS[8]}">High</span>
+    <span class="recent-band-label recent-band-label--on-line recent-band-label--moderate" style="color:${DAQI_COLORS[5]}">Moderate</span>
+    <span class="recent-band-label recent-band-label--on-line recent-band-label--low" style="color:${DAQI_COLORS[2]}">Low</span>
+  `;
+}
+
+export function bandAxisLinesHtml() {
+  return `
+    <div class="recent-band-line recent-band-line--low"></div>
+    <div class="recent-band-line recent-band-line--moderate"></div>
+    <div class="recent-band-line recent-band-line--high"></div>
+    <div class="recent-band-line recent-band-line--vhigh"></div>
+  `;
+}
+
+function laddersSplitHeaderHtml({ pastLabel = 'Recent', todayLabel = 'Today' } = {}) {
+  return `
+    <div class="zone-label-split">
+      <div class="ladders-header-split">
+        <div class="ladders-header-past"><div class="zone-label">${pastLabel}</div></div>
+        <div class="ladders-header-today-sep" aria-hidden="true"></div>
+        <div class="ladders-header-today"><div class="zone-label">${todayLabel}</div></div>
+      </div>
+    </div>
+  `;
+}
+
+function laddersTripleHeaderHtml() {
+  return `
+    <div class="zone-label-split">
+      <div class="ladders-header-split ladders-header-split--triple">
+        <div class="ladders-header-past"><div class="zone-label">Recent</div></div>
+        <div class="ladders-header-today-sep" aria-hidden="true"></div>
+        <div class="ladders-header-today"><div class="zone-label">Today</div></div>
+        <div class="ladders-header-forecast-sep" aria-hidden="true"></div>
+        <div class="ladders-header-forecast"><div class="zone-label">Forecast</div></div>
+      </div>
+    </div>
+  `;
+}
+
+/**
+ * Position 3.2c band-axis labels and dotted lines from rendered .daqi-stack segments
+ * (guarantees alignment with actual bar geometry, not CSS percentage estimates).
+ */
+export function syncV32cLaddersBandLayer(strip) {
+  const span = strip?.querySelector('[data-ladders-span]');
+  const layer = span?.querySelector('.ladders-band-layer');
+  const ladderCard = span?.querySelector('.zone-recent, .zone-combined');
+  const bar = ladderCard?.querySelector('.daqi-stack');
+  if (!span || !layer || !ladderCard || !bar) return;
+
+  const segs = [...bar.querySelectorAll('.daqi-seg')];
+  if (segs.length !== 10) return;
+
+  const spanRect = span.getBoundingClientRect();
+  const recentRect = ladderCard.getBoundingClientRect();
+  const barRect = bar.getBoundingClientRect();
+  const stacks = ladderCard.querySelectorAll('.daqi-stack');
+  const forecastBar = span.querySelector('.zone-forecast .daqi-stack')
+    ?? ladderCard.querySelector('.day-forecast-group .daqi-stack')
+    ?? (stacks.length ? stacks[stacks.length - 1] : null);
+  const forecastSlot = ladderCard.querySelector('.day-forecast-group .day-slot--visual');
+  const lineRightTarget = forecastSlot ?? forecastBar;
+  const lineRight = lineRightTarget
+    ? lineRightTarget.getBoundingClientRect().right
+    : recentRect.right - 20;
+
+  const labelGap = barRect.left - recentRect.left;
+  const axisEl = layer.querySelector('.ladders-band-axis');
+  if (axisEl) axisEl.style.width = `${labelGap}px`;
+
+  layer.style.top = `${barRect.top - spanRect.top}px`;
+  layer.style.height = `${barRect.height}px`;
+  layer.style.left = `${recentRect.left - spanRect.left}px`;
+  layer.style.right = `${Math.max(0, spanRect.right - lineRight)}px`;
+
+  const layerRect = layer.getBoundingClientRect();
+  const relY = (y) => y - layerRect.top;
+
+  const lineMap = [
+    ['recent-band-line--low', 2],
+    ['recent-band-line--moderate', 5],
+    ['recent-band-line--high', 8],
+    ['recent-band-line--vhigh', 9],
+  ];
+  lineMap.forEach(([cls, segIdx]) => {
+    const el = layer.querySelector(`.${cls}`);
+    if (!el) return;
+    const y = segs[segIdx].getBoundingClientRect().top;
+    el.classList.add('recent-band-line--synced');
+    el.style.bottom = '';
+    el.style.top = `${relY(y)}px`;
+  });
+
+  const labelOnLine = [
+    ['low', 2],
+    ['moderate', 5],
+    ['high', 8],
+    ['vhigh', 9],
+  ];
+  labelOnLine.forEach(([name, segIdx]) => {
+    const el = layer.querySelector(`.recent-band-label--${name}`);
+    if (!el) return;
+    const y = segs[segIdx].getBoundingClientRect().top;
+    el.classList.add('recent-band-label--synced');
+    el.style.bottom = '';
+    el.style.top = `${relY(y)}px`;
+  });
+}
+
 function whoScaleMax(who, annual) {
   if (annual > who) return annual;
   return who * 1.15;
@@ -182,7 +324,126 @@ export function whoAnnualChart2x2(annual) {
   return `<div class="who-grid">${rows}</div>`;
 }
 
-function dayStackHtml(items, { ladders = false, circles = false, dividerBeforeToday = false } = {}) {
+function dayStackBandAxisHtml(items, { dividerBeforeToday = false, spanBand = false, todayLabelAbove = false, todayHeaderSplit = false } = {}) {
+  const slot = (content, row) => `<div class="day-slot day-slot--${row}">${content || ''}</div>`;
+  const linesHtml = bandAxisLinesHtml();
+  const splitRow = (pick, rowSuffix, { todayOnly = false, pastOnly = false } = {}) => {
+    if (dividerBeforeToday && items.length >= 2) {
+      const past = items.slice(0, -1);
+      const today = items[items.length - 1];
+      const pastSlots = todayOnly
+        ? past.map(() => slot('', rowSuffix)).join('')
+        : past.map((i) => slot(pick(i), rowSuffix)).join('');
+      const todayContent = todayOnly ? pick(today) : (pastOnly ? '' : pick(today));
+      return `
+        <div class="day-${rowSuffix}-row day-row--split-today">
+          <div class="day-past-group">${pastSlots}</div>
+          <div class="day-today-separator" aria-hidden="true"></div>
+          ${slot(todayContent, rowSuffix)}
+        </div>
+      `;
+    }
+    return `
+      <div class="day-${rowSuffix}-row">
+        ${items.map((i) => slot(pick(i), rowSuffix)).join('')}
+      </div>
+    `;
+  };
+
+  const todayAboveRow = dividerBeforeToday && todayLabelAbove && items.length >= 2
+    ? (() => {
+      const past = items.slice(0, -1);
+      return `
+        <div class="day-today-above-row day-row--split-today">
+          <div class="day-past-group">${past.map(() => slot('', 'today-above')).join('')}</div>
+          <div class="day-today-separator" aria-hidden="true"></div>
+          <div class="day-slot day-slot--today-above"><span class="zone-label">Today</span></div>
+        </div>
+      `;
+    })()
+    : '';
+
+  const chartBody = dividerBeforeToday && items.length >= 2
+    ? `
+      ${todayAboveRow}
+      <div class="recent-band-plot">
+        ${spanBand ? '' : `<div class="recent-band-lines" aria-hidden="true">${linesHtml}</div>`}
+        ${splitRow((i) => i.visual, 'visual')}
+      </div>
+      ${splitRow((i) => i.name, 'name', { pastOnly: todayLabelAbove || todayHeaderSplit })}
+      ${splitRow((i) => i.date, 'date')}
+    `
+    : `
+      <div class="recent-band-plot">
+        ${spanBand ? '' : `<div class="recent-band-lines" aria-hidden="true">${linesHtml}</div>`}
+        ${splitRow((i) => i.visual, 'visual')}
+      </div>
+      ${splitRow((i) => i.name, 'name')}
+      ${splitRow((i) => i.date, 'date')}
+    `;
+
+  if (spanBand) {
+    return `
+      <div class="day-stack day-stack--ladders day-stack--span-band${dividerBeforeToday ? ' day-stack--with-divider' : ''}">
+        <div class="day-stack-main">
+          ${dividerBeforeToday ? '<div class="day-col-divider" aria-hidden="true"></div>' : ''}
+          ${chartBody}
+        </div>
+      </div>
+    `;
+  }
+
+  return `
+    <div class="day-stack day-stack--ladders day-stack--band-axis${dividerBeforeToday ? ' day-stack--with-divider' : ''}">
+      <div class="recent-band-axis ladders-band-axis" aria-hidden="true">${bandAxisLabelsHtml()}</div>
+      <div class="day-stack-main">
+        ${dividerBeforeToday ? '<div class="day-col-divider" aria-hidden="true"></div>' : ''}
+        ${chartBody}
+      </div>
+    </div>
+  `;
+}
+
+function dayStackTripleBandAxisHtml(items) {
+  const slot = (content, row) => `<div class="day-slot day-slot--${row}">${content || ''}</div>`;
+  const pastCount = items.length - 2;
+  const past = items.slice(0, pastCount);
+  const today = items[pastCount];
+  const forecast = items[pastCount + 1];
+
+  const tripleRow = (pick, rowSuffix) => `
+    <div class="day-${rowSuffix}-row day-row--split-triple">
+      <div class="day-past-group">${past.map((i) => slot(pick(i), rowSuffix)).join('')}</div>
+      <div class="day-today-separator" aria-hidden="true"></div>
+      ${slot(pick(today), rowSuffix)}
+      <div class="day-forecast-separator" aria-hidden="true"></div>
+      <div class="day-forecast-group">${slot(pick(forecast), rowSuffix)}</div>
+    </div>
+  `;
+
+  const chartBody = `
+    <div class="recent-band-plot">
+      ${tripleRow((i) => i.visual, 'visual')}
+    </div>
+    ${tripleRow((i) => i.name, 'name')}
+    ${tripleRow((i) => i.date, 'date')}
+  `;
+
+  return `
+    <div class="day-stack day-stack--ladders day-stack--span-band day-stack--with-double-divider">
+      <div class="day-stack-main">
+        <div class="day-col-divider day-col-divider--past-today" aria-hidden="true"></div>
+        <div class="day-col-divider day-col-divider--today-forecast" aria-hidden="true"></div>
+        ${chartBody}
+      </div>
+    </div>
+  `;
+}
+
+function dayStackHtml(items, { ladders = false, circles = false, dividerBeforeToday = false, bandAxis = false, spanBand = false, todayLabelAbove = false, todayHeaderSplit = false } = {}) {
+  if ((bandAxis || spanBand) && ladders) {
+    return dayStackBandAxisHtml(items, { dividerBeforeToday, spanBand, todayLabelAbove, todayHeaderSplit });
+  }
   const visualClass = ladders ? ' day-stack--ladders' : circles ? ' day-stack--circles' : '';
   const showDivider = dividerBeforeToday && items.length >= 2;
   const slot = (content, row) => `<div class="day-slot day-slot--${row}">${content || ''}</div>`;
@@ -234,7 +495,7 @@ function dayItemFromRecent(d, species, visualFn) {
   };
 }
 
-export function recentCardHtml(recentDays, species, { visual = 'blobs', ladderSize, legendOutside = false } = {}) {
+export function recentCardHtml(recentDays, species, { visual = 'blobs', ladderSize, legendOutside = false, bandAxis = false, spanBand = false, todayLabelAbove = false, todayHeaderSplit = false, dividerBeforeToday = true } = {}) {
   const days = sortedRecentDays(recentDays);
   let items;
 
@@ -262,18 +523,27 @@ export function recentCardHtml(recentDays, species, { visual = 'blobs', ladderSi
     }));
   }
 
-  const legend = legendOutside
+  const legend = legendOutside || bandAxis || spanBand
     ? ''
     : `<div class="daqi-legend-wrap">${daqiLegendHtml()}</div>`;
 
+  const useTodayHeaderSplit = todayHeaderSplit && visual === 'ladders';
+  const labelRow = useTodayHeaderSplit
+    ? laddersSplitHeaderHtml()
+    : '<div class="zone-label">Recent</div>';
+
   return `
-    <div class="zone-label">Recent</div>
-    <div class="zone-main zone-main--days">
+    ${labelRow}
+    <div class="zone-main zone-main--days${bandAxis ? ' zone-main--band-axis' : ''}">
       <div class="day-panel">
         ${dayStackHtml(items, {
           ladders: visual === 'ladders',
           circles: visual === 'circles',
-          dividerBeforeToday: true,
+          dividerBeforeToday,
+          bandAxis: bandAxis && visual === 'ladders',
+          spanBand: spanBand && visual === 'ladders',
+          todayLabelAbove: todayLabelAbove && visual === 'ladders' && !useTodayHeaderSplit,
+          todayHeaderSplit: useTodayHeaderSplit,
         })}
       </div>
     </div>
@@ -281,7 +551,59 @@ export function recentCardHtml(recentDays, species, { visual = 'blobs', ladderSi
   `;
 }
 
-export function forecastCardHtml(forecast, species, { type = 'blob', ladderSize, balanceLegend = false } = {}) {
+function forecastLadderAlignHtml(items) {
+  const slot = (content, row) => `<div class="day-slot day-slot--${row}">${content || ''}</div>`;
+  return `
+    <div class="day-stack day-stack--ladders day-stack--span-band">
+      <div class="day-stack-main">
+        <div class="recent-band-plot">
+          <div class="day-visual-row">
+            ${items.map((i) => slot(i.visual, 'visual')).join('')}
+          </div>
+        </div>
+        <div class="day-name-row">
+          ${items.map((i) => slot(i.name, 'name')).join('')}
+        </div>
+        <div class="day-date-row">
+          ${items.map((i) => slot(i.date, 'date')).join('')}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+export function todayCardHtml(recentDays, species, { ladderSize } = {}) {
+  const day = sortedRecentDays(recentDays).find((d) => d.offset === 0);
+  const lh = ladderSize?.height ?? LADDER_HEIGHT;
+  const lw = ladderSize?.width ?? 28;
+
+  if (!day) {
+    return `
+      <div class="zone-label zone-label--center">Today</div>
+      <div class="zone-main zone-main--days zone-main--compact">
+        <div class="day-panel day-panel--compact"></div>
+      </div>
+    `;
+  }
+
+  const level = daqiLevel(day.daily[species], species);
+  const items = [{
+    visual: daqiStackedBar(level, { height: lh, width: lw }),
+    name: '',
+    date: formatDateChip(day.date),
+  }];
+
+  return `
+    <div class="zone-label zone-label--center">Today</div>
+    <div class="zone-main zone-main--days zone-main--compact">
+      <div class="day-panel day-panel--compact">
+        ${forecastLadderAlignHtml(items)}
+      </div>
+    </div>
+  `;
+}
+
+export function forecastCardHtml(forecast, species, { type = 'blob', ladderSize, balanceLegend = false, ladderChartAlign = false, compact = false } = {}) {
   const level = forecastBandToDaqi(forecast.band);
   const lh = ladderSize?.height ?? LADDER_HEIGHT;
   const lw = ladderSize?.width ?? 28;
@@ -292,21 +614,155 @@ export function forecastCardHtml(forecast, species, { type = 'blob', ladderSize,
   else if (type === 'dot') visual = `<div class="daqi-dot daqi-dot--xl" style="background:${daqiColor(level)}"></div>`;
   else visual = daqiIndexBlob(level, { large: true });
 
-  const items = [{ visual, name: forecast.band, date: formatDateChip(forecast.date) }];
+  const items = [{ visual, name: '', date: formatDateChip(forecast.date) }];
 
   const legendBalance = balanceLegend
     ? '<div class="daqi-legend-spacer" aria-hidden="true"></div>'
     : '';
 
+  const stackHtml = type === 'ladder' && ladderChartAlign
+    ? forecastLadderAlignHtml(items)
+    : dayStackHtml(items, {
+      ladders: type === 'ladder',
+      circles: type === 'circles',
+    });
+
   return `
-    <div class="zone-label">Forecast</div>
+    <div class="zone-label${compact ? ' zone-label--center' : ''}">Forecast</div>
+    <div class="zone-main zone-main--days${compact ? ' zone-main--compact' : ''}">
+      <div class="day-panel${compact ? ' day-panel--compact' : ''}">
+        ${stackHtml}
+        ${legendBalance}
+      </div>
+    </div>
+  `;
+}
+
+/** 3.2c — Recent card with band-axis labels and Today header */
+export function recentCardBandAxisHtml(recentDays, species, { ladderSize } = {}) {
+  const days = sortedRecentDays(recentDays);
+  const h = ladderSize?.height ?? LADDER_HEIGHT;
+  const w = ladderSize?.width ?? 28;
+
+  const recentItems = days.map((d) => {
+    const item = dayItemFromRecent(d, species, (day) => {
+      const level = daqiLevel(day.daily[species], species);
+      return daqiStackedBar(level, { height: h, width: w });
+    });
+    if (d.offset === 0) item.name = '';
+    return item;
+  });
+
+  return `
+    <div class="recent-band-header">
+      <div class="ladders-header-split">
+        <div class="ladders-header-past"><div class="zone-label">Recent</div></div>
+        <div class="ladders-header-today-sep" aria-hidden="true"></div>
+        <div class="ladders-header-today"><div class="zone-label">Today</div></div>
+      </div>
+    </div>
+    <div class="recent-band-body">
+      <div class="ladders-band-axis" aria-hidden="true">${bandAxisLabelsHtml()}</div>
+      <div class="zone-main zone-main--days">
+        <div class="day-panel">
+          ${dayStackHtml(recentItems, { ladders: true, dividerBeforeToday: true })}
+        </div>
+      </div>
+    </div>
+  `;
+}
+
+/** 3.2e — single panel: Recent (−3d…−1d) | Today | Forecast with two dividers */
+export function combinedLaddersCardHtml(recentDays, forecast, species, { ladderSize } = {}) {
+  const days = sortedRecentDays(recentDays);
+  const h = ladderSize?.height ?? LADDER_HEIGHT;
+  const w = ladderSize?.width ?? 28;
+
+  const pastItems = days.filter((d) => d.offset > 0).map((d) => dayItemFromRecent(d, species, (day) => {
+    const level = daqiLevel(day.daily[species], species);
+    return daqiStackedBar(level, { height: h, width: w });
+  }));
+
+  const todayDay = days.find((d) => d.offset === 0);
+  const todayItem = todayDay
+    ? { ...dayItemFromRecent(todayDay, species, (day) => {
+      const level = daqiLevel(day.daily[species], species);
+      return daqiStackedBar(level, { height: h, width: w });
+    }), name: '' }
+    : { visual: '', name: '', date: '' };
+
+  const fcLevel = forecastBandToDaqi(forecast.band);
+  const forecastItem = {
+    visual: daqiStackedBar(fcLevel, { height: h, width: w }),
+    name: '',
+    date: formatDateChip(forecast.date),
+  };
+
+  const items = [...pastItems, todayItem, forecastItem];
+
+  return `
+    ${laddersTripleHeaderHtml()}
     <div class="zone-main zone-main--days">
       <div class="day-panel">
-        ${dayStackHtml(items, {
-          ladders: type === 'ladder',
-          circles: type === 'circles',
-        })}
-        ${legendBalance}
+        ${dayStackTripleBandAxisHtml(items)}
+      </div>
+    </div>
+  `;
+}
+
+/** @deprecated split into recentCardBandAxisHtml + separate forecast card */
+export function laddersCombinedCardHtml(recentDays, forecast, species, { ladderSize } = {}) {
+  const days = sortedRecentDays(recentDays);
+  const h = ladderSize?.height ?? LADDER_HEIGHT;
+  const w = ladderSize?.width ?? 28;
+
+  const recentItems = days.map((d) => {
+    const item = dayItemFromRecent(d, species, (day) => {
+      const level = daqiLevel(day.daily[species], species);
+      return daqiStackedBar(level, { height: h, width: w });
+    });
+    if (d.offset === 0) item.name = '';
+    return item;
+  });
+
+  const fcLevel = forecastBandToDaqi(forecast.band);
+  const forecastItems = [{
+    visual: daqiStackedBar(fcLevel, { height: h, width: w }),
+    name: '',
+    date: formatDateChip(forecast.date),
+  }];
+
+  return `
+    <div class="ladders-combined-header">
+      <div class="ladders-header-recent ladders-header-split">
+        <div class="ladders-header-past">
+          <div class="zone-label">Recent</div>
+        </div>
+        <div class="ladders-header-today-sep" aria-hidden="true"></div>
+        <div class="ladders-header-today">
+          <div class="zone-label">Today</div>
+        </div>
+      </div>
+      <div class="ladders-forecast-bar ladders-forecast-bar--header" aria-hidden="true"></div>
+      <div class="zone-label ladders-header-forecast">Forecast</div>
+    </div>
+    <div class="ladders-combined-body">
+      <div class="ladders-band-axis" aria-hidden="true">${bandAxisLabelsHtml()}</div>
+      <div class="ladders-band-lines" aria-hidden="true">${bandAxisLinesHtml()}</div>
+      <div class="ladders-col ladders-col--recent">
+        <div class="zone-main zone-main--days">
+          <div class="day-panel">
+            ${dayStackHtml(recentItems, { ladders: true, dividerBeforeToday: true })}
+          </div>
+        </div>
+      </div>
+      <div class="ladders-forecast-bar" aria-hidden="true"></div>
+      <div class="ladders-col ladders-col--forecast">
+        <div class="zone-main zone-main--days">
+          <div class="day-panel">
+            ${dayStackHtml(forecastItems, { ladders: true })}
+          </div>
+        </div>
       </div>
     </div>
   `;

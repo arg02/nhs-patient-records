@@ -7,6 +7,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site-nav.css">
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
 
@@ -451,7 +452,11 @@
     .who-bar-ratio { display: block; font-weight: 700; font-size: 13px; color: #1a3148; margin-top: 2px; }
 
     /* 3.1 / 3.2 aligned charts — "WHO" left of line, value right of bar */
-    .who-chart--aligned { gap: 38px; padding: 0 26px; }
+    .who-chart--aligned {
+      gap: 38px;
+      padding: 0 34px 0 42px;
+      box-sizing: border-box;
+    }
     .who-chart--aligned .who-vert-cell {
       display: flex;
       flex-direction: column;
@@ -556,6 +561,19 @@
       opacity: 0.7;
       max-width: 640px;
     }
+    .aq-foot .guidance-section { margin-bottom: 14px; }
+    .aq-foot .guidance-section:last-child { margin-bottom: 0; }
+    .aq-foot .guidance h3 {
+      margin: 0 0 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: #1a4a78;
+      line-height: 1.35;
+    }
+    .aq-foot .guidance p { margin: 0 0 8px; }
+    .aq-foot .guidance ul { margin: 0; padding-left: 18px; }
+    .aq-foot .guidance li { margin-bottom: 6px; }
+    .aq-foot .guidance li:last-child { margin-bottom: 0; }
     .aq-foot.open .guidance { display: block; }
     .aq-foot.open button { opacity: 1; font-weight: 500; }
 
@@ -576,9 +594,18 @@
   </style>
 </head>
 <body>
+  <nav class="site-nav" aria-label="Prototype navigation">
+    <div class="site-nav__inner">
+      <a href="index.html" class="site-nav__link site-nav__link--active" aria-current="page">All concepts</a>
+      <a href="concept3.html" class="site-nav__link">Design 3 iterations</a>
+      <a href="concept32.html" class="site-nav__link">Design 3.2 iterations</a>
+      <a href="nhs-data-guide.html" class="site-nav__link">NHS data integration guide</a>
+    </div>
+  </nav>
+
   <header class="page-hd">
     <h1>Air Quality Patient Record Integration</h1>
-    <p>Concept 1: pollutant switcher + single WHO bar. Concept 2: 2×2 annual chart, no switcher. Concept 3: DAQI ladders, no switcher. UK DAQI legend from daqi-vs-caqi. <a href="nhs-data-guide.html" style="color:#1a4a78">NHS data integration guide</a> · <a href="concept3.html" style="color:#1a4a78">Design 3 workspace</a></p>
+    <p>Concept 1: pollutant switcher + single WHO bar. Concept 2: 2×2 annual chart, no switcher. Concept 3: DAQI ladders, no switcher. UK DAQI legend from daqi-vs-caqi.</p>
   </header>
 
   <div class="stack" id="stack"></div>
@@ -586,7 +613,7 @@
   <script type="module">
     import {
       mockPatientExposure,
-      HEALTH_ADVICE,
+      clinicalGuidanceHtml,
       POLLUTANTS,
       recentDaysForConcept2,
     } from './js/air-quality.js';
@@ -602,7 +629,7 @@
     const data = mockPatientExposure();
     let species = 'pm25';
     const DEFAULT_SPECIES = 'pm25';
-    const guidanceText = `${HEALTH_ADVICE.annual} ${HEALTH_ADVICE.recent}`;
+    const guidanceText = clinicalGuidanceHtml();
 
     function bindGuidance(strip) {
       strip.querySelector('[data-guidance-toggle]').addEventListener('click', () => {
@@ -637,7 +664,7 @@
       strip.className = `aq-strip strip-${variant}`;
       strip.innerHTML = `
         <div class="aq-meta">
-          <div><strong>Air Quality at patient's home</strong><span class="place"> · ${data.patient.name} · SE1</span></div>
+          <div><strong>Air quality at patient's home</strong><span class="place"> · ${data.patient.name} · SE1</span></div>
           <div class="pollutants" data-pollutants></div>
         </div>
         <div class="aq-body">

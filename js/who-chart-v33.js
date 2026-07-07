@@ -70,7 +70,7 @@ function whoVerticalPillV33(species, annualValue, layout, showWhoLabel = false) 
       </div>
       <div class="who-vert-row">
         ${showWhoLabel ? `<div class="who-side who-side--left" style="height:${trackPx}px">
-          <span class="who-guideline-tag" style="bottom:${whoLinePx}px">WHO</span>
+          <span class="who-guideline-tag who-guideline-tag--multiline" style="bottom:${whoLinePx}px">WHO<br>guideline</span>
         </div>` : ''}
         <div class="who-vert-track" style="height:${trackPx}px">
           <div class="who-line-h who-line-h--dotted" style="bottom:${whoLinePx}px"></div>

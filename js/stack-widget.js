@@ -1,47 +1,65 @@
-import { HEALTH_ADVICE, recentDaysForV33, recentDaysForLadder } from './air-quality.js?v=6';
+import { clinicalGuidanceHtml, recentDaysForV33, recentDaysForLadder } from './air-quality.js?v=9';
 import {
   whoAnnualChart,
   recentCardHtml,
   forecastCardHtml,
   daqiLegendHtml,
-} from './widget-render.js?v=5';
-import { whoAnnualChartAligned } from './who-chart-v31.js?v=5';
-import { whoAnnualChartV32 } from './who-chart-v32.js?v=7';
-import { whoAnnualChartV32A, pollutantKeyStripHtml } from './who-chart-v32a.js?v=1';
-import { ergCreditHtml } from './erg-credit.js?v=1';
-import { whoAnnualChartV33 } from './who-chart-v33.js?v=6';
+  bandAxisLabelsHtml,
+  bandAxisLinesHtml,
+  syncV32cLaddersBandLayer,
+  todayCardHtml,
+  combinedLaddersCardHtml,
+} from './widget-render.js?v=23';
+import { whoAnnualChartAligned } from './who-chart-v31.js?v=6';
+import { whoAnnualChartV32 } from './who-chart-v32.js?v=8';
+import { whoAnnualChartV32A, whoAnnualChartV32B, whoAnnualChartV32C, pollutantKeyStripAlignedHtml } from './who-chart-v32a.js?v=7';
+import { ergCreditHtml } from './erg-credit.js?v=2';
+import { whoAnnualChartV33 } from './who-chart-v33.js?v=7';
 import { whoAnnualChartV34 } from './who-chart-v34.js?v=1';
 import { recentDaysForV34, forecastForV34 } from './who-data-v34.js?v=2';
-import { whoRecentCardHtml, whoForecastCardHtml, whoLegendHtml } from './who-recent-v34.js?v=2';
+import { whoRecentCardHtml, whoForecastCardHtml, whoLegendHtml } from './who-recent-v34.js?v=3';
 import { whoAnnualChartV35 } from './who-chart-v35.js?v=2';
 import { recentDaysForV35, forecastForV35 } from './who-data-v35.js?v=1';
 import { whoRecentCardHtmlV35, whoForecastCardHtmlV35, whoCaqiLegendHtml } from './who-recent-v35.js?v=4';
 
 const DEFAULT_SPECIES = 'pm25';
-const LADDER_SIZE = { height: 96, width: 34 };
+/** Canonical DAQI ladder pill — 34px wide, centred in 56px day slot (see css --daqi-bar-track). */
+const LADDER_SIZE = { height: 95, width: 34 };
 
 function bindGuidance(strip) {
-  strip.querySelector('[data-guidance-toggle]').addEventListener('click', () => {
-    strip.querySelector('[data-foot]').classList.toggle('open');
+  const foot = strip.querySelector('[data-foot]');
+  const btn = strip.querySelector('[data-guidance-toggle]');
+  btn.addEventListener('click', () => {
+    const open = foot.classList.toggle('open');
+    btn.setAttribute('aria-expanded', open ? 'true' : 'false');
   });
 }
 
+function footHtml(guidanceText) {
+  return `
+    <div class="aq-foot" data-foot>
+      <button type="button" class="guidance-toggle" data-guidance-toggle aria-expanded="false">
+        <span class="guidance-toggle-text">View clinical guidance</span>
+        <span class="guidance-toggle-icon" aria-hidden="true">▼</span>
+      </button>
+      <div class="guidance" role="region" aria-label="Clinical guidance">${guidanceText}</div>
+    </div>
+  `;
+}
+
 function shell(data, zonesHtml) {
-  const guidanceText = `${HEALTH_ADVICE.annual} ${HEALTH_ADVICE.recent}`;
+  const guidanceText = clinicalGuidanceHtml();
   const strip = document.createElement('div');
   strip.className = 'aq-strip strip-stack';
   strip.innerHTML = `
     <div class="aq-meta">
-      <div><strong>Air Quality at patient's home</strong><span class="place"> · ${data.patient.name} · SE1</span></div>
+      <div><strong>Air quality at patient's home</strong><span class="place"> · ${data.patient.name} · SE1</span></div>
       <div class="pollutants" data-pollutants></div>
     </div>
     <div class="aq-body">
       <div class="aq-zones">${zonesHtml}</div>
     </div>
-    <div class="aq-foot" data-foot>
-      <button type="button" data-guidance-toggle>Clinical guidance</button>
-      <div class="guidance">${guidanceText}</div>
-    </div>
+    ${footHtml(guidanceText)}
   `;
   strip.querySelector('[data-pollutants]').remove();
   bindGuidance(strip);
@@ -117,14 +135,23 @@ export function createStackWidgetV32(data, { species = DEFAULT_SPECIES } = {}) {
   return strip;
 }
 
-/** 3.2a — coloured ratios, pollutant key below long-term, WHO values on bars, ERG credit below forecast */
-function updateStackV32A(strip, data, species = DEFAULT_SPECIES, { ergLogo = 'blue' } = {}) {
+/** 3.2a / 3.2b — coloured ratios, pollutant key below long-term, ERG credit bottom-right */
+function updateStackV32Variant(strip, data, species = DEFAULT_SPECIES, { variant = 'a' } = {}) {
   const year = data.annualYear ?? 2022;
+  const longChart = variant === 'b' ? whoAnnualChartV32B : whoAnnualChartV32A;
+  const keyHtml = pollutantKeyStripAlignedHtml({
+    labelStyle: variant === 'a' ? 'chemical' : 'descriptive',
+  });
+  const ergLogo = variant === 'a' ? 'lightBlue' : 'blue';
+
   strip.querySelector('[data-long]').innerHTML = `
-    <div class="zone-label">Long-term <span class="zone-year">${year}</span></div>
-    <div class="zone-main">${whoAnnualChartV32A(data.annual)}</div>
+    <div class="zone-label-stack">
+      <div class="zone-label">Long-term</div>
+      <div class="zone-year">(${year})</div>
+    </div>
+    <div class="zone-main">${longChart(data.annual)}</div>
   `;
-  strip.querySelector('[data-long-key]').innerHTML = pollutantKeyStripHtml();
+  strip.querySelector('[data-long-key]').innerHTML = keyHtml;
   const recentEl = strip.querySelector('[data-recent]');
   recentEl.innerHTML = recentCardHtml(recentDaysForLadder(data.recentDays), species, {
     visual: 'ladders',
@@ -137,25 +164,22 @@ function updateStackV32A(strip, data, species = DEFAULT_SPECIES, { ergLogo = 'bl
     type: 'ladder',
     ladderSize: LADDER_SIZE,
   });
-  strip.querySelector('[data-forecast-credit]').innerHTML = ergCreditHtml(ergLogo);
+  strip.querySelector('[data-erg-credit]').innerHTML = ergCreditHtml(ergLogo);
 }
 
-function shellV32A(data, zonesHtml) {
-  const guidanceText = `${HEALTH_ADVICE.annual} ${HEALTH_ADVICE.recent}`;
+function shellV32A(data, zonesHtml, variant = 'a') {
+  const guidanceText = clinicalGuidanceHtml();
   const strip = document.createElement('div');
-  strip.className = 'aq-strip strip-stack strip-stack--v32a';
+  strip.className = `aq-strip strip-stack strip-stack--v32${variant}`;
   strip.innerHTML = `
     <div class="aq-meta">
-      <div><strong>Air Quality at patient's home</strong><span class="place"> · ${data.patient.name} · SE1</span></div>
+      <div><strong>Air quality at patient's home</strong><span class="place"> · ${data.patient.name} · SE1</span></div>
       <div class="pollutants" data-pollutants></div>
     </div>
     <div class="aq-body">
       <div class="aq-zones">${zonesHtml}</div>
     </div>
-    <div class="aq-foot" data-foot>
-      <button type="button" data-guidance-toggle>Clinical guidance</button>
-      <div class="guidance">${guidanceText}</div>
-    </div>
+    ${footHtml(guidanceText)}
   `;
   strip.querySelector('[data-pollutants]').remove();
   bindGuidance(strip);
@@ -173,22 +197,217 @@ const ZONES_V32A = `
   </div>
   <div class="zone-forecast-block" data-forecast-block>
     <section class="zone-card zone-forecast" data-forecast></section>
-    <div class="erg-credit-wrap erg-credit-wrap--outside" data-forecast-credit></div>
+    <div class="erg-credit-wrap erg-credit-wrap--outside" data-erg-credit></div>
   </div>
 `;
 
 export function createStackWidgetV32A(data, { species = DEFAULT_SPECIES } = {}) {
-  const strip = shellV32A(data, ZONES_V32A);
-  updateStackV32A(strip, data, species, { ergLogo: 'blue' });
-  strip._update = () => updateStackV32A(strip, data, species, { ergLogo: 'blue' });
+  const strip = shellV32A(data, ZONES_V32A, 'a');
+  updateStackV32Variant(strip, data, species, { variant: 'a' });
+  strip._update = () => updateStackV32Variant(strip, data, species, { variant: 'a' });
   return strip;
 }
 
-/** 3.2b — same as 3.2a but light-blue ERG logo under Forecast */
+/** 3.2b — side WHO values, DAQI-style pollutant key, dark-blue ERG logo */
 export function createStackWidgetV32B(data, { species = DEFAULT_SPECIES } = {}) {
-  const strip = shellV32A(data, ZONES_V32A);
-  updateStackV32A(strip, data, species, { ergLogo: 'lightBlue' });
-  strip._update = () => updateStackV32A(strip, data, species, { ergLogo: 'lightBlue' });
+  const strip = shellV32A(data, ZONES_V32A, 'b');
+  updateStackV32Variant(strip, data, species, { variant: 'b' });
+  strip._update = () => updateStackV32Variant(strip, data, species, { variant: 'b' });
+  return strip;
+}
+
+const ZONES_V32C = `
+  <div class="zone-long-block" data-long-block>
+    <section class="zone-card zone-long" data-long></section>
+  </div>
+  <div class="zone-ladders-span" data-ladders-span>
+    <div class="ladders-band-layer" aria-hidden="true">
+      <div class="ladders-band-axis" data-band-axis></div>
+      <div class="ladders-band-lines" data-band-lines></div>
+    </div>
+    <div class="zone-recent-block" data-recent-block>
+      <section class="zone-card zone-recent" data-recent></section>
+    </div>
+    <div class="zone-forecast-block" data-forecast-block>
+      <section class="zone-card zone-forecast" data-forecast></section>
+      <div class="erg-credit-wrap erg-credit-wrap--outside" data-erg-credit></div>
+    </div>
+  </div>
+`;
+
+/** 3.2c — standard layout; band-axis labels + lines on Recent; names under annual bars */
+function updateStackV32C(strip, data, species = DEFAULT_SPECIES) {
+  const year = data.annualYear ?? 2022;
+
+  strip.querySelector('[data-long]').innerHTML = `
+    <div class="zone-label-stack">
+      <div class="zone-label">Long-term</div>
+      <div class="zone-year">(${year})</div>
+    </div>
+    <div class="zone-main">${whoAnnualChartV32C(data.annual)}</div>
+  `;
+  const recentEl = strip.querySelector('[data-recent]');
+  recentEl.innerHTML = recentCardHtml(recentDaysForLadder(data.recentDays), species, {
+    visual: 'ladders',
+    ladderSize: LADDER_SIZE,
+    legendOutside: true,
+    spanBand: true,
+    todayHeaderSplit: true,
+  });
+  recentEl.querySelectorAll('.daqi-legend-wrap').forEach((el) => el.remove());
+  strip.querySelector('[data-forecast]').innerHTML = forecastCardHtml(data.forecast, species, {
+    type: 'ladder',
+    ladderSize: LADDER_SIZE,
+    ladderChartAlign: true,
+    compact: true,
+  });
+  strip.querySelector('[data-erg-credit]').innerHTML = ergCreditHtml('blue');
+
+  const bandLayer = strip.querySelector('.ladders-band-layer');
+  bandLayer.querySelector('[data-band-axis]').innerHTML = bandAxisLabelsHtml();
+  bandLayer.querySelector('[data-band-lines]').innerHTML = bandAxisLinesHtml();
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => syncV32cLaddersBandLayer(strip));
+  });
+}
+
+export function createStackWidgetV32C(data, { species = DEFAULT_SPECIES } = {}) {
+  const strip = shellV32A(data, ZONES_V32C, 'c');
+  updateStackV32C(strip, data, species);
+  strip._update = () => updateStackV32C(strip, data, species);
+  if (!strip._v32cBandObserver) {
+    strip._v32cBandObserver = new ResizeObserver(() => syncV32cLaddersBandLayer(strip));
+    strip._v32cBandObserver.observe(strip);
+  }
+  return strip;
+}
+
+const ZONES_V32D = `
+  <div class="zone-long-block" data-long-block>
+    <section class="zone-card zone-long" data-long></section>
+  </div>
+  <div class="zone-ladders-span" data-ladders-span>
+    <div class="ladders-band-layer" aria-hidden="true">
+      <div class="ladders-band-axis" data-band-axis></div>
+      <div class="ladders-band-lines" data-band-lines></div>
+    </div>
+    <div class="zone-recent-block" data-recent-block>
+      <section class="zone-card zone-recent" data-recent></section>
+    </div>
+    <div class="zone-today-block" data-today-block>
+      <section class="zone-card zone-today" data-today></section>
+    </div>
+    <div class="zone-forecast-block" data-forecast-block>
+      <section class="zone-card zone-forecast" data-forecast></section>
+      <div class="erg-credit-wrap erg-credit-wrap--outside" data-erg-credit></div>
+    </div>
+  </div>
+`;
+
+function pastDaysForLadder(recentDays) {
+  return recentDaysForLadder(recentDays).filter((d) => d.offset > 0);
+}
+
+/** 3.2d — Recent, Today, Forecast each in their own panel (based on 3.2c) */
+function updateStackV32D(strip, data, species = DEFAULT_SPECIES) {
+  const year = data.annualYear ?? 2022;
+  const ladderDays = recentDaysForLadder(data.recentDays);
+
+  strip.querySelector('[data-long]').innerHTML = `
+    <div class="zone-label-stack">
+      <div class="zone-label">Long-term</div>
+      <div class="zone-year">(${year})</div>
+    </div>
+    <div class="zone-main">${whoAnnualChartV32C(data.annual)}</div>
+  `;
+  strip.querySelector('[data-recent]').innerHTML = recentCardHtml(pastDaysForLadder(data.recentDays), species, {
+    visual: 'ladders',
+    ladderSize: LADDER_SIZE,
+    legendOutside: true,
+    spanBand: true,
+    dividerBeforeToday: false,
+  });
+  strip.querySelector('[data-today]').innerHTML = todayCardHtml(ladderDays, species, {
+    ladderSize: LADDER_SIZE,
+  });
+  strip.querySelector('[data-forecast]').innerHTML = forecastCardHtml(data.forecast, species, {
+    type: 'ladder',
+    ladderSize: LADDER_SIZE,
+    ladderChartAlign: true,
+    compact: true,
+  });
+  strip.querySelector('[data-erg-credit]').innerHTML = ergCreditHtml('blue');
+
+  const bandLayer = strip.querySelector('.ladders-band-layer');
+  bandLayer.querySelector('[data-band-axis]').innerHTML = bandAxisLabelsHtml();
+  bandLayer.querySelector('[data-band-lines]').innerHTML = bandAxisLinesHtml();
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => syncV32cLaddersBandLayer(strip));
+  });
+}
+
+export function createStackWidgetV32D(data, { species = DEFAULT_SPECIES } = {}) {
+  const strip = shellV32A(data, ZONES_V32D, 'd');
+  updateStackV32D(strip, data, species);
+  strip._update = () => updateStackV32D(strip, data, species);
+  if (!strip._v32dBandObserver) {
+    strip._v32dBandObserver = new ResizeObserver(() => syncV32cLaddersBandLayer(strip));
+    strip._v32dBandObserver.observe(strip);
+  }
+  return strip;
+}
+
+const ZONES_V32E = `
+  <div class="zone-long-block" data-long-block>
+    <section class="zone-card zone-long" data-long></section>
+  </div>
+  <div class="zone-ladders-span" data-ladders-span>
+    <div class="ladders-band-layer" aria-hidden="true">
+      <div class="ladders-band-axis" data-band-axis></div>
+      <div class="ladders-band-lines" data-band-lines></div>
+    </div>
+    <div class="zone-combined-block" data-combined-block>
+      <section class="zone-card zone-combined" data-combined></section>
+      <div class="erg-credit-wrap erg-credit-wrap--outside" data-erg-credit></div>
+    </div>
+  </div>
+`;
+
+/** 3.2e — single combined panel for Recent + Today + Forecast (based on 3.2c) */
+function updateStackV32E(strip, data, species = DEFAULT_SPECIES) {
+  const year = data.annualYear ?? 2022;
+
+  strip.querySelector('[data-long]').innerHTML = `
+    <div class="zone-label-stack">
+      <div class="zone-label">Long-term</div>
+      <div class="zone-year">(${year})</div>
+    </div>
+    <div class="zone-main">${whoAnnualChartV32C(data.annual)}</div>
+  `;
+  strip.querySelector('[data-combined]').innerHTML = combinedLaddersCardHtml(
+    recentDaysForLadder(data.recentDays),
+    data.forecast,
+    species,
+    { ladderSize: LADDER_SIZE },
+  );
+  strip.querySelector('[data-erg-credit]').innerHTML = ergCreditHtml('blue');
+
+  const bandLayer = strip.querySelector('.ladders-band-layer');
+  bandLayer.querySelector('[data-band-axis]').innerHTML = bandAxisLabelsHtml();
+  bandLayer.querySelector('[data-band-lines]').innerHTML = bandAxisLinesHtml();
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => syncV32cLaddersBandLayer(strip));
+  });
+}
+
+export function createStackWidgetV32E(data, { species = DEFAULT_SPECIES } = {}) {
+  const strip = shellV32A(data, ZONES_V32E, 'e');
+  updateStackV32E(strip, data, species);
+  strip._update = () => updateStackV32E(strip, data, species);
+  if (!strip._v32eBandObserver) {
+    strip._v32eBandObserver = new ResizeObserver(() => syncV32cLaddersBandLayer(strip));
+    strip._v32eBandObserver.observe(strip);
+  }
   return strip;
 }
 

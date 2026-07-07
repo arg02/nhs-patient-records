@@ -6,6 +6,10 @@
   border: 1px solid #c8d0dc;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
+/* Stack widgets — allow WHO guideline label to extend into card padding without clipping */
+.aq-strip.strip-stack {
+  overflow: visible;
+}
 
 .aq-meta {
   display: flex;
@@ -64,7 +68,49 @@
   justify-content: center;
   min-height: 72px;
 }
-.zone-long .zone-main { min-height: 128px; }
+.zone-long .zone-main {
+  min-height: 128px;
+  overflow-x: visible;
+}
+
+/* Bar-grid chart renders via the later .who-chart / .who-chart--aligned flex
+   rules (centered, gap 38px, padding 0 26px); each .who-bar-group settles at
+   its 32px min-content width (the .who-vert-track). The pollutant key below
+   mirrors that exact geometry so each key circle is centred on the same
+   x-axis as its annual bar column. */
+.pollutant-key--bar-grid {
+  display: flex;
+  justify-content: center;
+  gap: 38px;
+  padding: 5px 26px;
+  width: 100%;
+  box-sizing: border-box;
+  background: #f5f6f8;
+  border-radius: 10px;
+}
+.pollutant-key-col {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 3px;
+  width: 32px;
+  flex: 0 0 32px;
+}
+.pollutant-key-label {
+  font-size: 7px;
+  font-weight: 500;
+  color: #6a7385;
+  text-align: center;
+  white-space: nowrap;
+  line-height: 1.15;
+}
+.pollutant-key-label--stacked {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0;
+  white-space: normal;
+}
 
 /* Day grid — shared rows so dots / labels / dates align */
 .zone-main--days { align-items: center; justify-content: center; }
@@ -113,6 +159,50 @@
   width: var(--day-separator, 40px);
   flex-shrink: 0;
 }
+.day-forecast-separator {
+  width: var(--day-separator, 40px);
+  flex-shrink: 0;
+}
+.day-row--split-triple {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 0;
+  width: 100%;
+}
+.day-forecast-group {
+  display: flex;
+  gap: 22px;
+  align-items: center;
+}
+.day-stack--with-double-divider {
+  position: relative;
+  --day-separator: 40px;
+  --day-past-width: calc(3 * 56px + 2 * 22px);
+  --day-triple-width: calc(var(--day-past-width) + var(--day-separator) + 56px + var(--day-separator) + 56px);
+}
+.day-col-divider--past-today {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1px dotted #a8b2be;
+  pointer-events: none;
+  z-index: 1;
+  left: calc((100% - var(--day-triple-width)) / 2 + var(--day-past-width) + var(--day-separator) / 2);
+  transform: translateX(-50%);
+}
+.day-col-divider--today-forecast {
+  position: absolute;
+  top: 0;
+  bottom: 0;
+  width: 0;
+  border-left: 1px dotted #a8b2be;
+  pointer-events: none;
+  z-index: 1;
+  left: calc((100% - var(--day-triple-width)) / 2 + var(--day-past-width) + var(--day-separator) + 56px + var(--day-separator) / 2);
+  transform: translateX(-50%);
+}
 .day-visual-row,
 .day-name-row,
 .day-date-row {
@@ -126,6 +216,14 @@
 .day-band-row { margin-top: 6px; }
 .day-band-row,
 .day-date-row { margin-top: 6px; }
+/* Triple ladder rows (3.2e) compute their own separator widths — no inherited 22px gap.
+   Split-today rows DO keep the 22px gap: canonical design 3 spacing between the last
+   recent day and Today is 22px gap + 40px separator + 22px gap = 84px. */
+.day-visual-row.day-row--split-triple,
+.day-name-row.day-row--split-triple,
+.day-date-row.day-row--split-triple {
+  gap: 0;
+}
 .day-slot {
   width: 56px;
   flex: 0 0 56px;
@@ -136,6 +234,755 @@
 }
 .day-slot--visual { height: 52px; }
 .day-stack--ladders .day-slot--visual { height: 96px; }
+/*
+ * DAQI ladder — stack widgets only (annual WHO panel untouched).
+ * Height = ratio band (11px tag + 12px margin) + 72px WHO track → tops/bottoms align across columns.
+ * Width = 34px pill, centred in day slot (never stretch to fill compact 96px panels).
+ */
+.strip-stack {
+  --who-track-h: 72px;
+  --who-ratio-band-h: 23px;
+  --daqi-bar-track: calc(var(--who-ratio-band-h) + var(--who-track-h));
+  --aq-year-label-offset: 16px;
+}
+/* Long-term panel has year sub-label; ladder panels need matching offset (3.2a–e only) */
+.strip-stack--v32a .day-panel:has(.day-stack--ladders),
+.strip-stack--v32b .day-panel:has(.day-stack--ladders),
+.strip-stack--v32c .day-panel:has(.day-stack--ladders),
+.strip-stack--v32d .day-panel:has(.day-stack--ladders),
+.strip-stack--v32e .day-panel:has(.day-stack--ladders) {
+  padding-top: var(--aq-year-label-offset);
+}
+/* Forecast columns on 3.2a/b are vertically centred in their card (design 3
+   canon) — the year-label offset would just push them 8px below true centre */
+.strip-stack--v32a .zone-forecast .day-panel:has(.day-stack--ladders),
+.strip-stack--v32b .zone-forecast .day-panel:has(.day-stack--ladders) {
+  padding-top: 0;
+}
+.strip-stack .zone-long .zone-main,
+.strip-stack .zone-recent .zone-main--days,
+.strip-stack .zone-today .zone-main--days,
+.strip-stack .zone-combined .zone-main {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+/* Forecast intentionally omitted from the flex-start override above: it falls
+   back to the base .zone-main--days rule (centred both ways), matching design 3
+   on the all-concepts page. 3.2c/3.2d compact forecasts keep their own
+   flex-start rules further down. */
+.strip-stack .day-stack--ladders .day-slot--visual {
+  height: var(--daqi-bar-track);
+  align-items: center;
+  justify-content: center;
+}
+.strip-stack .day-stack--ladders .daqi-stack {
+  flex: 0 0 auto;
+  width: 34px;
+  max-width: 34px;
+  min-width: 34px;
+  height: var(--daqi-bar-track);
+  min-height: 0;
+}
+
+/* 3.2c — band-axis labels left of dotted lines (inside standard Recent panel) */
+.day-stack--band-axis {
+  display: flex;
+  align-items: flex-start;
+  gap: 0;
+  width: 100%;
+}
+.day-stack--band-axis .day-stack-main {
+  flex: 1;
+  min-width: 0;
+  position: relative;
+}
+.day-stack--band-axis .recent-band-axis {
+  position: relative;
+  width: 48px;
+  flex-shrink: 0;
+  height: var(--daqi-bar-track, 96px);
+  padding-right: 6px;
+  box-sizing: border-box;
+}
+.day-stack--band-axis .recent-band-label,
+.ladders-band-axis .recent-band-label {
+  position: absolute;
+  right: 6px;
+  left: 0;
+  text-align: right;
+  font-weight: 700;
+  font-size: 8px;
+  letter-spacing: 0.06em;
+  white-space: nowrap;
+  line-height: 1;
+}
+.recent-band-label--on-line {
+  transform: translateY(50%);
+}
+.recent-band-label--in-band {
+  transform: translateY(-50%);
+}
+.recent-band-label--moderate { bottom: var(--line-34); }
+.recent-band-label--high { bottom: var(--line-67); }
+.recent-band-label--vhigh { bottom: var(--line-910); }
+.recent-band-label--low { bottom: var(--low-center); }
+.recent-band-line--34 { bottom: var(--line-34); }
+.recent-band-line--67 { bottom: var(--line-67); }
+.recent-band-line--910 { bottom: var(--line-910); }
+.day-stack--band-axis .recent-band-plot {
+  position: relative;
+  width: 100%;
+}
+.day-stack--band-axis .recent-band-lines {
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: 0;
+  height: var(--daqi-bar-track, 96px);
+  pointer-events: none;
+  z-index: 0;
+}
+.day-stack--band-axis .recent-band-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dotted #c8d0dc;
+}
+.day-stack--band-axis .day-row--split-today,
+.day-stack--band-axis .day-visual-row {
+  position: relative;
+  z-index: 1;
+}
+.day-stack--band-axis .day-slot--visual {
+  position: relative;
+  z-index: 1;
+}
+.zone-main--band-axis .day-panel {
+  width: 100%;
+}
+.zone-main--band-axis {
+  justify-content: flex-start;
+  align-items: flex-start;
+}
+
+/* Today label in card header row (3.2c) — aligns with Recent / Forecast zone labels */
+.zone-label-split {
+  width: 100%;
+}
+.ladders-header-split {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  gap: 22px;
+  width: 100%;
+  --day-separator: 40px;
+  --day-past-width: calc(3 * 56px + 2 * 22px);
+}
+.ladders-header-past {
+  width: var(--day-past-width);
+  flex-shrink: 0;
+  display: flex;
+  align-items: flex-end;
+}
+.ladders-header-today-sep {
+  width: var(--day-separator);
+  flex-shrink: 0;
+}
+.ladders-header-today {
+  width: 56px;
+  flex: 0 0 56px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.ladders-header-forecast-sep {
+  width: var(--day-separator);
+  flex-shrink: 0;
+}
+.ladders-header-forecast {
+  width: 56px;
+  flex: 0 0 56px;
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+}
+.ladders-header-split--triple {
+  width: var(--day-triple-width);
+}
+.strip-stack--v32c .zone-recent .zone-label-split {
+  display: flex;
+  /* Ladder rows below are left-aligned (zone-main--days flex-start); the header
+     must share their origin so "Today" sits centred over the Today column */
+  justify-content: flex-start;
+}
+.strip-stack--v32c .zone-recent .ladders-header-split {
+  width: calc(var(--day-past-width) + 2 * 22px + var(--day-separator) + 56px);
+}
+.strip-stack--v32c .zone-recent .ladders-header-past .zone-label,
+.strip-stack--v32c .zone-forecast > .zone-label {
+  line-height: 1.2;
+}
+
+/* Today label above bar (legacy — non-header-split layouts) */
+.day-today-above-row {
+  display: flex;
+  justify-content: center;
+  align-items: flex-end;
+  width: 100%;
+}
+.day-row--forecast-align {
+  justify-content: center;
+}
+.day-slot--today-above {
+  min-height: 20px;
+  display: flex;
+  align-items: flex-end;
+  justify-content: center;
+}
+.day-slot--today-above .zone-label {
+  line-height: 1.2;
+}
+
+/* 3.2c / 3.2d / 3.2e — shared zone rhythm (main column gap = inner panel gap) */
+.strip-stack--v32c,
+.strip-stack--v32d,
+.strip-stack--v32e {
+  --v32-zone-gap: 28px;
+  width: max-content;
+  max-width: 100%;
+}
+
+/* 3.2c — spanning band axis across Recent + Forecast */
+.strip-stack--v32c {
+  --v32c-forecast-pad-x: 20px;
+  --day-slot-w: 56px;
+  /* 352px chart + 35px side margin ×2 + 40px card padding = 462px (matches 3.2b) */
+  --v32c-recent-w: 462px;
+}
+.strip-stack--v32c .aq-zones {
+  grid-template-columns: max-content max-content;
+  gap: var(--v32-zone-gap);
+  width: max-content;
+  max-width: 100%;
+  justify-items: start;
+}
+/* Recent panel matches 3.2b — default .zone-card padding (18px 20px 16px) */
+.strip-stack--v32c .zone-long-block,
+.strip-stack--v32c .zone-ladders-span,
+.strip-stack--v32c .zone-recent-block,
+.strip-stack--v32c .zone-forecast-block {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  align-self: stretch;
+}
+.strip-stack--v32c .zone-ladders-span {
+  display: grid;
+  grid-template-columns: max-content max-content;
+  grid-template-rows: 1fr;
+  gap: var(--v32-zone-gap);
+  align-items: stretch;
+  justify-items: start;
+  width: max-content;
+  min-height: 100%;
+}
+.strip-stack--v32c .zone-long-block {
+  min-height: 100%;
+}
+.strip-stack--v32c .zone-long-block > .zone-card {
+  box-sizing: border-box;
+  width: 100%;
+}
+.strip-stack--v32c .zone-ladders-span > .zone-recent-block {
+  flex: 0 0 auto;
+  width: var(--v32c-recent-w);
+  max-width: 100%;
+}
+.strip-stack--v32c .zone-recent.zone-card {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+.strip-stack--v32c .zone-ladders-span > .zone-forecast-block {
+  flex: 0 0 auto;
+  width: calc(var(--day-slot-w) + 2 * var(--v32c-forecast-pad-x));
+  max-width: calc(var(--day-slot-w) + 2 * var(--v32c-forecast-pad-x));
+}
+.strip-stack--v32c .zone-ladders-span .zone-card {
+  box-sizing: border-box;
+}
+.strip-stack--v32c .zone-ladders-span > .zone-recent-block,
+.strip-stack--v32c .zone-ladders-span > .zone-forecast-block {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  align-self: stretch;
+  height: 100%;
+}
+.strip-stack--v32c .zone-ladders-span .zone-card {
+  flex: 1;
+  min-height: 168px;
+  height: 100%;
+}
+.strip-stack--v32c .zone-forecast > .zone-label {
+  /* Match the Recent header's rendered height (13px zone-label → 17px)
+     so bars and dates share baselines across cards */
+  min-height: 17px;
+  display: flex;
+  align-items: flex-end;
+}
+.strip-stack--v32c .zone-forecast .day-panel--compact {
+  width: var(--day-slot-w);
+  align-items: center;
+}
+.strip-stack--v32c .ladders-band-layer {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  z-index: 4;
+  pointer-events: none;
+}
+.strip-stack--v32c .ladders-band-axis {
+  position: relative;
+  flex-shrink: 0;
+  height: 100%;
+  box-sizing: border-box;
+}
+.strip-stack--v32c .ladders-band-axis .recent-band-label {
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+.strip-stack--v32c .zone-recent .day-slot--name {
+  color: #7a8494;
+}
+/* Forecast card has an empty name row — keep Recent's row height (13px × 1.2)
+   so its date sits on the same baseline as the Recent/Today dates */
+.strip-stack--v32c .zone-forecast .day-slot--name {
+  min-height: 15.6px;
+}
+.strip-stack--v32c .zone-recent .day-slot--date,
+.strip-stack--v32c .zone-forecast .day-slot--date {
+  font-weight: 600;
+  color: #1a2030;
+}
+.strip-stack--v32c .ladders-band-lines {
+  flex: 1;
+  position: relative;
+  height: 100%;
+  min-width: 0;
+}
+.strip-stack--v32c .ladders-band-lines .recent-band-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dotted #c8d0dc;
+}
+.strip-stack--v32c .ladders-band-lines .recent-band-line--synced {
+  bottom: auto;
+}
+.strip-stack--v32c .ladders-band-axis .recent-band-label--synced {
+  bottom: auto;
+  transform: translateY(-50%);
+}
+.strip-stack--v32c .day-stack--span-band .day-stack-main {
+  width: 100%;
+  position: relative;
+}
+.strip-stack--v32c .zone-forecast.zone-card {
+  position: relative;
+}
+.strip-stack--v32c .zone-forecast .zone-label--center {
+  text-align: center;
+  justify-content: center;
+  width: 100%;
+}
+.strip-stack--v32c .zone-forecast .zone-main--compact {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.strip-stack--v32c .zone-forecast .day-panel--compact {
+  width: var(--day-slot-w);
+  align-items: center;
+}
+.strip-stack--v32c .zone-forecast-block {
+  position: relative;
+}
+
+/* 3.2d — separate Recent / Today / Forecast panels (band axis from 3.2c) */
+.strip-stack--v32d {
+  --v32d-compact-pad-x: 20px;
+  --day-slot-w: 56px;
+  /* 3 past bars: 212px chart + 35px margin ×2 + 40px padding */
+  --v32d-recent-w: 322px;
+}
+.strip-stack--v32d .aq-zones {
+  grid-template-columns: max-content max-content;
+  gap: var(--v32-zone-gap);
+  width: max-content;
+  max-width: 100%;
+  justify-items: start;
+}
+.strip-stack--v32d .zone-long-block,
+.strip-stack--v32d .zone-ladders-span,
+.strip-stack--v32d .zone-recent-block,
+.strip-stack--v32d .zone-today-block,
+.strip-stack--v32d .zone-forecast-block {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  align-self: stretch;
+}
+.strip-stack--v32d .zone-ladders-span {
+  display: grid;
+  grid-template-columns: max-content max-content max-content;
+  grid-template-rows: 1fr;
+  gap: var(--v32-zone-gap);
+  align-items: stretch;
+  justify-items: start;
+  width: max-content;
+  min-height: 100%;
+}
+.strip-stack--v32d .zone-long-block {
+  min-height: 100%;
+}
+.strip-stack--v32d .zone-long-block > .zone-card {
+  box-sizing: border-box;
+  width: 100%;
+}
+.strip-stack--v32d .zone-ladders-span > .zone-recent-block {
+  flex: 0 0 auto;
+  width: var(--v32d-recent-w);
+  max-width: 100%;
+}
+.strip-stack--v32d .zone-recent.zone-card {
+  width: 100%;
+  box-sizing: border-box;
+  min-width: 0;
+}
+.strip-stack--v32d .zone-ladders-span > .zone-today-block,
+.strip-stack--v32d .zone-ladders-span > .zone-forecast-block {
+  flex: 0 0 auto;
+  width: calc(var(--day-slot-w) + 2 * var(--v32d-compact-pad-x));
+  max-width: calc(var(--day-slot-w) + 2 * var(--v32d-compact-pad-x));
+}
+.strip-stack--v32d .zone-ladders-span .zone-card {
+  box-sizing: border-box;
+}
+.strip-stack--v32d .zone-ladders-span > .zone-recent-block,
+.strip-stack--v32d .zone-ladders-span > .zone-today-block,
+.strip-stack--v32d .zone-ladders-span > .zone-forecast-block {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  align-self: stretch;
+  height: 100%;
+}
+.strip-stack--v32d .zone-ladders-span .zone-card {
+  flex: 1;
+  min-height: 168px;
+  height: 100%;
+}
+.strip-stack--v32d .zone-today > .zone-label,
+.strip-stack--v32d .zone-forecast > .zone-label {
+  /* Match the Recent header's rendered height (13px zone-label → 17px)
+     so bars and dates share baselines across cards */
+  min-height: 17px;
+  display: flex;
+  align-items: flex-end;
+}
+.strip-stack--v32d .zone-today .zone-label--center,
+.strip-stack--v32d .zone-forecast .zone-label--center {
+  text-align: center;
+  justify-content: center;
+  width: 100%;
+}
+.strip-stack--v32d .zone-today .zone-main--compact,
+.strip-stack--v32d .zone-forecast .zone-main--compact {
+  align-items: flex-start;
+  justify-content: flex-start;
+}
+.strip-stack--v32d .zone-today .day-panel--compact,
+.strip-stack--v32d .zone-forecast .day-panel--compact {
+  width: var(--day-slot-w);
+  align-items: center;
+}
+.strip-stack--v32d .ladders-band-layer {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  z-index: 4;
+  pointer-events: none;
+}
+.strip-stack--v32d .ladders-band-axis {
+  position: relative;
+  flex-shrink: 0;
+  height: 100%;
+  box-sizing: border-box;
+}
+.strip-stack--v32d .ladders-band-axis .recent-band-label {
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+.strip-stack--v32d .zone-recent .day-slot--name {
+  color: #7a8494;
+}
+/* Today/Forecast cards have empty name rows — keep Recent's row height (13px × 1.2)
+   so the date row sits on the same baseline across all three panels */
+.strip-stack--v32d .zone-today .day-slot--name,
+.strip-stack--v32d .zone-forecast .day-slot--name {
+  min-height: 15.6px;
+}
+.strip-stack--v32d .zone-recent .day-slot--date,
+.strip-stack--v32d .zone-today .day-slot--date,
+.strip-stack--v32d .zone-forecast .day-slot--date {
+  font-weight: 600;
+  color: #1a2030;
+}
+.strip-stack--v32d .ladders-band-lines {
+  flex: 1;
+  position: relative;
+  height: 100%;
+  min-width: 0;
+}
+.strip-stack--v32d .ladders-band-lines .recent-band-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dotted #c8d0dc;
+}
+.strip-stack--v32d .ladders-band-lines .recent-band-line--synced {
+  bottom: auto;
+}
+.strip-stack--v32d .ladders-band-axis .recent-band-label--synced {
+  bottom: auto;
+  transform: translateY(-50%);
+}
+.strip-stack--v32d .day-stack--span-band .day-stack-main {
+  width: 100%;
+  position: relative;
+}
+.strip-stack--v32d .zone-today.zone-card,
+.strip-stack--v32d .zone-forecast.zone-card {
+  position: relative;
+}
+.strip-stack--v32d .zone-forecast-block {
+  position: relative;
+}
+
+/* 3.2e — single combined Recent / Today / Forecast panel (band axis from 3.2c) */
+.strip-stack--v32e {
+  --v32d-compact-pad-x: 20px;
+  --v32d-recent-w: 322px;
+  --day-slot-w: 56px;
+  --day-compact-w: calc(var(--day-slot-w) + 2 * var(--v32d-compact-pad-x));
+  /* Match 3.2d ladders span: Recent (322) + gap + Today (96) + gap + Forecast (96) */
+  --v32e-combined-w: calc(
+    var(--v32d-recent-w) + var(--v32-zone-gap) + var(--day-compact-w)
+    + var(--v32-zone-gap) + var(--day-compact-w)
+  );
+}
+.strip-stack--v32e .aq-zones {
+  grid-template-columns: max-content max-content;
+  gap: var(--v32-zone-gap);
+  width: max-content;
+  max-width: 100%;
+  justify-items: start;
+}
+.strip-stack--v32e .zone-long-block,
+.strip-stack--v32e .zone-ladders-span,
+.strip-stack--v32e .zone-combined-block {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  align-self: stretch;
+}
+.strip-stack--v32e .zone-ladders-span {
+  display: grid;
+  grid-template-columns: max-content;
+  grid-template-rows: 1fr;
+  gap: var(--v32-zone-gap);
+  align-items: stretch;
+  justify-items: start;
+  width: max-content;
+  min-height: 100%;
+}
+.strip-stack--v32e .zone-long-block {
+  min-height: 100%;
+}
+.strip-stack--v32e .zone-ladders-span > .zone-combined-block {
+  flex: 0 0 auto;
+  width: var(--v32e-combined-w);
+  max-width: 100%;
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+  min-height: 0;
+  align-self: stretch;
+  height: 100%;
+}
+.strip-stack--v32e .zone-combined.zone-card {
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
+  flex: 1;
+  min-height: 168px;
+  height: 100%;
+  position: relative;
+  /* Let chart row use full 570px panel grid (same outer span as 3.2d's three cards) */
+  padding-inline: 0;
+}
+.strip-stack--v32e .zone-combined .zone-label-split {
+  display: flex;
+  justify-content: center;
+}
+.strip-stack--v32e .zone-combined .zone-main {
+  width: 100%;
+}
+.strip-stack--v32e .zone-combined .ladders-header-split--triple {
+  width: var(--v32e-combined-w);
+  max-width: 100%;
+  margin-inline: auto;
+  gap: 0;
+}
+.strip-stack--v32e .zone-combined .day-panel {
+  width: 100%;
+  max-width: 100%;
+  margin-inline: 0;
+}
+.strip-stack--v32e .day-stack--with-double-divider {
+  --day-separator: var(--v32-zone-gap);
+  --day-past-width: var(--v32d-recent-w);
+  --day-compact-w: calc(var(--day-slot-w) + 2 * var(--v32d-compact-pad-x));
+  --day-triple-width: var(--v32e-combined-w, calc(
+    var(--day-past-width) + var(--day-separator) + var(--day-compact-w)
+    + var(--day-separator) + var(--day-compact-w)
+  ));
+}
+.strip-stack--v32e .day-col-divider--today-forecast {
+  left: calc(
+    (100% - var(--day-triple-width)) / 2 + var(--day-past-width) + var(--day-separator)
+    + var(--day-compact-w) + var(--day-separator) / 2
+  );
+}
+.strip-stack--v32e .ladders-header-split--triple {
+  width: var(--v32e-combined-w);
+  gap: 0;
+  margin-inline: auto;
+}
+.strip-stack--v32e .ladders-header-split--triple .ladders-header-past {
+  width: var(--v32d-recent-w);
+  flex: 0 0 var(--v32d-recent-w);
+  justify-content: center;
+}
+.strip-stack--v32e .ladders-header-split--triple .ladders-header-today-sep,
+.strip-stack--v32e .ladders-header-split--triple .ladders-header-forecast-sep {
+  width: var(--v32-zone-gap);
+  flex: 0 0 var(--v32-zone-gap);
+}
+.strip-stack--v32e .ladders-header-split--triple .ladders-header-today,
+.strip-stack--v32e .ladders-header-split--triple .ladders-header-forecast {
+  width: var(--day-compact-w);
+  flex: 0 0 var(--day-compact-w);
+}
+.strip-stack--v32e .day-row--split-triple .day-past-group {
+  width: var(--v32d-recent-w);
+  flex: 0 0 var(--v32d-recent-w);
+  justify-content: center;
+}
+.strip-stack--v32e .day-row--split-triple .day-today-separator,
+.strip-stack--v32e .day-row--split-triple .day-forecast-separator {
+  width: var(--v32-zone-gap);
+  flex: 0 0 var(--v32-zone-gap);
+}
+.strip-stack--v32e .day-row--split-triple > .day-slot {
+  width: var(--day-compact-w);
+  flex: 0 0 var(--day-compact-w);
+}
+.strip-stack--v32e .day-row--split-triple .day-forecast-group {
+  width: var(--day-compact-w);
+  flex: 0 0 var(--day-compact-w);
+  justify-content: center;
+}
+.strip-stack--v32e .day-stack--with-double-divider .day-row--split-triple {
+  width: var(--v32e-combined-w);
+  margin-inline: auto;
+}
+/* Header labels must keep default zone-label line-height (17px) so the
+   combined card's content lines up with the long-term card. */
+.strip-stack--v32e .ladders-band-layer {
+  position: absolute;
+  display: flex;
+  flex-direction: row;
+  z-index: 4;
+  pointer-events: none;
+}
+.strip-stack--v32e .ladders-band-axis {
+  position: relative;
+  flex-shrink: 0;
+  height: 100%;
+  box-sizing: border-box;
+}
+.strip-stack--v32e .ladders-band-axis .recent-band-label {
+  font-size: 8px;
+  letter-spacing: 0.04em;
+  left: 0;
+  right: 0;
+  text-align: center;
+}
+.strip-stack--v32e .zone-combined .day-slot--name {
+  color: #7a8494;
+}
+.strip-stack--v32e .zone-combined .day-slot--date {
+  font-weight: 600;
+  color: #1a2030;
+}
+.strip-stack--v32e .ladders-band-lines {
+  flex: 1;
+  position: relative;
+  height: 100%;
+  min-width: 0;
+}
+.strip-stack--v32e .ladders-band-lines .recent-band-line {
+  position: absolute;
+  left: 0;
+  right: 0;
+  border-top: 1px dotted #c8d0dc;
+}
+.strip-stack--v32e .ladders-band-lines .recent-band-line--synced {
+  bottom: auto;
+}
+.strip-stack--v32e .ladders-band-axis .recent-band-label--synced {
+  bottom: auto;
+  transform: translateY(-50%);
+}
+.strip-stack--v32e .day-stack--span-band .day-stack-main {
+  width: 100%;
+  position: relative;
+}
+.strip-stack--v32e .zone-combined-block {
+  position: relative;
+}
+
+/* 3.2c / 3.2d / 3.2e — annual pollutant names match relative day labels (-3d, -2d…) */
+.strip-stack--v32c .who-bar-name,
+.strip-stack--v32d .who-bar-name,
+.strip-stack--v32e .who-bar-name {
+  font-size: 13px;
+  font-weight: 600;
+  color: #7a8494;
+}
+
 /* 10-dot DAQI stacks: 122px natural + top breathing room */
 .day-stack--circles:not(.day-stack--who-circles) .day-slot--visual {
   height: 130px;
@@ -531,6 +1378,14 @@
   line-height: 1;
   transform: translateY(-50%);
 }
+.who-guideline-tag--multiline {
+  white-space: normal;
+  text-align: right;
+  line-height: 1.12;
+}
+.who-chart--aligned .who-guideline-tag--multiline {
+  letter-spacing: 0.04em;
+}
 
 .who-line-h {
   position: absolute;
@@ -615,7 +1470,10 @@
   bottom: 0;
   width: 0;
 }
-.who-chart--aligned .who-side--left { right: calc(50% + 22px); }
+/* Breathing room: "WHO guideline" label ends 18px left of the 32px track
+   (22px clear of the pill). Values keep 22px — 3.2b's last µg/m³ value must
+   stay inside the card's right edge. */
+.who-chart--aligned .who-side--left { right: calc(50% + 34px); }
 .who-chart--aligned .who-side--right { left: calc(50% + 22px); }
 .who-chart--aligned .who-guideline-tag {
   left: auto;
@@ -660,7 +1518,8 @@
 .who-onbar-val {
   position: absolute;
   left: 50%;
-  transform: translateX(-50%) translateY(calc(50% + 2px));
+  /* +6px clears the 2px dashed guideline so the value never overlaps it */
+  transform: translateX(-50%) translateY(calc(50% + 6px));
   font-size: 7px;
   font-weight: 600;
   color: #2a3142;
@@ -670,11 +1529,17 @@
   pointer-events: none;
 }
 
+.zone-label-stack {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
 .zone-year {
-  font-weight: 500;
-  color: #6a7385;
-  letter-spacing: 0.04em;
-  margin-left: 6px;
+  font-size: 11px;
+  font-weight: 400;
+  color: #a8b0bc;
+  letter-spacing: 0.02em;
+  text-transform: none;
 }
 
 /* Pollutant key strip — below long-term panel */
@@ -699,68 +1564,91 @@
   top: calc(100% + 10px);
   left: 0;
   right: 0;
-}
-.pollutant-key {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 14px 20px;
-  padding: 4px 8px;
-}
-.pollutant-key-item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-.pollutant-key-swatch {
-  width: 10px;
-  height: 10px;
-  border-radius: 2px;
-  flex-shrink: 0;
-}
-.pollutant-key-label {
-  font-size: 10px;
-  font-weight: 600;
-  color: #4a5568;
-  letter-spacing: 0.02em;
+  /* zone-card padding (20px) + its 1px border, so the key grid is exactly as
+     wide as the chart inside the panel and columns share x-centres */
+  padding: 0 21px;
+  box-sizing: border-box;
 }
 
-/* ERG credit — below forecast panel */
-.strip-stack .zone-forecast-block {
+/* v32a/b — annual, DAQI, and ERG footers share a baseline */
+.strip-stack--v32a .zone-long-block,
+.strip-stack--v32b .zone-long-block,
+.strip-stack--v32a .zone-recent-block,
+.strip-stack--v32b .zone-recent-block,
+.strip-stack--v32a .zone-forecast-block,
+.strip-stack--v32b .zone-forecast-block {
+  position: relative;
   display: flex;
   flex-direction: column;
   min-width: 0;
-  position: relative;
   align-self: stretch;
 }
-.strip-stack .zone-forecast-block .zone-card {
+.strip-stack--v32a .zone-forecast-block .zone-card,
+.strip-stack--v32b .zone-forecast-block .zone-card {
   width: 100%;
   flex: 1;
 }
-.strip-stack .erg-credit-wrap--outside {
+.strip-stack--v32a .pollutant-key-wrap--outside,
+.strip-stack--v32b .pollutant-key-wrap--outside,
+.strip-stack--v32a .daqi-legend-wrap--outside,
+.strip-stack--v32b .daqi-legend-wrap--outside,
+.strip-stack--v32a .erg-credit-wrap--outside,
+.strip-stack--v32b .erg-credit-wrap--outside,
+.strip-stack--v32c .erg-credit-wrap--outside,
+.strip-stack--v32d .erg-credit-wrap--outside,
+.strip-stack--v32e .erg-credit-wrap--outside {
+  min-height: 44px;
+  display: flex;
+  align-items: flex-end;
+}
+.strip-stack--v32a .pollutant-key-wrap--outside,
+.strip-stack--v32b .pollutant-key-wrap--outside {
+  justify-content: center;
+}
+.strip-stack--v32a .daqi-legend-wrap--outside,
+.strip-stack--v32b .daqi-legend-wrap--outside {
+  justify-content: center;
+}
+.strip-stack--v32a .erg-credit-wrap--outside,
+.strip-stack--v32b .erg-credit-wrap--outside,
+.strip-stack--v32c .erg-credit-wrap--outside,
+.strip-stack--v32d .erg-credit-wrap--outside,
+.strip-stack--v32e .erg-credit-wrap--outside {
+  justify-content: flex-end;
+}
+.strip-stack--v32a .aq-body,
+.strip-stack--v32b .aq-body,
+.strip-stack--v32c .aq-body,
+.strip-stack--v32d .aq-body,
+.strip-stack--v32e .aq-body {
+  padding-bottom: 56px;
+}
+
+/* ERG credit */
+.erg-credit-wrap--outside {
   position: absolute;
   top: calc(100% + 10px);
   left: 0;
   right: 0;
-  display: flex;
-  justify-content: center;
+  box-sizing: border-box;
 }
 .erg-credit {
   display: flex;
   flex-direction: column;
-  align-items: center;
-  gap: 4px;
+  align-items: flex-end;
+  gap: 3px;
 }
 .erg-credit-label {
-  font-size: 9px;
-  letter-spacing: 0.08em;
-  text-transform: uppercase;
+  font-size: 7px;
+  font-weight: 500;
   color: #8a929e;
+  white-space: nowrap;
 }
 .erg-credit-logo {
-  height: 22px;
+  height: 20px;
   width: auto;
   object-fit: contain;
+  display: block;
 }
 
 .who-single-row {
@@ -797,27 +1685,71 @@
   max-width: 130px;
 }
 
-.aq-foot { padding: 4px 24px 14px; }
-.aq-foot button {
+.aq-foot { padding: 8px 24px 16px; }
+.guidance-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   font: inherit;
   font-size: 11px;
-  background: none;
-  border: none;
+  font-weight: 600;
+  color: #1a4a78;
+  background: #eef4fa;
+  border: 1px solid #c5d9ec;
+  border-radius: 6px;
+  padding: 7px 12px;
   cursor: pointer;
-  opacity: 0.5;
-  padding: 4px 0;
+  transition: background 0.15s, border-color 0.15s;
 }
-.aq-foot button:hover { opacity: 0.8; }
+.guidance-toggle:hover {
+  background: #e3edf7;
+  border-color: #a8c4de;
+}
+.guidance-toggle-icon {
+  font-size: 8px;
+  line-height: 1;
+  transition: transform 0.2s ease;
+}
+.aq-foot.open .guidance-toggle-icon {
+  transform: rotate(180deg);
+}
+.aq-foot.open .guidance-toggle {
+  background: #1a4a78;
+  border-color: #1a4a78;
+  color: #fff;
+}
 .aq-foot .guidance {
   display: none;
   font-size: 12px;
   line-height: 1.55;
-  padding: 8px 0 0;
-  opacity: 0.7;
+  padding: 10px 0 0 14px;
+  margin-top: 4px;
+  opacity: 0.85;
   max-width: 640px;
+  border-left: 3px solid #1a4a78;
 }
+.aq-foot .guidance-section {
+  margin-bottom: 14px;
+}
+.aq-foot .guidance-section:last-child {
+  margin-bottom: 0;
+}
+.aq-foot .guidance h3 {
+  margin: 0 0 6px;
+  font-size: 12px;
+  font-weight: 700;
+  color: #1a4a78;
+  line-height: 1.35;
+}
+.aq-foot .guidance p { margin: 0 0 8px; }
+.aq-foot .guidance p:last-child { margin-bottom: 0; }
+.aq-foot .guidance ul {
+  margin: 0 0 8px;
+  padding-left: 18px;
+}
+.aq-foot .guidance li { margin-bottom: 6px; }
+.aq-foot .guidance li:last-child { margin-bottom: 0; }
 .aq-foot.open .guidance { display: block; }
-.aq-foot.open button { opacity: 1; font-weight: 500; }
 
 .strip-cerner .aq-meta,
 .strip-annual .aq-meta,

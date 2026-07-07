@@ -120,7 +120,7 @@ export function whoForecastCardHtml(forecast, species) {
   const visual = whoCircleStack(dailyMean, species);
   const items = [{
     visual,
-    name: caqiBandLabel(level) ?? forecast.band,
+    name: '',
     date: formatDateChip(forecast.date),
   }];
 

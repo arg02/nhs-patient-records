@@ -34,10 +34,10 @@ export const WHO_ANNUAL = {
 };
 
 export const POLLUTANTS = [
-  { key: 'pm25', label: 'PM₂.₅', daqiKey: 'pm25' },
-  { key: 'pm10', label: 'PM₁₀', daqiKey: 'pm10' },
-  { key: 'no2', label: 'NO₂', daqiKey: 'no2' },
-  { key: 'o3', label: 'O₃', daqiKey: 'o3' },
+  { key: 'pm25', label: 'PM₂.₅', daqiKey: 'pm25', annualKeyLines: ['PM2.5', 'Particulates'] },
+  { key: 'pm10', label: 'PM₁₀', daqiKey: 'pm10', annualKeyLines: ['PM10', 'Particulates'] },
+  { key: 'no2', label: 'NO₂', daqiKey: 'no2', annualKeyLines: ['Nitrogen', 'Dioxide'] },
+  { key: 'o3', label: 'O₃', daqiKey: 'o3', annualKeyLines: ['Ozone'] },
 ];
 
 /** CityAir forecast band → representative DAQI index level */
@@ -216,6 +216,29 @@ export function daqiLevelForDay(day) {
 }
 
 export const HEALTH_ADVICE = {
-  annual: 'Chronic exposure above WHO annual guidelines is a separate risk from daily index peaks. Consider long-term cardiovascular and respiratory context.',
-  recent: 'Pollution presentations may lag 1–3 days. Review the past three days, not only today.',
+  longTerm:
+    'Clinical guidance here about risk that long-term exposure above WHO confers on an individual.',
+  recent: 'Clinical guidance here about lag-effects.',
+  daqi: `<ul>
+<li><strong>Low (1–3):</strong> Air quality is satisfactory. Enjoy usual outdoor activities.</li>
+<li><strong>Moderate (4–6):</strong> Consider reducing strenuous outdoor activity if symptoms such as cough or sore throat occur. Adults and children with heart or lung problems, and older people, should reduce strenuous exertion outdoors. People with asthma may need to use their reliever inhaler more often.</li>
+<li><strong>High (7–9):</strong> Reduce outdoor activity if symptoms occur. Adults and children with heart or lung problems, older people, and those with asthma should reduce strenuous outdoor exertion and may need reliever inhalers more frequently.</li>
+<li><strong>Very High (10):</strong> Adults and children with heart or lung problems, older people, and those with asthma should avoid strenuous outdoor activity and may need reliever inhalers more often.</li>
+</ul>`,
 };
+
+/** Clinical guidance for expandable footer — long-term, recent-lag, and DAQI band advice */
+export function clinicalGuidanceHtml() {
+  return `<section class="guidance-section">
+<h3>Long-term</h3>
+<p>${HEALTH_ADVICE.longTerm}</p>
+</section>
+<section class="guidance-section">
+<h3>Recent</h3>
+<p>${HEALTH_ADVICE.recent}</p>
+</section>
+<section class="guidance-section">
+<h3>Daily Air Quality Index (DAQI)</h3>
+${HEALTH_ADVICE.daqi}
+</section>`;
+}
