@@ -107,30 +107,65 @@ export function syncV32cLaddersBandLayer(strip) {
   const segs = [...bar.querySelectorAll('.daqi-seg')];
   if (segs.length !== 10) return;
 
+  const LINE_OVERHANG = 8; /* matches --band-line-overhang */
   const spanRect = span.getBoundingClientRect();
   const recentRect = ladderCard.getBoundingClientRect();
   const barRect = bar.getBoundingClientRect();
-  const stacks = ladderCard.querySelectorAll('.daqi-stack');
-  const forecastBar = span.querySelector('.zone-forecast .daqi-stack')
-    ?? ladderCard.querySelector('.day-forecast-group .daqi-stack')
-    ?? (stacks.length ? stacks[stacks.length - 1] : null);
-  const forecastSlot = ladderCard.querySelector('.day-forecast-group .day-slot--visual');
-  const lineRightTarget = forecastSlot ?? forecastBar;
-  const lineRight = lineRightTarget
-    ? lineRightTarget.getBoundingClientRect().right
-    : recentRect.right - 20;
+  const allStacks = [...span.querySelectorAll('.daqi-stack')];
+  const firstBar = allStacks[0] ?? bar;
+  const lastBar = allStacks[allStacks.length - 1] ?? bar;
+  const firstBarRect = firstBar.getBoundingClientRect();
+  const lastBarRect = lastBar.getBoundingClientRect();
 
-  const labelGap = barRect.left - recentRect.left;
+  const labelGap = firstBarRect.left - recentRect.left;
   const axisEl = layer.querySelector('.ladders-band-axis');
   if (axisEl) axisEl.style.width = `${labelGap}px`;
 
   layer.style.top = `${barRect.top - spanRect.top}px`;
   layer.style.height = `${barRect.height}px`;
-  layer.style.left = `${recentRect.left - spanRect.left}px`;
-  layer.style.right = `${Math.max(0, spanRect.right - lineRight)}px`;
+  layer.style.left = '0';
+  layer.style.right = '0';
+  layer.style.width = '';
 
   const layerRect = layer.getBoundingClientRect();
   const relY = (y) => y - layerRect.top;
+
+  const zoneSelectors = ['.zone-recent', '.zone-today', '.zone-forecast', '.zone-combined'];
+  const segments = zoneSelectors
+    .map((sel) => {
+      const zone = span.querySelector(sel);
+      if (!zone) return null;
+      const stacks = [...zone.querySelectorAll('.daqi-stack')];
+      if (!stacks.length) return null;
+      const firstRect = stacks[0].getBoundingClientRect();
+      const lastRect = stacks[stacks.length - 1].getBoundingClientRect();
+      return {
+        left: firstRect.left - LINE_OVERHANG,
+        right: lastRect.right + LINE_OVERHANG,
+      };
+    })
+    .filter(Boolean);
+
+  const linesEl = layer.querySelector('.ladders-band-lines');
+  if (linesEl) {
+    linesEl.style.position = 'absolute';
+    linesEl.style.top = '0';
+    linesEl.style.height = '100%';
+    linesEl.style.marginLeft = '0';
+    linesEl.style.flex = 'none';
+    linesEl.style.left = '0';
+    linesEl.style.right = 'auto';
+    linesEl.style.width = `${layerRect.width}px`;
+    linesEl.style.clipPath = '';
+    linesEl.style.webkitClipPath = '';
+    linesEl.innerHTML = segments.length
+      ? segments.map((seg) => {
+        const left = Math.round(seg.left - layerRect.left);
+        const width = Math.round(seg.right - seg.left);
+        return `<div class="ladders-band-lines-segment" style="position:absolute;top:0;height:100%;left:${left}px;width:${width}px">${bandAxisLinesHtml()}</div>`;
+      }).join('')
+      : bandAxisLinesHtml();
+  }
 
   const lineMap = [
     ['recent-band-line--low', 2],
@@ -139,12 +174,15 @@ export function syncV32cLaddersBandLayer(strip) {
     ['recent-band-line--vhigh', 9],
   ];
   lineMap.forEach(([cls, segIdx]) => {
-    const el = layer.querySelector(`.${cls}`);
-    if (!el) return;
     const y = segs[segIdx].getBoundingClientRect().top;
-    el.classList.add('recent-band-line--synced');
-    el.style.bottom = '';
-    el.style.top = `${relY(y)}px`;
+    layer.querySelectorAll(`.${cls}`).forEach((el) => {
+      el.classList.add('recent-band-line--synced');
+      el.style.bottom = '';
+      el.style.top = `${relY(y)}px`;
+      el.style.left = '0';
+      el.style.right = 'auto';
+      el.style.width = '100%';
+    });
   });
 
   const labelOnLine = [
@@ -452,21 +490,24 @@ function dayStackHtml(items, { ladders = false, circles = false, dividerBeforeTo
     const past = items.slice(0, -1);
     const today = items[items.length - 1];
 
-    const splitRow = (pick, rowSuffix) => `
+    const splitRow = (pick, rowSuffix, { pastOnly = false } = {}) => {
+      const todayContent = pastOnly ? '' : pick(today);
+      return `
       <div class="day-${rowSuffix}-row day-row--split-today">
         <div class="day-past-group">
           ${past.map((i) => slot(pick(i), rowSuffix)).join('')}
         </div>
         <div class="day-today-separator" aria-hidden="true"></div>
-        ${slot(pick(today), rowSuffix)}
+        ${slot(todayContent, rowSuffix)}
       </div>
     `;
+    };
 
     return `
       <div class="day-stack${visualClass} day-stack--with-divider">
         <div class="day-col-divider" aria-hidden="true"></div>
         ${splitRow((i) => i.visual, 'visual')}
-        ${splitRow((i) => i.name, 'name')}
+        ${splitRow((i) => i.name, 'name', { pastOnly: todayHeaderSplit })}
         ${splitRow((i) => i.date, 'date')}
       </div>
     `;

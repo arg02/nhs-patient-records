@@ -6,6 +6,16 @@
   border: 1px solid #c8d0dc;
   box-shadow: 0 2px 8px rgba(0,0,0,0.05);
 }
+/* Canonical day-column rhythm — single source for ladder layouts */
+:root {
+  --day-slot-w: 56px;
+  --day-col-gap: 22px;
+  --day-separator: 40px;
+  --daqi-pill-w: 34px;
+  --band-line-overhang: 8px;
+  --who-chart-pad-left: 57px;
+  --who-chart-pad-right: 26px;
+}
 /* Stack widgets — allow WHO guideline label to extend into card padding without clipping */
 .aq-strip.strip-stack {
   overflow: visible;
@@ -260,11 +270,16 @@
   padding-top: 0;
 }
 .strip-stack .zone-long .zone-main,
-.strip-stack .zone-recent .zone-main--days,
 .strip-stack .zone-today .zone-main--days,
 .strip-stack .zone-combined .zone-main {
   align-items: flex-start;
   justify-content: flex-start;
+}
+/* Recent: top-aligned (keeps DAQI stack tops level with annual ratio tags)
+   but horizontally centred like canonical design 3 */
+.strip-stack .zone-recent .zone-main--days {
+  align-items: flex-start;
+  justify-content: center;
 }
 /* Forecast intentionally omitted from the flex-start override above: it falls
    back to the base .zone-main--days rule (centred both ways), matching design 3
@@ -411,12 +426,7 @@
 }
 .strip-stack--v32c .zone-recent .zone-label-split {
   display: flex;
-  /* Ladder rows below are left-aligned (zone-main--days flex-start); the header
-     must share their origin so "Today" sits centred over the Today column */
-  justify-content: flex-start;
-}
-.strip-stack--v32c .zone-recent .ladders-header-split {
-  width: calc(var(--day-past-width) + 2 * 22px + var(--day-separator) + 56px);
+  justify-content: center;
 }
 .strip-stack--v32c .zone-recent .ladders-header-past .zone-label,
 .strip-stack--v32c .zone-forecast > .zone-label {
@@ -570,11 +580,22 @@
   font-weight: 600;
   color: #1a2030;
 }
-.strip-stack--v32c .ladders-band-lines {
-  flex: 1;
-  position: relative;
+.strip-stack--v32c .ladders-band-lines,
+.strip-stack--v32d .ladders-band-lines,
+.strip-stack--v32e .ladders-band-lines {
+  flex: none;
+  position: absolute;
   height: 100%;
   min-width: 0;
+  pointer-events: none;
+}
+.strip-stack--v32c .ladders-band-lines-segment,
+.strip-stack--v32d .ladders-band-lines-segment,
+.strip-stack--v32e .ladders-band-lines-segment {
+  position: absolute;
+  top: 0;
+  height: 100%;
+  pointer-events: none;
 }
 .strip-stack--v32c .ladders-band-lines .recent-band-line {
   position: absolute;
@@ -747,12 +768,6 @@
 .strip-stack--v32d .zone-forecast .day-slot--date {
   font-weight: 600;
   color: #1a2030;
-}
-.strip-stack--v32d .ladders-band-lines {
-  flex: 1;
-  position: relative;
-  height: 100%;
-  min-width: 0;
 }
 .strip-stack--v32d .ladders-band-lines .recent-band-line {
   position: absolute;
@@ -946,12 +961,6 @@
 .strip-stack--v32e .zone-combined .day-slot--date {
   font-weight: 600;
   color: #1a2030;
-}
-.strip-stack--v32e .ladders-band-lines {
-  flex: 1;
-  position: relative;
-  height: 100%;
-  min-width: 0;
 }
 .strip-stack--v32e .ladders-band-lines .recent-band-line {
   position: absolute;
@@ -1453,7 +1462,26 @@
 .who-bar-ratio { display: block; font-weight: 700; font-size: 13px; color: #1a3148; margin-top: 2px; }
 
 /* 3.1 / 3.2 aligned charts — "WHO" left of line, value right of bar */
-.who-chart--aligned { gap: 38px; padding: 0 26px; }
+/* Extra left padding clears the multiline "WHO guideline" tag inside the card */
+.who-chart--aligned { gap: 38px; padding: 0 var(--who-chart-pad-right) 0 var(--who-chart-pad-left); }
+/* 3.2b side values need a touch more inset on the narrower long-term column */
+/* 3.2a/b — annual panel must fit four bars + WHO label (same width as 3.2 reference) */
+.strip-stack--v32a .zone-long-block,
+.strip-stack--v32b .zone-long-block {
+  min-width: 370px;
+}
+/* Key strip mirrors chart horizontal padding so dots stay centred on bars */
+.strip-stack--v32a .pollutant-key--bar-grid,
+.strip-stack--v32b .pollutant-key--bar-grid {
+  padding: 5px var(--who-chart-pad-right) 5px var(--who-chart-pad-left);
+}
+/* 3.2b — side WHO µg/m³ values need extra right inset */
+.strip-stack--v32b .who-chart--aligned {
+  padding-right: 48px;
+}
+.strip-stack--v32b .pollutant-key--bar-grid {
+  padding-right: 48px;
+}
 .who-chart--aligned .who-vert-cell {
   display: flex;
   flex-direction: column;
@@ -1572,7 +1600,13 @@
 
 /* v32a/b — annual, DAQI, and ERG footers share a baseline */
 .strip-stack--v32a .zone-long-block,
-.strip-stack--v32b .zone-long-block,
+.strip-stack--v32b .zone-long-block {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  min-width: 370px;
+  align-self: stretch;
+}
 .strip-stack--v32a .zone-recent-block,
 .strip-stack--v32b .zone-recent-block,
 .strip-stack--v32a .zone-forecast-block,
@@ -1603,7 +1637,10 @@
 }
 .strip-stack--v32a .pollutant-key-wrap--outside,
 .strip-stack--v32b .pollutant-key-wrap--outside {
-  justify-content: center;
+  justify-content: flex-start;
+  padding: 0;
+  left: 0;
+  right: 0;
 }
 .strip-stack--v32a .daqi-legend-wrap--outside,
 .strip-stack--v32b .daqi-legend-wrap--outside {

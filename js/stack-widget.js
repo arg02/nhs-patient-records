@@ -9,7 +9,7 @@ import {
   syncV32cLaddersBandLayer,
   todayCardHtml,
   combinedLaddersCardHtml,
-} from './widget-render.js?v=23';
+} from './widget-render.js?v=27';
 import { whoAnnualChartAligned } from './who-chart-v31.js?v=6';
 import { whoAnnualChartV32 } from './who-chart-v32.js?v=8';
 import { whoAnnualChartV32A, whoAnnualChartV32B, whoAnnualChartV32C, pollutantKeyStripAlignedHtml } from './who-chart-v32a.js?v=7';
@@ -71,6 +71,7 @@ function updateStack(strip, data, species = DEFAULT_SPECIES, {
   recentVisual = 'ladders',
   forecastVisual = 'ladder',
   recentDays = data.recentDays,
+  todayHeaderSplit = false,
 } = {}) {
   strip.querySelector('[data-long]').innerHTML = `
     <div class="zone-label">Long-term</div>
@@ -81,6 +82,7 @@ function updateStack(strip, data, species = DEFAULT_SPECIES, {
     visual: recentVisual,
     ladderSize: LADDER_SIZE,
     legendOutside: true,
+    todayHeaderSplit,
   });
   recentEl.querySelectorAll('.daqi-legend-wrap').forEach((el) => el.remove());
   strip.querySelector('[data-recent-legend]').innerHTML = daqiLegendHtml();
@@ -130,8 +132,16 @@ export function createStackWidgetV32(data, { species = DEFAULT_SPECIES } = {}) {
     </div>
     <section class="zone-card zone-forecast" data-forecast></section>
   `);
-  updateStack(strip, data, species, { longTermChart: whoAnnualChartV32, recentDays: recentDaysForLadder(data.recentDays) });
-  strip._update = () => updateStack(strip, data, species, { longTermChart: whoAnnualChartV32, recentDays: recentDaysForLadder(data.recentDays) });
+  updateStack(strip, data, species, {
+    longTermChart: whoAnnualChartV32,
+    recentDays: recentDaysForLadder(data.recentDays),
+    todayHeaderSplit: true,
+  });
+  strip._update = () => updateStack(strip, data, species, {
+    longTermChart: whoAnnualChartV32,
+    recentDays: recentDaysForLadder(data.recentDays),
+    todayHeaderSplit: true,
+  });
   return strip;
 }
 
@@ -157,6 +167,7 @@ function updateStackV32Variant(strip, data, species = DEFAULT_SPECIES, { variant
     visual: 'ladders',
     ladderSize: LADDER_SIZE,
     legendOutside: true,
+    todayHeaderSplit: true,
   });
   recentEl.querySelectorAll('.daqi-legend-wrap').forEach((el) => el.remove());
   strip.querySelector('[data-recent-legend]').innerHTML = daqiLegendHtml();
