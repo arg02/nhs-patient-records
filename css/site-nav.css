@@ -56,3 +56,31 @@
     font-size: 12px;
   }
 }
+
+/* Deep-link anchors — scroll targets for individual designs */
+[id^="concept-"],
+[id^="design-"] {
+  scroll-margin-top: 24px;
+}
+
+.design-link {
+  color: #4a5568;
+  font-weight: 600;
+  font-style: normal;
+  text-decoration: none;
+}
+
+.design-link:hover,
+.design-link:focus {
+  color: #1a4a78;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.section-tag .design-link {
+  letter-spacing: 0.16em;
+}
+
+.concept-tag .design-link em {
+  font-style: normal;
+}

@@ -774,15 +774,16 @@
     }
 
     const concepts = [
-      { label: '1 · Cerner', note: 'Pollutant switcher · WHO bar + ratio · recent blobs · DAQI legend.', build: buildCerner },
-      { label: '2 · Annual 2×2', note: 'Four pollutants in grid · recent circles · forecast circle (same layout as concept 1).', build: buildAnnual },
-      { label: '3 · DAQI ladders', note: 'Compact WHO row · ladder recent + forecast · no switcher.', build: buildStack },
+      { id: 'concept-1', num: '1', name: 'Cerner', note: 'Pollutant switcher · WHO bar + ratio · recent blobs · DAQI legend.', build: buildCerner },
+      { id: 'concept-2', num: '2', name: 'Annual 2×2', note: 'Four pollutants in grid · recent circles · forecast circle (same layout as concept 1).', build: buildAnnual },
+      { id: 'concept-3', num: '3', name: 'DAQI ladders', note: 'Compact WHO row · ladder recent + forecast · no switcher.', build: buildStack },
     ];
 
     const stackEl = document.getElementById('stack');
     concepts.forEach((c) => {
       const wrap = document.createElement('div');
-      wrap.innerHTML = `<div class="concept-tag"><em>${c.label}</em> — ${c.note}</div>`;
+      wrap.id = c.id;
+      wrap.innerHTML = `<div class="concept-tag"><a href="#${c.id}" class="design-link">${c.num}</a> · ${c.name} — ${c.note}</div>`;
       wrap.appendChild(c.build());
       stackEl.appendChild(wrap);
     });
