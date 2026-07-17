@@ -1,0 +1,9 @@
+{
+  "name": "nhs-patient-records",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Static air quality patient-record prototype with a Vercel password gate.",
+  "dependencies": {
+    "@vercel/functions": "^3.7.5"
+  }
+}
