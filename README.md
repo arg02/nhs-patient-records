@@ -201,3 +201,5 @@ Changes are usually live within one to two minutes.
 ## Status
 
 Active design exploration. Mock data only — not for clinical use. Iteration workspaces (`concept3.html`, `concept32.html`) are the intended place to add and review new variants before promoting them to the main showcase.
+
+Open research and next steps (including relative risk / CRF framing for long-term clinical advice) are tracked in [ROADMAP.md](ROADMAP.md).
