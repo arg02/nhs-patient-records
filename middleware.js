@@ -130,6 +130,18 @@ export default async function middleware(request) {
   const password = process.env.SITE_PASSWORD;
   const url = new URL(request.url);
 
+  // Clear the authentication cookie, then return to the password page.
+  if (url.pathname === '/__logout') {
+    return new Response(null, {
+      status: 303,
+      headers: {
+        Location: '/',
+        'Cache-Control': 'no-store',
+        'Set-Cookie': `${COOKIE_NAME}=; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=0`,
+      },
+    });
+  }
+
   if (!password) {
     return htmlResponse(loginPage({ notConfigured: true }), 503);
   }
