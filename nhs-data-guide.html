@@ -479,5 +479,6 @@ aboveHeight = (excessRatio / maxExcessAcrossPollutants) × 48% of track</div>
       <strong>Prototype note:</strong> This repository uses mock data in <code>js/air-quality.js</code> for design review. Replace <code>mockPatientExposure()</code> with live API calls following the patterns above before clinical deployment. The prototype simplifies DAQI by using daily means for all pollutants and <code>daqiLevel()</code> compares raw floating-point values without integer rounding — production integrations should apply pollutant-specific rules (Step 1) and round before band lookup (Step 2).
     </div>
   </article>
+  <script src="js/inactivity-logout.js" defer></script>
 </body>
 </html>

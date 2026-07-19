@@ -17,7 +17,7 @@ export const config = {
 };
 
 const COOKIE_NAME = 'nhs_aq_gate';
-const COOKIE_MAX_AGE = 60 * 60 * 24 * 7; // 7 days
+const COOKIE_MAX_AGE = 30 * 60; // 30-minute inactivity window
 
 async function tokenFor(password) {
   const data = new TextEncoder().encode(`v1:${password}`);
@@ -156,7 +156,7 @@ export default async function middleware(request) {
       return new Response(null, {
         status: 303,
         headers: {
-          Location: '/',
+          Location: '/?signed_in=1',
           'Cache-Control': 'no-store',
           'Set-Cookie': `${COOKIE_NAME}=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${COOKIE_MAX_AGE}`,
         },
@@ -170,6 +170,25 @@ export default async function middleware(request) {
   const authed = cookieHeader
     .split(';')
     .some((part) => part.trim() === `${COOKIE_NAME}=${token}`);
+
+  // Active pages ping this endpoint periodically. Refreshing the cookie here
+  // gives the server-side session the same rolling 30-minute inactivity limit
+  // as the browser timer.
+  if (url.pathname === '/__activity') {
+    if (!authed) {
+      return new Response(null, {
+        status: 401,
+        headers: { 'Cache-Control': 'no-store' },
+      });
+    }
+    return new Response(null, {
+      status: 204,
+      headers: {
+        'Cache-Control': 'no-store',
+        'Set-Cookie': `${COOKIE_NAME}=${token}; Path=/; HttpOnly; Secure; SameSite=Lax; Max-Age=${COOKIE_MAX_AGE}`,
+      },
+    });
+  }
 
   if (authed) {
     return next();
