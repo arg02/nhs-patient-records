@@ -5,7 +5,15 @@
  * 3.5 pill bars: segment ON/OFF is set in who-recent-v35.js (level <= maxLevel).
  * Visual bottom-up order in the Meets WHO zone requires .who-caqi-zone--below { column-reverse } in CSS.
  */
-import { mockPatientExposure, recentDaysForV33, recentDaysForLadder, daqiLevel, forecastBandToDaqi } from '../js/air-quality.js';
+import {
+  DAQI_THRESHOLDS,
+  daqiLevel,
+  forecastBandToDaqi,
+  mockPatientExposure,
+  recentDaysForLadder,
+  recentDaysForV33,
+  roundDaqiConcentration,
+} from '../js/air-quality.js';
 import { daqiStackedBar, daqiCircleStack, forecastCardHtml } from '../js/widget-render.js';
 import { whoCircleStack } from '../js/who-recent-v34.js';
 import { caqiWhoPillBar } from '../js/who-recent-v35.js';
@@ -75,6 +83,41 @@ function auditCaqiPill(dailyMean, speciesKey) {
 
 const data = mockPatientExposure();
 const report = {};
+
+const expectedDaqiThresholds = {
+  pm25: [0, 12, 24, 36, 42, 48, 54, 59, 65, 71],
+  pm10: [0, 17, 34, 51, 59, 67, 76, 84, 92, 101],
+  no2: [0, 68, 135, 201, 268, 335, 401, 468, 535, 601],
+  o3: [0, 34, 67, 101, 121, 141, 161, 188, 214, 241],
+};
+report['Official DAQI thresholds'] = Object.entries(expectedDaqiThresholds).map(([pollutant, expected]) => ({
+  pollutant,
+  ok: JSON.stringify(DAQI_THRESHOLDS[pollutant]) === JSON.stringify(expected),
+}));
+
+report['DAQI final rounding'] = [
+  { input: 50.486, expected: 50 },
+  { input: 50.5, expected: 51 },
+].map(({ input, expected }) => ({
+  input,
+  expected,
+  actual: roundDaqiConcentration(input),
+  ok: roundDaqiConcentration(input) === expected,
+}));
+
+report['DAQI rounded boundaries'] = [
+  { pollutant: 'no2', input: 200.49, expected: 3 },
+  { pollutant: 'no2', input: 200.5, expected: 4 },
+  { pollutant: 'pm10', input: 83.5, expected: 8 },
+  { pollutant: 'o3', input: 33.5, expected: 2 },
+  { pollutant: 'o3', input: 66.5, expected: 3 },
+].map(({ pollutant, input, expected }) => ({
+  pollutant,
+  input,
+  expected,
+  actual: daqiLevel(input, pollutant),
+  ok: daqiLevel(input, pollutant) === expected,
+}));
 
 // 3.0–3.2 DAQI ladders (Recent)
 const ladderDays = recentDaysForLadder(data.recentDays);

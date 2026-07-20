@@ -1,5 +1,6 @@
 /**
- * Air quality utilities — UK DAQI colours/thresholds from daqi-vs-caqi (colorScales.ts).
+ * Air quality utilities — UK DAQI colours and current official concentration thresholds.
+ * Threshold source: https://www.gov.uk/government/publications/health-effects-of-air-pollution/pollutant-concentrations-for-the-daily-air-quality-index-daqi
  * WHO annual guidelines for long-term comparison (separate from DAQI daily indexing).
  */
 
@@ -13,9 +14,8 @@ export const DAQI_COLORS = [
 export const DAQI_THRESHOLDS = {
   pm25: [0, 12, 24, 36, 42, 48, 54, 59, 65, 71],
   no2: [0, 68, 135, 201, 268, 335, 401, 468, 535, 601],
-  /** UK DEFRA daily bands — same colour ladder as PM2.5/NO2 in daqi-vs-caqi */
-  pm10: [0, 17, 34, 51, 59, 67, 76, 85, 93, 102],
-  o3: [0, 51, 101, 121, 141, 161, 181, 201, 221, 241],
+  pm10: [0, 17, 34, 51, 59, 67, 76, 84, 92, 101],
+  o3: [0, 34, 67, 101, 121, 141, 161, 188, 214, 241],
 };
 
 /** Long-term bar colours — solid above WHO guideline, light fill below */
@@ -54,15 +54,24 @@ export function normalizeSpecies(key) {
   return k === 'pm2.5' ? 'pm25' : k;
 }
 
-/** DAQI index level 1–10 for a daily mean concentration */
+/**
+ * Round a nonnegative DAQI concentration once, immediately before comparison.
+ * Project convention: exact .5 ties round upward.
+ */
+export function roundDaqiConcentration(value) {
+  return Math.floor(value + 0.5);
+}
+
+/** DAQI index level 1–10 after prescribed final integer rounding */
 export function daqiLevel(value, species) {
   if (value == null || Number.isNaN(value)) return null;
   const sp = normalizeSpecies(species);
   const t = DAQI_THRESHOLDS[sp];
   if (!t) return null;
+  const roundedValue = roundDaqiConcentration(value);
   let level = 1;
   for (let i = 0; i < t.length; i++) {
-    if (value >= t[i]) level = i + 1;
+    if (roundedValue >= t[i]) level = i + 1;
     else break;
   }
   return level;

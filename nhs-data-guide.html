@@ -183,23 +183,31 @@
       Use the <strong>range endpoint</strong> (<code>/coords</code>) for NHS integration. Dates must be ISO 8601 UTC strings (e.g. <code>2026-07-03T00:00:00Z</code>) — the API does not accept <code>-3d</code> shorthand. Pass the API key as a <code>key</code> query parameter.
     </p>
 
+    <h3>Fields on each hourly record</h3>
+    <p>Each hourly object includes:</p>
+    <ul>
+      <li><code>timestamp</code> — start of the hour in GMT/UTC</li>
+      <li><code>data_map_start</code> — base year of the annual-mean map used for <code>value</code>, as an ISO datetime string, e.g. <code>2022-01-01T00:00:00.000+0000</code>. Constant for a given response; use its calendar year for the Long-term panel label (<code>annualYear</code>)</li>
+      <li><code>results[]</code> — per-species concentrations (see below)</li>
+    </ul>
+
     <h3>Two fields per species</h3>
     <p>Each entry in <code>results[]</code> includes both:</p>
     <ul>
-      <li><code>value</code> — LAEI 2022 annual mean at the patient’s lat/lng (µg/m³). Constant for a given location regardless of hour; use for the <strong>Long-term</strong> panel (<code>annual</code> + <code>annualYear: 2022</code>)</li>
+      <li><code>value</code> — annual mean at the patient’s lat/lng from the map identified by <code>data_map_start</code> (µg/m³). Constant for a given location regardless of hour; use for the <strong>Long-term</strong> panel</li>
       <li><code>nowcast_value</code> — real-time nowcast concentration for that hour (µg/m³). Varies hour by hour; use for the <strong>Recent</strong> panel</li>
     </ul>
 
     <h3>What to fetch</h3>
     <p>
-      One range call from the start of UK-local day −3 through the latest hour covers both panels. Request a wide enough GMT window to cover BST boundaries and at least seven hours before UK 00:00 on −3d for the first O₃ rolling-8h window (see timezone and DAQI sections below). For very long date ranges (e.g. bulk validation), fetch in weekly chunks to avoid timeouts.
+      One range call can cover both panels, but it must start <strong>at least seven hours before UK-local 00:00 on day −3</strong>. Those preceding hours are needed to calculate the rolling 8-hour O₃ result at 00:00. Convert that local boundary with the IANA timezone <code>Europe/London</code>, then send the resulting instant to the API as UTC. UK midnight is <code>00:00Z</code> during GMT and <code>23:00Z</code> on the preceding UTC date during BST. Fetch through the latest complete hour (or through the end of today if the service supplies it). For very long ranges, fetch in weekly chunks to avoid timeouts.
     </p>
 
     <h3>Example URL — last 3 days + today</h3>
-    <p>Eleanor Marsh (<code>lat=51.4933</code>, <code>lng=-0.0995</code>), UK calendar days 3–6 July 2026 during BST. The GMT window starts at UK 00:00 on 3 Jul (= <code>2026-07-02T23:00:00Z</code>):</p>
+    <p>Eleanor Marsh (<code>lat=51.4933</code>, <code>lng=-0.0995</code>), UK calendar days 3–6 July 2026 during BST. UK-local 00:00 on 3 July is <code>2026-07-02T23:00:00Z</code>; subtracting seven hours makes the required request start <code>2026-07-02T16:00:00Z</code>:</p>
     <div class="callout">
       <strong>Example request URL</strong>
-      <pre style="margin:12px 0 0;background:#eef1f5;color:#1a2030;white-space:pre-wrap;word-break:break-all">https://swift-exposure-357937791793.europe-west2.run.app/exposure/london/coords?key=<span style="color:#1a4a78">&lt;api-key&gt;</span>&amp;lat=51.4933&amp;lng=-0.0995&amp;species=no2,pm10,pm25,o3&amp;from=2026-07-02T23:00:00Z&amp;to=2026-07-06T22:59:59Z</pre>
+      <pre style="margin:12px 0 0;background:#eef1f5;color:#1a2030;white-space:pre-wrap;word-break:break-all">https://swift-exposure-357937791793.europe-west2.run.app/exposure/london/coords?key=<span style="color:#1a4a78">&lt;api-key&gt;</span>&amp;lat=51.4933&amp;lng=-0.0995&amp;species=no2,pm10,pm25,o3&amp;from=2026-07-02T16:00:00Z&amp;to=2026-07-06T22:59:59Z</pre>
     </div>
     <p>Equivalent multi-line form:</p>
     <pre><span class="comment">GET https://swift-exposure-357937791793.europe-west2.run.app/exposure/london/coords</span>
@@ -207,7 +215,7 @@
   &amp;lat=<span class="num">51.4933</span>
   &amp;lng=<span class="num">-0.0995</span>
   &amp;species=<span class="str">no2,pm10,pm25,o3</span>
-  &amp;from=<span class="str">2026-07-02T23:00:00Z</span>
+  &amp;from=<span class="str">2026-07-02T16:00:00Z</span>
   &amp;to=<span class="str">2026-07-06T22:59:59Z</span></pre>
 
     <h3>Example response (raw API)</h3>
@@ -215,6 +223,7 @@
     <pre>[
   {
     <span class="key">"timestamp"</span>: <span class="str">"2026-07-02T23:00:00.000+0000"</span>,
+    <span class="key">"data_map_start"</span>: <span class="str">"2022-01-01T00:00:00.000+0000"</span>,
     <span class="key">"lat"</span>: <span class="num">51.4933</span>,
     <span class="key">"lng"</span>: <span class="num">-0.0995</span>,
     <span class="key">"results"</span>: [
@@ -226,6 +235,7 @@
   },
   {
     <span class="key">"timestamp"</span>: <span class="str">"2026-07-03T00:00:00.000+0000"</span>,
+    <span class="key">"data_map_start"</span>: <span class="str">"2022-01-01T00:00:00.000+0000"</span>,
     <span class="key">"results"</span>: [
       { <span class="key">"species"</span>: <span class="str">"no2"</span>,  <span class="key">"value"</span>: <span class="num">36.2</span>, <span class="key">"nowcast_value"</span>: <span class="num">22.3</span> },
       { <span class="key">"species"</span>: <span class="str">"pm10"</span>, <span class="key">"value"</span>: <span class="num">21.7</span>, <span class="key">"nowcast_value"</span>: <span class="num">15.9</span> },
@@ -233,10 +243,10 @@
       { <span class="key">"species"</span>: <span class="str">"o3"</span>,   <span class="key">"value"</span>: <span class="num">37.5</span>, <span class="key">"nowcast_value"</span>: <span class="num">54.5</span> }
     ]
   }
-  <span class="comment">/* … one object per hour; value is constant per lat/lng, nowcast_value varies */</span>
+  <span class="comment">/* … one object per hour; value and data_map_start are constant per lat/lng, nowcast_value varies */</span>
 ]</pre>
     <p>
-      Each <code>timestamp</code> marks the <strong>start</strong> of the hour in <strong>GMT/UTC</strong>. Map <code>species</code> to <code>pm25</code>, <code>pm10</code>, <code>no2</code>, <code>o3</code>. Use <code>nowcast_value</code> for Recent hourly series; use <code>value</code> for Long-term annual concentrations (same at every hour for a given location).
+      Each <code>timestamp</code> marks the <strong>start</strong> of the hour in <strong>GMT/UTC</strong>. Map <code>species</code> to <code>pm25</code>, <code>pm10</code>, <code>no2</code>, <code>o3</code>. Use <code>nowcast_value</code> for Recent hourly series; use <code>value</code> for Long-term annual concentrations (same at every hour for a given location). Derive <code>annualYear</code> from <code>data_map_start</code> — for example <code>2022-01-01T00:00:00.000+0000</code> → <code>2022</code> — rather than hard-coding the year.
     </p>
 
     <h3>Mapping API response → widget data</h3>
@@ -244,27 +254,28 @@
       The prototype’s <code>mockPatientExposure()</code> in <code>js/air-quality.js</code> shows the <strong>widget’s expected shape</strong>, not the raw API. Your integration layer must transform the hourly array into:
     </p>
     <ul>
-      <li><code>annual</code> + <code>annualYear</code> — read <code>value</code> per species from any hour in the response (constant for a given lat/lng; LAEI 2022 annual mean). Set <code>annualYear</code> to <strong>2022</strong></li>
-      <li><code>recentDays[]</code> — group hours by UK-local calendar day using <code>nowcast_value</code>; build <code>hourly</code> arrays (indices 0–23 = UK-local 00:00–23:00), then derive pollutant-specific DAQI inputs: PM₂.₅/PM₁₀ daily means; NO₂ and O₃ keep hourly series for max-of-hourly / rolling-8h calculations (see DAQI section)</li>
+      <li><code>annual</code> + <code>annualYear</code> — read <code>value</code> per species from any hour in the response (constant for a given lat/lng). Set <code>annualYear</code> from <code>data_map_start</code> (calendar year of that datetime — currently <strong>2022</strong> when the field is <code>2022-01-01T00:00:00.000+0000</code>)</li>
+      <li><code>recentDays[]</code> — group hours by UK-local calendar day using <code>nowcast_value</code>, retaining each timestamp rather than assuming a fixed 24-element array (a daylight-saving transition day has 23 or 25 hours). Then derive pollutant-specific DAQI inputs: PM₂.₅/PM₁₀ daily means; NO₂ and O₃ keep timestamped hourly series for max-of-hourly / rolling-8h calculations (see DAQI section)</li>
     </ul>
     <div class="callout">
       <strong>Raw vs widget shape:</strong>
       <ul style="margin-top:8px;margin-bottom:0">
-        <li><strong>API returns:</strong> flat array of <code>{ timestamp, results[{ species, value, nowcast_value }] }</code> in GMT</li>
+        <li><strong>API returns:</strong> flat array of <code>{ timestamp, data_map_start, results[{ species, value, nowcast_value }] }</code> in GMT</li>
         <li><strong>Widget expects:</strong> <code>{ annual, annualYear, recentDays[{ offset, date, hourly, daily }] }</code> grouped by UK calendar day</li>
       </ul>
     </div>
 
     <h2>Calculating DAQI banding (Recent panel)</h2>
     <div class="callout">
-      <strong>Official reference — DEFRA DAQI thresholds and averaging rules:</strong>
-      <a href="https://www.gov.uk/government/publications/health-effects-of-air-pollution/pollutant-concentrations-for-the-daily-air-quality-index-daqi">Pollutant concentrations for the Daily Air Quality Index (DAQI)</a> (gov.uk).
-      Each pollutant uses a different averaging period; the daily index for a pollutant is not always a 24-hour mean.
+      <strong>Normative official references:</strong>
+      <a href="https://www.gov.uk/government/publications/health-effects-of-air-pollution/pollutant-concentrations-for-the-daily-air-quality-index-daqi">Current GOV.UK DAQI pollutant concentration table</a>
+      for concentration ranges and averaging periods, and DEFRA’s
+      <a href="https://uk-air.defra.gov.uk/reports/cat14/1304251155_Update_on_Implementation_of_the_DAQI_April_2013_Final.pdf">Update on Implementation of the DAQI (April 2013) (PDF)</a>
+      for implementation detail on data capture, final rounding, retrospective calculations and triggers.
+      Each pollutant uses a different averaging period; a historical daily summary is not a 24-hour mean for every pollutant.
     </div>
     <p>
-      Thresholds and colours in this prototype match the
-      <a href="https://github.com/arg02/daqi-vs-caqi">daqi-vs-caqi</a> reference implementation
-      (<code>colorScales.ts</code>).
+      The concentration thresholds below come directly from the current gov.uk table. Do not use the prototype or a third-party implementation as the normative source.
     </p>
 
     <h3>Step 1 — Pollutant-specific concentrations for DAQI</h3>
@@ -274,43 +285,105 @@
 
     <h3>PM₂.₅ and PM₁₀ — 24-hour daily mean</h3>
     <p>
-      For each UK calendar day, average the <strong>24 hourly values for UK-local hours 00:00 through 23:00</strong> (time beginning). Ignore null or missing hours.
+      For each completed UK calendar day, average the unrounded hourly means from <strong>UK-local midnight to midnight</strong> (time beginning). A normal day has 24 hours; the spring DST transition day has 23 and the autumn transition day has 25. Select hours by timestamp and local-day boundary, so the skipped or repeated clock hour is handled correctly.
     </p>
-    <div class="formula">pmDailyMean = sum(hourlyValues[00:00..23:00]) / count(validHourlyValues)</div>
-    <p>The daily PM index is derived from this mean in Step 2 (round, then band lookup).</p>
+    <div class="formula">pmDailyMean = sum(valid unrounded hourly means in local day) / count(valid hourly means)</div>
+    <p>
+      DEFRA requires at least <strong>75% data capture</strong> for a daily mean (the 2013 guidance gives 18 hourly means for a normal 24-hour day). Applied to the actual DST-day duration, require at least 18 of 23 hours in spring and 19 of 25 hours in autumn. Do not silently calculate an official DAQI value below the required capture; mark it unavailable. The official document does not spell out the 23/25-hour arithmetic, so this is the direct application of its 75% rule to the UK-local interval.
+    </p>
+    <p>The daily PM index is derived from this mean in Step 2 (round once, then perform the threshold lookup).</p>
 
     <h3>NO₂ — maximum hourly index (not a daily mean)</h3>
     <p>
-      DAQI for NO₂ is based on <strong>hourly</strong> concentrations only — do <strong>not</strong> compute a 24-hour mean. For each UK-local hour in the day, round the hourly value (Step 2) and map it to a DAQI index. The daily NO₂ index is the <strong>maximum</strong> hourly index across UK-local 00:00–23:00.
+      DAQI for NO₂ is based on <strong>hourly mean</strong> concentrations — do <strong>not</strong> compute a 24-hour mean and do not reduce the calculation to a single 200 µg/m³ test. For a completed-day summary, keep each valid hourly mean unrounded until its final comparison, round it once (Step 2), map that rounded concentration to the full index 1–10 table, then take the maximum of those hourly indices across the UK-local day. DEFRA’s 75% capture rule requires an hourly mean derived from sub-hourly measurements to contain at least three valid 15-minute means; the exposure API already supplies hourly values, so their upstream completeness should be confirmed with the service owner.
     </p>
-    <div class="formula">no2DayIndex = max( daqiIndex(round(hourlyNO2[h])) for h in 00:00..23:00 )</div>
+    <div class="formula">no2DayIndex = max( daqiIndex(roundOnce(hourlyNO2[h])) for valid hours in the local day )</div>
+    <p><strong>Boundary condition:</strong> after final integer rounding, 200 µg/m³ is still Low/index 3. A rounded concentration of <strong>at least 201 µg/m³ (≥201)</strong> is Moderate or above, and <strong>201 µg/m³ is the first Moderate/index 4 value</strong>.</p>
 
     <h3>O₃ — rolling 8-hour mean</h3>
     <p>
-      DAQI for O₃ uses a <strong>rolling 8-hour mean</strong> at each hour: the mean of the current hour and the previous seven consecutive hours (eight hours total). Compute this rolling mean for every UK-local hour from <strong>00:00 on the −3 day</strong> through the latest hour on “today”, then for each UK calendar day take the <strong>maximum</strong> rolling-8h index across that day’s local hours 00:00–23:00.
+      DAQI for O₃ uses a <strong>rolling 8-hour mean</strong> at each hour: the mean of the current hour and the previous seven elapsed hourly slots (eight hours total). Compute this from <strong>00:00 on the −3 day</strong>. For each completed UK calendar day, take the <strong>maximum</strong> valid rolling-8h index among windows ending within that local midnight-to-midnight interval. Current-day presentation is addressed separately below.
     </p>
-    <div class="formula">rolling8h[h] = mean( hourlyO3[h−7] … hourlyO3[h] )
-o3DayIndex = max( daqiIndex(round(rolling8h[h])) for h in 00:00..23:00 on that day )</div>
+    <div class="formula">rolling8h[h] = mean( unrounded hourlyO3[h−7] … hourlyO3[h] )
+o3DayIndex = max( daqiIndex(roundOnce(rolling8h[h])) for valid windows ending in that local day )</div>
     <p>
-      At UK-local 00:00, the rolling window includes the prior seven hours — which may fall on the <strong>previous UK calendar day</strong>. During BST, UK midnight on the −3 day can require GMT hours from the prior evening (see BST example below). Request enough pre-window hourly data (at least seven hours before UK 00:00 on −3d, plus a BST margin) so the first rolling mean is valid.
+      A rolling window is valid with at least <strong>six of its eight hourly means</strong> (75% capture), according to DEFRA’s 2013 guidance. At UK-local 00:00, the window includes the prior seven elapsed hours, which may fall on the <strong>previous UK calendar day</strong>. Request at least seven hours before UK-local midnight on −3d; no additional “BST margin” is needed if the boundary is converted correctly with <code>Europe/London</code>. Assign each rolling result to the local date of the hour at which its window ends.
     </p>
 
     <h3>Today (current day)</h3>
     <p>
-      The <strong>−3d</strong>, <strong>−2d</strong>, and <strong>−1d</strong> columns in the Recent panel represent completed UK calendar days. Apply the pollutant-specific rules above: PM₂.₅ and PM₁₀ daily means, NO₂ maximum hourly index, and O₃ maximum rolling-8h index.
+      The <strong>−3d</strong>, <strong>−2d</strong>, and <strong>−1d</strong> columns are completed UK calendar days only. Use the Step 1 rules above (full PM midnight-to-midnight means; NO₂ max hourly index; O₃ max rolling-8h index). Do <strong>not</strong> apply triggers retrospectively to those days.
     </p>
     <p>
-      The <strong>Today</strong> column is different. While the day is still in progress, PM₂.₅, PM₁₀, and O₃ do not use the completed-day formulas alone — they rely on a <strong>trigger system</strong> that predicts an index level from rising concentrations as hourly data arrives. This logic is implemented in the <strong>Awair</strong> project (separate from this prototype).
+      The <strong>Today</strong> column shows the <strong>current</strong> situation for each pollutant, then takes the maximum across pollutants (Step 3). “Current” means different things per pollutant: NO₂ follows the latest hour only; PM₂.₅, PM₁₀ and O₃ use predictive <strong>triggers</strong> that can remain in force after they fire, optionally superseded by a higher measurement-based index.
+    </p>
+
+    <h4>What “current” means per pollutant</h4>
+    <ul>
+      <li><strong>NO₂</strong> — index of the <strong>latest complete UK-local hour only</strong>. A high hour earlier today (e.g. ≥201 µg/m³ three hours ago) does <strong>not</strong> keep Today elevated. No separate trigger table.</li>
+      <li><strong>PM₂.₅ / PM₁₀</strong> — from UK-local midnight, run the trigger system on consecutive hourly means. An activated trigger index <strong>stays in force</strong> until it is superseded by a <strong>higher</strong> partial-day mean index (from 19:00 onward — see below) or until UK-local midnight resets the day. A later fall in hourly concentrations does not by itself clear the trigger.</li>
+      <li><strong>O₃</strong> — same trigger persistence idea, but the measurement that can supersede is the <strong>current rolling 8-hour mean</strong> index (only if higher than the active trigger). Clear the O₃ trigger after about <strong>four hours</strong> without a continuing trigger condition, or at UK-local midnight. If the rolling 8-hour index is higher than the trigger, use the rolling index.</li>
+    </ul>
+
+    <h4>How a trigger activates</h4>
+    <p>
+      A trigger uses <strong>two consecutive hourly means</strong> (time beginning), biased to rising concentrations: the first hour is greater than or equal to the trigger threshold for an index level, and the second hour is greater than or equal to the first. When that happens, that index level becomes the active trigger for the pollutant (and may step up if a higher index trigger fires later). Triggers are for real-time Today information only — never for −3d/−2d/−1d.
+    </p>
+
+    <h4>Sources for trigger thresholds</h4>
+    <p>
+      DEFRA’s
+      <a href="https://uk-air.defra.gov.uk/reports/cat14/1304251155_Update_on_Implementation_of_the_DAQI_April_2013_Final.pdf">Update on Implementation of the DAQI (April 2013)</a>
+      publishes official <strong>band</strong> triggers only (Moderate or above, High or above, Very High or above). Those band anchors are: PM₁₀ = <strong>68</strong>, <strong>107</strong>, <strong>177</strong> µg/m³; PM₂.₅ = <strong>50</strong>, <strong>74</strong>, <strong>101</strong> µg/m³; O₃ = <strong>105</strong>, <strong>170</strong> µg/m³, and Very High for O₃ <strong>not determined</strong>.
     </p>
     <p>
-      NO₂ for today still follows the standard hourly rule: take the maximum hourly index across UK-local hours received so far (00:00 through the latest complete hour).
+      DEFRA commissioned Environmental Research Group (ERG), King’s College London, to develop those band triggers. ERG then extended the same method to produce <strong>per–index-point (1–10) triggers</strong> so a Today ladder can resolve individual DAQI levels, not only broad bands. The index-point table below is that ERG extension. Treat it as <strong>proprietary</strong> implementation data for this NHS integration — do not republish it as a public DEFRA specification, and do not invent or interpolate alternative index-point triggers.
     </p>
-    <div class="callout">
-      <strong>Documentation in progress</strong>
-      <p style="margin:8px 0 0">
-        Full description of how to calculate DAQI for the current day is coming. This section will document the Awair trigger rules for PM₂.₅, PM₁₀, and O₃ once they are ported for NHS integration.
-      </p>
-    </div>
+
+    <h4>Index-point trigger thresholds (µg/m³)</h4>
+    <p>Hourly mean thresholds used by the two-hour rising rule. Band-anchor cells (index 4 / 7 / 10) match DEFRA 2013; other cells are the ERG index-point extension. There is no O₃ trigger for index 10.</p>
+    <table>
+      <thead>
+        <tr>
+          <th>DAQI index</th>
+          <th>Band</th>
+          <th>PM₂.₅</th>
+          <th>PM₁₀</th>
+          <th>O₃</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Low</td><td>8</td><td>12</td><td>14</td></tr>
+        <tr><td>2</td><td>Low</td><td>17</td><td>22</td><td>34</td></tr>
+        <tr><td>3</td><td>Low</td><td>33</td><td>44</td><td>68</td></tr>
+        <tr><td>4</td><td>Moderate</td><td><strong>50</strong></td><td><strong>68</strong></td><td><strong>105</strong></td></tr>
+        <tr><td>5</td><td>Moderate</td><td>56</td><td>79</td><td>126</td></tr>
+        <tr><td>6</td><td>Moderate</td><td>61</td><td>95</td><td>146</td></tr>
+        <tr><td>7</td><td>High</td><td><strong>74</strong></td><td><strong>107</strong></td><td><strong>170</strong></td></tr>
+        <tr><td>8</td><td>High</td><td>84</td><td>118</td><td>198</td></tr>
+        <tr><td>9</td><td>High</td><td>95</td><td>130</td><td>224</td></tr>
+        <tr><td>10</td><td>Very High</td><td><strong>101</strong></td><td><strong>177</strong></td><td>—</td></tr>
+      </tbody>
+    </table>
+
+    <h4>PM₂.₅ / PM₁₀ — superseding the trigger with a partial-day mean</h4>
+    <p>
+      From UK-local <strong>midnight</strong> (use <code>Europe/London</code> — during BST, UK midnight is <strong>23:00 UTC</strong> on the previous calendar date, not 00:00 GMT), operate on triggers as above.
+    </p>
+    <p>
+      From UK-local <strong>19:00</strong>, enough complete hours exist for a 75% day mean: the mean of hours <strong>00:00 through 18:00</strong> inclusive (19 hourly slots on a normal day). Round once, map to a DAQI index. If that index is <strong>strictly greater</strong> than the active trigger index, it replaces the trigger as the pollutant’s Today value. If it is lower or equal, keep the trigger. As later hours complete (19:00, 20:00, …), extend the mean from UK midnight through the latest complete hour and apply the same replace-only-if-higher rule. At UK-local midnight, clear triggers and start again.
+    </p>
+    <div class="formula">pmTodayIndex = max( activeTriggerIndex, daySoFarIndex )   // daySoFarIndex only from 19:00; only replaces when higher
+ // activeTriggerIndex persists until replaced or midnight</div>
+
+    <h4>O₃ — superseding with the rolling 8-hour mean</h4>
+    <p>
+      Compute the current valid rolling 8-hour mean, round once, and map to an index. Today’s O₃ value is the maximum of the active trigger index (if any) and that rolling index. The rolling index replaces the trigger only when it is higher; otherwise the trigger remains until the ~four-hour clear or midnight.
+    </p>
+    <div class="formula">o3TodayIndex = max( activeTriggerIndex, rolling8hIndex )</div>
+
+    <h4>Combining pollutants for Today</h4>
+    <div class="formula">todayLevel = max( pm25TodayIndex, pm10TodayIndex, no2LatestHourIndex, o3TodayIndex )</div>
 
     <h3>Timestamps and UK calendar days</h3>
     <p>
@@ -332,32 +405,31 @@ o3DayIndex = max( daqiIndex(round(rolling8h[h])) for h in 00:00..23:00 on that d
         <li>UK 23:00 → <code>2026-07-06T22:00:00Z</code></li>
       </ul>
       <p style="margin:8px 0 0">
-        To compute the PM daily mean for “6 Jul”, select exactly these 24 hourly records — not all records where the GMT date is 6 Jul. The same hour selection applies when taking NO₂ hourly maxima or O₃ rolling-8h maxima for that day. For O₃ at UK 00:00 on 6 Jul, the rolling window also needs UK-local hours from 17:00–23:00 on 5 Jul — i.e. <code>2026-07-05T16:00:00Z</code> through <code>2026-07-05T22:00:00Z</code> during BST.
+        To compute the PM daily mean for “6 Jul”, select exactly these 24 hourly records — not all records where the UTC date is 6 Jul. The same local-day selection applies when taking NO₂ hourly maxima or O₃ rolling-8h maxima for that day. For O₃ at UK 00:00 on 6 Jul, the rolling window also needs UK-local hours from 17:00–23:00 on 5 Jul — i.e. <code>2026-07-05T16:00:00Z</code> through <code>2026-07-05T22:00:00Z</code> during BST.
       </p>
     </div>
 
     <p><strong>Implementation checklist:</strong></p>
     <ol>
-      <li>Convert each API <code>timestamp</code> from GMT to UK local time (use <code>Europe/London</code> — handles GMT/BST automatically).</li>
+      <li>Parse each API <code>timestamp</code> as a UTC instant and convert it to UK local time using <code>Europe/London</code>, which handles GMT, BST and transition days automatically.</li>
       <li>Assign each hour to a UK calendar date based on its local time.</li>
-      <li>For each UK date, collect the 24 values at local hours 00:00–23:00. PM₂.₅/PM₁₀: daily mean. NO₂: max hourly index. O₃: max rolling-8h index (using hours from prior local days where needed).</li>
-      <li>When requesting data, extend the GMT <code>from</code>/<code>to</code> window: one day on each side during BST for day grouping, plus at least seven hours before UK 00:00 on −3d for the first O₃ rolling window.</li>
+      <li>For each completed UK date, collect all timestamps in its local midnight-to-midnight interval (23, 24 or 25 hours). PM₂.₅/PM₁₀: daily mean with at least 75% capture. NO₂: max hourly index for the historical-day summary. O₃: max valid rolling-8h index, using prior-day hours where needed and at least six values per window.</li>
+      <li>Set <code>from</code> to the UTC instant exactly seven hours before UK-local 00:00 on −3d. Set <code>to</code> to the latest complete hour needed. Do not append a guessed one-day BST buffer.</li>
+      <li>Handle Today separately using the trigger and supersede rules in the Today section above (NO₂ = latest hour only; PM/O₃ triggers persist until superseded or cleared).</li>
     </ol>
     <p>Outside BST (GMT = UK local), UK midnight aligns with GMT midnight and grouping is straightforward — but always use UK-local assignment so the logic works year-round.</p>
 
     <h3>Step 2 — Round, then map to DAQI index</h3>
     <p>
-      Before comparing any concentration to DAQI bands, round it to the <strong>nearest whole µg/m³</strong> (standard rounding — values ending in .5 round up). This applies to <strong>all pollutants and all calculation types</strong>: PM daily means, NO₂ hourly values, O₃ rolling 8-hour means, and any other value mapped to levels 1–10. Per DEFRA implementation guidance, rounding must be the <strong>last step</strong> — compute means from unrounded hourly values first, then round once immediately before band lookup. Do not round intermediate hourly values or round more than once.
+      Before comparing a concentration to DAQI levels, round it <strong>once to an integer</strong>. DEFRA’s 2013 guidance is explicit that rounding is the <strong>last step</strong>: calculate hourly, rolling 8-hour and daily means from unrounded inputs, then round once immediately before the index comparison. Do not pre-round hourly inputs used in a longer mean and do not round via an intermediate decimal place.
     </p>
     <div class="callout">
-      <strong>Rounding example (illustrates the general rule, not an O₃-only special case):</strong>
+      <strong>Prescribed rounding evidence and implementation note:</strong>
       <ul style="margin-top:8px;margin-bottom:0">
-        <li><strong>101.4</strong> µg/m³ → rounds to <strong>101</strong> before band comparison</li>
-        <li><strong>101.5</strong> µg/m³ → rounds to <strong>102</strong> before band comparison</li>
+        <li>The official example says <strong>50.486 → 50</strong> directly; it warns that first producing 50.5 and then rounding again would incorrectly produce 51.</li>
+        <li>DEFRA’s document requires one final integer rounding step but does not specify how exact <code>x.5</code> ties are handled. The <strong>NHS integration project’s explicit implementation convention</strong> is that exact ties round upward: <strong>50.5 → 51</strong>. This is a project decision, not a rule attributed to the DEFRA document.</li>
+        <li>DAQI concentrations are nonnegative, so a safe cross-language expression is <code>floor(value + 0.5)</code> at the final comparison only. In JavaScript, use <code>Math.floor(value + 0.5)</code>; do not generalise JavaScript’s <code>Math.round()</code> behaviour to negative numbers.</li>
       </ul>
-      <p style="margin:8px 0 0">
-        The same rule applies at every threshold boundary — e.g. NO₂ <strong>67.4</strong> → <strong>67</strong>, <strong>67.5</strong> → <strong>68</strong>; PM₂.₅ <strong>11.4</strong> → <strong>11</strong>, <strong>11.5</strong> → <strong>12</strong>.
-      </p>
     </div>
     <p>
       Compare each rounded value against the lower-bound thresholds for that pollutant. The index is the highest band whose threshold the rounded value meets or exceeds (levels 1–10). Gov.uk publishes these as integer ranges (e.g. O₃ level 3 = 67–100, level 4 = 101–120); the lower-bound table below is equivalent.
@@ -368,20 +440,42 @@ o3DayIndex = max( daqiIndex(round(rolling8h[h])) for h in 00:00..23:00 on that d
       </thead>
       <tbody>
         <tr><td>PM₂.₅</td><td>0, 12, 24, 36, 42, 48, 54, 59, 65, 71</td></tr>
-        <tr><td>PM₁₀</td><td>0, 17, 34, 51, 59, 67, 76, 85, 93, 102</td></tr>
+        <tr><td>PM₁₀</td><td>0, 17, 34, 51, 59, 67, 76, 84, 92, 101</td></tr>
         <tr><td>NO₂</td><td>0, 68, 135, 201, 268, 335, 401, 468, 535, 601</td></tr>
-        <tr><td>O₃</td><td>0, 51, 101, 121, 141, 161, 181, 201, 221, 241</td></tr>
+        <tr><td>O₃</td><td>0, 34, 67, 101, 121, 141, 161, 188, 214, 241</td></tr>
       </tbody>
     </table>
 
     <h3>Step 3 — Take the highest index across pollutants</h3>
-    <p>For each day, the displayed DAQI level is the <strong>maximum</strong> index across PM₂.₅, PM₁₀, NO₂, and O₃ — using each pollutant’s Step 1 result (PM daily mean; NO₂ max hourly; O₃ max rolling-8h). This follows the UK approach of reporting the pollutant driving the overall band.</p>
-    <div class="formula">dayLevel = max(pmDayIndex, pm10DayIndex, no2DayIndex, o3DayIndex)</div>
+    <p>For each <strong>completed day</strong>, the displayed DAQI level is the <strong>maximum</strong> index across PM₂.₅, PM₁₀, NO₂, and O₃ — using each pollutant’s Step 1 result (PM daily mean; NO₂ max hourly; O₃ max rolling-8h). For <strong>Today</strong>, derive each pollutant’s current index as in the Today section (NO₂ latest hour; PM/O₃ active trigger with optional higher measurement supersede), then take the maximum across available pollutants.</p>
+    <div class="formula">dayLevel = max(pmDayIndex, pm10DayIndex, no2DayIndex, o3DayIndex)   // completed days
+todayLevel = max(pm25TodayIndex, pm10TodayIndex, no2LatestHourIndex, o3TodayIndex)</div>
 
     <h3>Step 4 — Render the ladder</h3>
     <p>
-      Display a 10-segment vertical ladder per day. <strong>Fill rule:</strong> segments 1 through <code>dayLevel</code> are coloured; segments above <code>dayLevel</code> are grey. Show the DAQI key strip below the Recent panel (Low · Moderate · High · V.High).
+      Display a 10-segment vertical ladder per day. <strong>Fill rule:</strong> segments 1 through <code>dayLevel</code> are coloured; segments above <code>dayLevel</code> are grey (<code>#eceef2</code>). Show the DAQI key strip below the Recent panel (Low · Moderate · High · V.High).
     </p>
+    <p>
+      Use these hex colours for the active ladder segments (index 1–10). They match the prototype’s <code>DAQI_COLORS</code> in <code>js/air-quality.js</code> and the UK DAQI palette used in the widget:
+    </p>
+    <table>
+      <thead>
+        <tr><th>Index</th><th>Band</th><th>Hex</th><th>Swatch</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>1</td><td>Low</td><td><code>#A3CC7A</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#A3CC7A;vertical-align:middle"></span></td></tr>
+        <tr><td>2</td><td>Low</td><td><code>#66A33E</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#66A33E;vertical-align:middle"></span></td></tr>
+        <tr><td>3</td><td>Low</td><td><code>#2B8200</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#2B8200;vertical-align:middle"></span></td></tr>
+        <tr><td>4</td><td>Moderate</td><td><code>#EEBF8F</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#EEBF8F;vertical-align:middle"></span></td></tr>
+        <tr><td>5</td><td>Moderate</td><td><code>#FE994D</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#FE994D;vertical-align:middle"></span></td></tr>
+        <tr><td>6</td><td>Moderate</td><td><code>#F46200</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#F46200;vertical-align:middle"></span></td></tr>
+        <tr><td>7</td><td>High</td><td><code>#D80000</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#D80000;vertical-align:middle"></span></td></tr>
+        <tr><td>8</td><td>High</td><td><code>#A30000</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#A30000;vertical-align:middle"></span></td></tr>
+        <tr><td>9</td><td>High</td><td><code>#7A0000</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#7A0000;vertical-align:middle"></span></td></tr>
+        <tr><td>10</td><td>Very High</td><td><code>#000000</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#000000;vertical-align:middle;border:1px solid #d0d6e0"></span></td></tr>
+        <tr><td>—</td><td>Inactive (above reached level)</td><td><code>#eceef2</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#eceef2;vertical-align:middle;border:1px solid #d0d6e0"></span></td></tr>
+      </tbody>
+    </table>
 
     <h2>Forecast data source</h2>
     <p>
@@ -443,7 +537,7 @@ aboveHeight = (excessRatio / maxExcessAcrossPollutants) × 48% of track</div>
     <ul>
       <li>Show annual concentrations as <strong>integers</strong> (µg/m³)</li>
       <li>Show ratio as <strong>3.6×</strong> — no “WHO” suffix on the multiplier</li>
-      <li>Label the year from <code>annualYear</code> (e.g. <strong>2022</strong>)</li>
+      <li>Label the year from <code>annualYear</code>, taken from <code>data_map_start</code> (e.g. <strong>2022</strong>)</li>
       <li>Use pollutant bar colours (solid above WHO, light fill below); names in the key strip below the panel</li>
     </ul>
 
@@ -451,7 +545,7 @@ aboveHeight = (excessRatio / maxExcessAcrossPollutants) × 48% of track</div>
 
     <h3>Long-term</h3>
     <ul>
-      <li><strong>Data:</strong> <code>value</code> per species from the same range call (LAEI 2022 annual mean at lat/lng); label with <code>annualYear: 2022</code></li>
+      <li><strong>Data:</strong> <code>value</code> per species from the same range call (annual mean at lat/lng from the map identified by <code>data_map_start</code>); set <code>annualYear</code> from that field’s calendar year</li>
       <li><strong>Render:</strong> four vertical bars (PM₂.₅, PM₁₀, NO₂, O₃), shared WHO dotted line at 52%, ratio above bar, concentration below</li>
       <li><strong>Key strip:</strong> pollutant colour swatches + names below the panel</li>
     </ul>
@@ -459,7 +553,7 @@ aboveHeight = (excessRatio / maxExcessAcrossPollutants) × 48% of track</div>
     <h3>Recent</h3>
     <ul>
       <li><strong>Data:</strong> <code>nowcast_value</code> from the same range call; group into UK-local calendar days (−3d through today), adjusting for BST</li>
-      <li><strong>Process:</strong> group into UK-local days (BST-aware) → pollutant-specific DAQI inputs (PM daily mean; NO₂ max hourly; O₃ max rolling-8h) for −3d/−2d/−1d; <strong>today</strong> uses additional Awair trigger logic for PM₂.₅, PM₁₀, and O₃ (see Step 1) → round and band per pollutant → max across pollutants</li>
+      <li><strong>Process:</strong> group timestamped data into UK-local days (DST-aware) → for −3d/−2d/−1d use PM daily means, NO₂ max hourly index and O₃ max rolling-8h index, enforcing 75% data capture → round once and compare with the official thresholds → max across pollutants. For <strong>Today</strong>, use the current-situation rules and ERG index-point trigger table in the Today section (no retrospective triggers on past days).</li>
       <li><strong>Render:</strong> four day columns (−3d, −2d, −1d, Today) with 10-segment DAQI ladders</li>
       <li><strong>Key strip:</strong> DAQI band legend below the panel</li>
     </ul>
@@ -476,7 +570,7 @@ aboveHeight = (excessRatio / maxExcessAcrossPollutants) × 48% of track</div>
     <p>Use the title <a href="js/stack-widget.js#L55"><strong>“Air quality at patient's home”</strong></a> followed by patient name and location sector (e.g. <code>· Eleanor Marsh · SE1</code>).</p>
 
     <div class="callout">
-      <strong>Prototype note:</strong> This repository uses mock data in <code>js/air-quality.js</code> for design review. Replace <code>mockPatientExposure()</code> with live API calls following the patterns above before clinical deployment. The prototype simplifies DAQI by using daily means for all pollutants and <code>daqiLevel()</code> compares raw floating-point values without integer rounding — production integrations should apply pollutant-specific rules (Step 1) and round before band lookup (Step 2).
+      <strong>Prototype note:</strong> This repository uses mock data in <code>js/air-quality.js</code> for design review. Replace <code>mockPatientExposure()</code> with live API calls following the patterns above before clinical deployment. The prototype still simplifies DAQI by using daily means for all pollutants, but <code>daqiLevel()</code> now applies the project’s single final integer-rounding convention before threshold lookup. Production integrations must also apply the pollutant-specific aggregation rules in Step 1.
     </div>
   </article>
   <script src="js/inactivity-logout.js" defer></script>

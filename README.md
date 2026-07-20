@@ -13,7 +13,7 @@ Prototype widgets exploring how long-term WHO exposure, recent daily air quality
 | **All concepts** | [index.html](index.html) | Concepts 1–3 side by side |
 | **Design 3 workspace** | [concept3.html](concept3.html) | Iterations 3.0–3.5 on the DAQI-ladder design |
 | **Design 3.2 workspace** | [concept32.html](concept32.html) | Fork of 3.2 — coloured ratios, pollutant key strip, ERG credit |
-| **NHS data guide** | [nhs-data-guide.html](nhs-data-guide.html) | Integration guide — single exposure range call (`value` → Long-term, `nowcast_value` → Recent), lat/lng, pollutant-specific DAQI (PM daily mean, NO₂ max hourly, O₃ rolling 8h; UK-local/BST), integer rounding, forecast; today’s DAQI (Awair trigger rules) documented as placeholder |
+| **NHS data guide** | [nhs-data-guide.html](nhs-data-guide.html) | Integration guide — single exposure range call (`value` + `data_map_start` → Long-term, `nowcast_value` → Recent), lat/lng, pollutant-specific DAQI (PM daily mean, NO₂ max hourly, O₃ rolling 8h; UK-local/BST), integer rounding, forecast; Today via ERG index-point triggers + measurement supersede |
 
 ---
 
@@ -93,12 +93,12 @@ Long-term concentration pills are intentionally different — height is proporti
 
 ## Data sources
 
-All patient data is **mocked** in [`js/air-quality.js`](js/air-quality.js) via `mockPatientExposure()`. See [nhs-data-guide.html](nhs-data-guide.html) for how NHS implementers should integrate live data — including a single geocoded lat/lng range call to the exposure service (`value` → Long-term annual, `nowcast_value` → Recent), grouping hourly GMT timestamps into UK-local calendar days (BST-aware), pollutant-specific DAQI rules (PM daily mean; NO₂ max hourly; O₃ rolling 8h), and rounding concentrations to integers before band comparison.
+All patient data is **mocked** in [`js/air-quality.js`](js/air-quality.js) via `mockPatientExposure()`. See [nhs-data-guide.html](nhs-data-guide.html) for how NHS implementers should integrate live data — including a single geocoded lat/lng range call to the exposure service (`value` → Long-term annual, `nowcast_value` → Recent), grouping hourly GMT timestamps into UK-local calendar days (BST-aware), pollutant-specific DAQI rules (PM daily mean; NO₂ max hourly; O₃ rolling 8h), and one final integer-rounding step before band comparison (project convention: exact `.5` ties round upward).
 
 | Data | Source / basis |
 |------|----------------|
-| **Exposure service (Long-term + Recent)** | Single `/coords` range call — `value` (LAEI 2022 annual at lat/lng) and `nowcast_value` (hourly nowcast); see [nhs-data-guide.html](nhs-data-guide.html) |
-| **UK DAQI colours & daily thresholds** | [daqi-vs-caqi](https://github.com/arg02/daqi-vs-caqi) — `colorScales.ts` (DEFRA/DAQI ladder, indices 1–10) |
+| **Exposure service (Long-term + Recent)** | Single `/coords` range call — `value` (annual mean at lat/lng), `data_map_start` (map base year, e.g. `2022-01-01T00:00:00.000+0000` → `annualYear`), and `nowcast_value` (hourly nowcast); see [nhs-data-guide.html](nhs-data-guide.html) |
+| **UK DAQI thresholds & implementation** | Normative sources: [current GOV.UK DAQI concentration table](https://www.gov.uk/government/publications/health-effects-of-air-pollution/pollutant-concentrations-for-the-daily-air-quality-index-daqi) and [DEFRA’s April 2013 implementation guidance (PDF)](https://uk-air.defra.gov.uk/reports/cat14/1304251155_Update_on_Implementation_of_the_DAQI_April_2013_Final.pdf) |
 | **WHO annual guidelines** | WHO air quality guidelines (µg/m³): PM₂.₅ 5, PM₁₀ 15, NO₂ 10, O₃ 60 |
 | **Long-term bar colours** | Pollutant-specific palette — solid above WHO guideline, light fill below |
 | **CAQI scale (3.4 / 3.5)** | [daqi-vs-caqi](https://github.com/arg02/daqi-vs-caqi) CAQI(false)I — 13 levels in five groups: Meets WHO, Above WHO, Moderate, High, V.High |
