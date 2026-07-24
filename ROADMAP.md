@@ -34,8 +34,7 @@ Epidemiology and WHO/COMEAP health-risk methods express long-term mortality/morb
 
 | Item | Status |
 |------|--------|
-| Restructure [nhs-data-guide.html](nhs-data-guide.html) into Annual / Previous days / Today / Forecast with end-product mockups | **Done locally (Jul 2026)** — preview before Vercel push |
-| NHS feedback: guide was overwhelming → clearer sections | Addressed in local restructure; await review then deploy |
+| Restructure [nhs-data-guide.html](nhs-data-guide.html) into Annual / Previous days / Today / Forecast with end-product mockups | **Done** (Jul 2026) — live on GitHub Pages |
 | Promote a 3.2 variant to the main showcase | Open |
 | Wire prototype to live exposure API (replace mock) | Open — rules are in the data guide |
 | Prototype still simplifies some Today / pollutant-specific paths vs the guide | Open — keep guide normative; align JS when integrating |

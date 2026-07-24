@@ -13,9 +13,9 @@ Static HTML/CSS/JS prototypes for an NHS Cerner-style air quality widget (Long-t
 
 ## Hosting
 
-- **Primary shareable site:** Vercel (password gate via `middleware.js`, `SITE_PASSWORD` env, inactivity logout).
-- GitHub Pages may be unpublished; prefer the Vercel URL as the live site.
-- Local preview: `python3 serve.py 8765` or `python3 -m http.server 8765`.
+- **GitHub Pages:** https://arg02.github.io/nhs-patient-records/ (public; `main` branch root)
+- **Vercel:** password gate via `middleware.js`, `SITE_PASSWORD` env, inactivity logout
+- Local preview: `python3 serve.py 8080` (or `8765`)
 
 ## After meaningful work — update docs in the same task
 

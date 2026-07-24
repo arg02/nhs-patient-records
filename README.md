@@ -4,7 +4,11 @@ Prototype widgets exploring how long-term WHO exposure, recent daily air quality
 
 **Docs for agents:** [AGENTS.md](AGENTS.md) · **Open work:** [ROADMAP.md](ROADMAP.md) · **NHS integration:** [nhs-data-guide.html](nhs-data-guide.html)
 
-**Live site:** Vercel (password-protected). Set `SITE_PASSWORD` in the Vercel project. Local preview does not require the gate.
+**Live sites:**
+- [GitHub Pages](https://arg02.github.io/nhs-patient-records/) (public)
+- [Vercel](https://nhs-patient-records.vercel.app/) (password-protected via `SITE_PASSWORD`)
+
+Local preview: `python3 serve.py 8080` (or `8765`).
 
 ---
 
@@ -188,13 +192,15 @@ node scripts/verify-fill-logic.mjs
 
 ## Deployment
 
-**Vercel** (preferred share URL): push to `main`; set `SITE_PASSWORD` in the project environment. Middleware serves the password form and `/__logout` / `/__activity`.
+**GitHub Pages** (public): push to `main`; site at https://arg02.github.io/nhs-patient-records/
+
+**Vercel** (password-protected): same push; set `SITE_PASSWORD` in the project. Middleware serves the password form and `/__logout` / `/__activity`.
 
 ```bash
 git push origin main
 ```
 
-Local: `python3 serve.py 8765` (no password gate).
+Local: `python3 serve.py 8080` (no password gate).
 
 ---
 
