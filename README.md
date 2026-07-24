@@ -1,8 +1,10 @@
 # Air Quality Patient Record Integration
 
-Prototype widgets exploring how long-term WHO exposure, recent daily air quality, and short-term forecast information could appear in an NHS Cerner-style patient record. Built as static HTML/JS for rapid design iteration and hosted on GitHub Pages.
+Prototype widgets exploring how long-term WHO exposure, recent daily air quality, and short-term forecast information could appear in an NHS Cerner-style patient record. Built as static HTML/JS for rapid design iteration.
 
-**Live site:** https://arg02.github.io/nhs-patient-records/
+**Docs for agents:** [AGENTS.md](AGENTS.md) · **Open work:** [ROADMAP.md](ROADMAP.md) · **NHS integration:** [nhs-data-guide.html](nhs-data-guide.html)
+
+**Live site:** Vercel (password-protected). Set `SITE_PASSWORD` in the Vercel project. Local preview does not require the gate.
 
 ---
 
@@ -13,7 +15,7 @@ Prototype widgets exploring how long-term WHO exposure, recent daily air quality
 | **All concepts** | [index.html](index.html) | Concepts 1–3 side by side |
 | **Design 3 workspace** | [concept3.html](concept3.html) | Iterations 3.0–3.5 on the DAQI-ladder design |
 | **Design 3.2 workspace** | [concept32.html](concept32.html) | Fork of 3.2 — coloured ratios, pollutant key strip, ERG credit |
-| **NHS data guide** | [nhs-data-guide.html](nhs-data-guide.html) | Integration guide — single exposure range call (`value` + `data_map_start` → Long-term, `nowcast_value` → Recent), lat/lng, pollutant-specific DAQI (PM daily mean, NO₂ max hourly, O₃ rolling 8h; UK-local/BST), integer rounding, forecast; Today via ERG index-point triggers + measurement supersede |
+| **NHS data guide** | [nhs-data-guide.html](nhs-data-guide.html) | Four sections — Annual · Previous days · Today · Forecast — each with an end-product mockup; exposure API, DAQI rules, ERG index-point triggers |
 
 ---
 
@@ -93,12 +95,17 @@ Long-term concentration pills are intentionally different — height is proporti
 
 ## Data sources
 
-All patient data is **mocked** in [`js/air-quality.js`](js/air-quality.js) via `mockPatientExposure()`. See [nhs-data-guide.html](nhs-data-guide.html) for how NHS implementers should integrate live data — including a single geocoded lat/lng range call to the exposure service (`value` → Long-term annual, `nowcast_value` → Recent), grouping hourly GMT timestamps into UK-local calendar days (BST-aware), pollutant-specific DAQI rules (PM daily mean; NO₂ max hourly; O₃ rolling 8h), and one final integer-rounding step before band comparison (project convention: exact `.5` ties round upward).
+All patient data is **mocked** in [`js/air-quality.js`](js/air-quality.js) via `mockPatientExposure()`. NHS implementers should follow [nhs-data-guide.html](nhs-data-guide.html) panel by panel:
+
+1. **Annual** — `value` + `data_map_start` → WHO bars  
+2. **Previous days** — completed UK-local day DAQI (PM mean; NO₂ max hourly; O₃ max rolling 8h)  
+3. **Today** — current situation + ERG index-point triggers (DEFRA 2013 band anchors)  
+4. **Forecast** — London Air text band → ladder fill  
 
 | Data | Source / basis |
 |------|----------------|
-| **Exposure service (Long-term + Recent)** | Single `/coords` range call — `value` (annual mean at lat/lng), `data_map_start` (map base year, e.g. `2022-01-01T00:00:00.000+0000` → `annualYear`), and `nowcast_value` (hourly nowcast); see [nhs-data-guide.html](nhs-data-guide.html) |
-| **UK DAQI thresholds & implementation** | Normative sources: [current GOV.UK DAQI concentration table](https://www.gov.uk/government/publications/health-effects-of-air-pollution/pollutant-concentrations-for-the-daily-air-quality-index-daqi) and [DEFRA’s April 2013 implementation guidance (PDF)](https://uk-air.defra.gov.uk/reports/cat14/1304251155_Update_on_Implementation_of_the_DAQI_April_2013_Final.pdf) |
+| **Exposure service (Long-term + Recent)** | Single `/coords` range call — `value` (annual mean at lat/lng), `data_map_start` (map base year → `annualYear`), and `nowcast_value` (hourly nowcast); see [nhs-data-guide.html](nhs-data-guide.html) |
+| **UK DAQI thresholds & implementation** | [GOV.UK DAQI concentration table](https://www.gov.uk/government/publications/health-effects-of-air-pollution/pollutant-concentrations-for-the-daily-air-quality-index-daqi); [DEFRA April 2013 implementation (PDF)](https://uk-air.defra.gov.uk/reports/cat14/1304251155_Update_on_Implementation_of_the_DAQI_April_2013_Final.pdf); Today index-point triggers = ERG extension (proprietary; band anchors = DEFRA 2013) |
 | **WHO annual guidelines** | WHO air quality guidelines (µg/m³): PM₂.₅ 5, PM₁₀ 15, NO₂ 10, O₃ 60 |
 | **Long-term bar colours** | Pollutant-specific palette — solid above WHO guideline, light fill below |
 | **CAQI scale (3.4 / 3.5)** | [daqi-vs-caqi](https://github.com/arg02/daqi-vs-caqi) CAQI(false)I — 13 levels in five groups: Meets WHO, Above WHO, Moderate, High, V.High |
@@ -112,27 +119,25 @@ Demo overrides (not “real” readings) are applied per variant for visual vari
 ## Project structure
 
 ```
+├── AGENTS.md               # Agent / contributor guidance
+├── README.md               # Project overview
+├── ROADMAP.md              # Open research & next steps
 ├── index.html              # Concepts 1–3 showcase
 ├── concept3.html           # Design 3 iteration workspace (3.0–3.5)
 ├── concept32.html          # Design 3.2 coloured-ratio fork (3.2a / 3.2b)
-├── nhs-data-guide.html     # NHS implementer integration guide
+├── nhs-data-guide.html     # NHS implementer guide (4 sections + mockups)
+├── middleware.js           # Vercel password gate, logout, activity refresh
 ├── images/                 # ERG logos for forecast credit
 ├── css/aq-widget.css       # Shared widget styles
 ├── js/
 │   ├── air-quality.js      # DAQI/WHO constants, mock data, helpers
+│   ├── inactivity-logout.js
 │   ├── widget-render.js    # DAQI ladders, circles, baseline WHO charts
 │   ├── stack-widget.js     # createStackWidget* factory functions
-│   ├── who-chart-v31.js    # 3.1 aligned WHO long-term chart
-│   ├── who-chart-v32.js    # 3.2 long-term layout
-│   ├── who-chart-v32a.js   # 3.2a coloured ratios, on-bar WHO labels
-│   ├── erg-credit.js       # ERG forecast data source credit
-│   ├── who-chart-v33.js    # 3.3 alternative profile
-│   ├── who-caqi-v34.js     # CAQI scale (re-exports v35)
-│   ├── who-recent-v34.js   # 3.4 circle stacks + legend
-│   ├── who-caqi-v35.js     # Full 13-level CAQI constants
-│   └── who-recent-v35.js   # 3.5 pill bars + legend
+│   ├── who-chart-v31.js … who-recent-v35.js
+│   └── erg-credit.js
 ├── scripts/
-│   └── verify-fill-logic.mjs  # Automated fill-rule checks
+│   └── verify-fill-logic.mjs
 └── serve.py                # Local dev server (no-cache headers)
 ```
 
@@ -175,31 +180,33 @@ node scripts/verify-fill-logic.mjs
 
 6. **Legend placement** — DAQI/CAQI keys sit **outside** the Recent card (below it) so the three panels stay equal height and the key reads as shared scale reference. Design 3.2a adds a pollutant key below Long-term and ERG credit below Forecast.
 
-7. **No backend** — Pure static site for GitHub Pages; easy to share and iterate in design reviews.
+7. **Static prototypes + thin edge auth** — Widget is static HTML/JS; Vercel Edge Middleware only gates access (password cookie, sign-out, inactivity timeout). No application backend.
+
+8. **NHS guide structure** — Integration instructions are organised by **widget panel outcome** (Annual · Previous days · Today · Forecast), each with an end-product mockup, so implementers can find one job at a time.
 
 ---
 
 ## Deployment
 
-The repo is configured for **GitHub Pages** from the `main` branch (project site at `/nhs-patient-records/`).
+**Vercel** (preferred share URL): push to `main`; set `SITE_PASSWORD` in the project environment. Middleware serves the password form and `/__logout` / `/__activity`.
 
 ```bash
 git push origin main
 ```
 
-Changes are usually live within one to two minutes.
+Local: `python3 serve.py 8765` (no password gate).
 
 ---
 
 ## Related repositories
 
-- [arg02/daqi-vs-caqi](https://github.com/arg02/daqi-vs-caqi) — DAQI vs CAQI colour scales and legend components (source of truth for thresholds and CAQI colours)
+- [arg02/daqi-vs-caqi](https://github.com/arg02/daqi-vs-caqi) — DAQI vs CAQI colour scales (prototype colours; normative DAQI thresholds are GOV.UK / DEFRA as cited above)
 - [arg02/nhs-patient-records](https://github.com/arg02/nhs-patient-records) — this project
 
 ---
 
 ## Status
 
-Active design exploration. Mock data only — not for clinical use. Iteration workspaces (`concept3.html`, `concept32.html`) are the intended place to add and review new variants before promoting them to the main showcase.
+Active design exploration. Mock data only — not for clinical use. Iteration workspaces (`concept3.html`, `concept32.html`) are where new variants land before the main showcase.
 
-Open research and next steps (including relative risk / CRF framing for long-term clinical advice) are tracked in [ROADMAP.md](ROADMAP.md).
+Open research (including relative risk / CRF framing) and next steps: [ROADMAP.md](ROADMAP.md). Agent conventions: [AGENTS.md](AGENTS.md).

@@ -21,11 +21,11 @@
     }
 
     .page {
-      max-width: 760px;
+      max-width: 780px;
       margin: 0 auto;
     }
 
-    .page-hd { margin-bottom: 40px; }
+    .page-hd { margin-bottom: 28px; }
     .page-hd h1 {
       font-size: 28px;
       font-weight: 600;
@@ -40,21 +40,82 @@
     }
     .page-hd a { color: #1a4a78; }
 
-    h2 {
-      font-size: 18px;
+    .toc {
+      background: #fff;
+      border: 1px solid #d0d6e0;
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin: 0 0 36px;
+    }
+    .toc__label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #6b7385;
+      margin-bottom: 10px;
+    }
+    .toc ol {
+      margin: 0;
+      padding-left: 20px;
+    }
+    .toc li { margin-bottom: 8px; font-size: 14px; }
+    .toc a {
+      color: #1a4a78;
+      text-decoration: none;
+      font-weight: 500;
+    }
+    .toc a:hover { text-decoration: underline; }
+    .toc .toc-hint {
+      display: block;
+      font-size: 12px;
+      font-weight: 400;
+      color: #6b7385;
+      margin-top: 2px;
+    }
+
+    .section {
+      background: #fff;
+      border: 1px solid #d0d6e0;
+      border-radius: 12px;
+      padding: 28px 28px 32px;
+      margin: 0 0 28px;
+      scroll-margin-top: 24px;
+    }
+    .section__kicker {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #1a4a78;
+      margin-bottom: 6px;
+    }
+    .section h2 {
+      font-size: 22px;
       font-weight: 600;
       color: #1a2030;
-      margin: 40px 0 12px;
-      padding-top: 8px;
-      border-top: 1px solid #d0d6e0;
+      margin: 0 0 10px;
+      border: none;
+      padding: 0;
     }
-    h2:first-of-type { border-top: none; margin-top: 0; padding-top: 0; }
+    .section > .section-intro {
+      font-size: 15px;
+      color: #4a5568;
+      margin-bottom: 20px;
+    }
 
     h3 {
       font-size: 14px;
       font-weight: 600;
       color: #2a3142;
-      margin: 24px 0 8px;
+      margin: 28px 0 8px;
+    }
+    h3:first-of-type { margin-top: 8px; }
+    h4 {
+      font-size: 13px;
+      font-weight: 600;
+      color: #3d4658;
+      margin: 20px 0 8px;
     }
 
     p, li { font-size: 14px; color: #3d4658; }
@@ -62,8 +123,20 @@
     ul, ol { margin: 0 0 16px 20px; }
     li { margin-bottom: 6px; }
 
+    .shared {
+      margin-bottom: 28px;
+    }
+    .shared h2 {
+      font-size: 18px;
+      font-weight: 600;
+      color: #1a2030;
+      margin: 0 0 12px;
+      border: none;
+      padding: 0;
+    }
+
     .callout {
-      background: #fff;
+      background: #f4f6f9;
       border: 1px solid #d0d6e0;
       border-radius: 8px;
       padding: 16px 20px;
@@ -71,6 +144,7 @@
       font-size: 13px;
     }
     .callout strong { color: #1a2030; }
+    .section .callout { background: #f8f9fb; }
 
     pre {
       background: #1a2030;
@@ -127,6 +201,265 @@
       font-size: 12px;
       line-height: 1.7;
     }
+
+    /* End-product mockups */
+    .outcome {
+      background: linear-gradient(180deg, #eef2f7 0%, #e4e8ef 100%);
+      border: 1px solid #cfd6e0;
+      border-radius: 10px;
+      padding: 16px 18px 18px;
+      margin: 0 0 24px;
+    }
+    .outcome__label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #5a6478;
+      margin-bottom: 10px;
+    }
+    .outcome__caption {
+      margin-top: 12px;
+      font-size: 12px;
+      color: #5a6478;
+      line-height: 1.45;
+    }
+
+    .mock-widget {
+      background: #f7f8fa;
+      border: 1px solid #d5dae3;
+      border-radius: 8px;
+      padding: 14px 16px 12px;
+      max-width: 100%;
+    }
+    .mock-widget__title {
+      font-size: 12px;
+      font-weight: 600;
+      color: #1a2030;
+      margin-bottom: 12px;
+    }
+    .mock-widget__title span { font-weight: 400; color: #6b7385; }
+
+    .mock-panel {
+      background: #fff;
+      border: 1px solid #dde2ea;
+      border-radius: 6px;
+      padding: 10px 12px 8px;
+      display: inline-block;
+      vertical-align: top;
+    }
+    .mock-panel__label {
+      font-size: 10px;
+      font-weight: 600;
+      color: #6b7385;
+      margin-bottom: 4px;
+    }
+    .mock-panel__sub {
+      font-size: 9px;
+      color: #8a929e;
+      margin-bottom: 8px;
+    }
+
+    /* Annual bars */
+    .mock-annual {
+      display: flex;
+      gap: 14px;
+      align-items: flex-end;
+      height: 120px;
+      padding: 0 4px 4px;
+      position: relative;
+    }
+    .mock-annual__who {
+      position: absolute;
+      left: 0;
+      right: 0;
+      bottom: calc(4px + 52%);
+      border-top: 1.5px dotted #7a8496;
+      z-index: 1;
+      pointer-events: none;
+    }
+    .mock-annual__who span {
+      position: absolute;
+      right: 0;
+      top: -14px;
+      font-size: 8px;
+      color: #6b7385;
+      background: #fff;
+      padding: 0 3px;
+    }
+    .mock-bar {
+      width: 28px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: relative;
+      z-index: 2;
+      height: 100%;
+      justify-content: flex-end;
+    }
+    .mock-bar__ratio {
+      font-size: 9px;
+      font-weight: 600;
+      margin-bottom: 3px;
+    }
+    .mock-bar__track {
+      width: 22px;
+      height: 90px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+      border-radius: 3px 3px 0 0;
+      overflow: hidden;
+    }
+    .mock-bar__above { width: 100%; }
+    .mock-bar__below { width: 100%; }
+    .mock-bar__val {
+      font-size: 9px;
+      color: #3d4658;
+      margin-top: 3px;
+    }
+    .mock-key {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+      padding-top: 8px;
+      border-top: 1px solid #e8ecf2;
+    }
+    .mock-key__item {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 9px;
+      color: #5a6478;
+    }
+    .mock-key__swatch {
+      width: 10px;
+      height: 10px;
+      border-radius: 2px;
+    }
+
+    /* DAQI ladders */
+    .mock-days {
+      display: flex;
+      gap: 16px;
+      align-items: flex-end;
+    }
+    .mock-day {
+      text-align: center;
+      width: 44px;
+    }
+    .mock-day--focus {
+      outline: 2px solid #1a4a78;
+      outline-offset: 4px;
+      border-radius: 4px;
+      padding: 4px 2px 2px;
+      background: #f0f5fa;
+    }
+    .mock-ladder {
+      display: flex;
+      flex-direction: column-reverse;
+      gap: 2px;
+      align-items: center;
+      margin: 0 auto 6px;
+    }
+    .mock-seg {
+      width: 22px;
+      height: 8px;
+      border-radius: 2px;
+      background: #eceef2;
+    }
+    .mock-day__name {
+      font-size: 9px;
+      font-weight: 600;
+      color: #3d4658;
+    }
+    .mock-day__date {
+      font-size: 8px;
+      color: #8a929e;
+    }
+    .mock-daqi-key {
+      display: flex;
+      gap: 8px;
+      margin-top: 10px;
+      font-size: 8px;
+      color: #6b7385;
+      flex-wrap: wrap;
+    }
+    .mock-daqi-key i {
+      display: inline-block;
+      width: 8px;
+      height: 8px;
+      border-radius: 1px;
+      margin-right: 3px;
+      vertical-align: -1px;
+    }
+
+    .steps {
+      counter-reset: step;
+      list-style: none;
+      margin: 12px 0 16px;
+      padding: 0;
+    }
+    .steps li {
+      counter-increment: step;
+      position: relative;
+      padding-left: 36px;
+      margin-bottom: 12px;
+    }
+    .steps li::before {
+      content: counter(step);
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: #1a4a78;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      line-height: 1;
+    }
+
+    .refs {
+      font-size: 13px;
+    }
+    .refs a { color: #1a4a78; }
+
+    details.appendix {
+      background: #fff;
+      border: 1px solid #d0d6e0;
+      border-radius: 12px;
+      padding: 16px 22px 20px;
+      margin: 0 0 28px;
+    }
+    details.appendix > summary {
+      cursor: pointer;
+      font-size: 15px;
+      font-weight: 600;
+      color: #1a2030;
+      list-style: none;
+    }
+    details.appendix > summary::-webkit-details-marker { display: none; }
+    details.appendix > summary::after {
+      content: "Show";
+      float: right;
+      font-size: 12px;
+      font-weight: 500;
+      color: #1a4a78;
+    }
+    details.appendix[open] > summary::after { content: "Hide"; }
+    details.appendix .appendix-body { margin-top: 16px; }
+
+    @media (max-width: 640px) {
+      body { padding: 32px 16px 64px; }
+      .section { padding: 20px 16px 24px; }
+      .mock-days { gap: 10px; }
+    }
   </style>
 </head>
 <body>
@@ -144,433 +477,503 @@
     <header class="page-hd">
       <h1>NHS Air Quality Data Integration Guide</h1>
       <p class="lede">
-        How to populate the three-panel air quality widget (Long-term · Recent · Forecast) from the exposure service and London Air forecast. Written for NHS implementers integrating with Cerner or similar EHR systems.
+        How to populate each part of the three-panel widget
+        (<strong>Long-term · Recent · Forecast</strong>)
+        from the exposure service and London Air forecast.
+        Written for NHS implementers integrating with Cerner or similar EHR systems.
       </p>
     </header>
 
-    <h2>Exposure service API</h2>
-    <p>
-      The exposure service returns hourly pollutant concentrations for a geocoded home location. A <strong>single range request</strong> serves both the Long-term and Recent panels — each hourly record includes two concentrations per species. The API does not return a pre-shaped widget payload; your integration layer maps the fields below into the widget shape.
-    </p>
+    <nav class="toc" aria-label="Guide sections">
+      <div class="toc__label">Jump to a panel</div>
+      <ol>
+        <li>
+          <a href="#annual">1. Annual average</a>
+          <span class="toc-hint">Long-term panel — WHO comparison bars from annual means</span>
+        </li>
+        <li>
+          <a href="#previous-days">2. Previous days</a>
+          <span class="toc-hint">Recent panel −3d / −2d / −1d — completed-day DAQI ladders</span>
+        </li>
+        <li>
+          <a href="#today">3. Today</a>
+          <span class="toc-hint">Recent panel “Today” — triggers + current measurements</span>
+        </li>
+        <li>
+          <a href="#forecast">4. Forecast</a>
+          <span class="toc-hint">Forecast panel — London Air band for tomorrow</span>
+        </li>
+      </ol>
+    </nav>
 
-    <h3>Patient location</h3>
-    <p>
-      Geocode the patient’s home address to latitude and longitude. The API takes <code>lat</code> and <code>lng</code> — <strong>not</strong> a postcode. Postcode is for display in the widget header only.
-    </p>
-    <p>
-      Example: <strong>Eleanor Marsh</strong>, 14 Walworth Road, Southwark, London SE1 6EE → <code>lat=51.4933</code>, <code>lng=-0.0995</code>.
-    </p>
-
-    <h3>Endpoints</h3>
-    <table>
-      <thead>
-        <tr><th>Use</th><th>Base URL</th><th>Key parameters</th></tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>Multi-day / hourly range</td>
-          <td><code>https://swift-exposure-357937791793.europe-west2.run.app/exposure/london/coords</code></td>
-          <td><code>key</code>, <code>lat</code>, <code>lng</code>, <code>species</code>, <code>from</code>, <code>to</code></td>
-        </tr>
-        <tr>
-          <td>Single hour (legacy)</td>
-          <td><code>https://swift-exposure.nw.r.appspot.com/exposure/london/coord</code></td>
-          <td><code>key</code>, <code>lat</code>, <code>lng</code>, <code>species</code>, <code>timestamp</code>, <code>weighted=true</code></td>
-        </tr>
-      </tbody>
-    </table>
-    <p>
-      Use the <strong>range endpoint</strong> (<code>/coords</code>) for NHS integration. Dates must be ISO 8601 UTC strings (e.g. <code>2026-07-03T00:00:00Z</code>) — the API does not accept <code>-3d</code> shorthand. Pass the API key as a <code>key</code> query parameter.
-    </p>
-
-    <h3>Fields on each hourly record</h3>
-    <p>Each hourly object includes:</p>
-    <ul>
-      <li><code>timestamp</code> — start of the hour in GMT/UTC</li>
-      <li><code>data_map_start</code> — base year of the annual-mean map used for <code>value</code>, as an ISO datetime string, e.g. <code>2022-01-01T00:00:00.000+0000</code>. Constant for a given response; use its calendar year for the Long-term panel label (<code>annualYear</code>)</li>
-      <li><code>results[]</code> — per-species concentrations (see below)</li>
-    </ul>
-
-    <h3>Two fields per species</h3>
-    <p>Each entry in <code>results[]</code> includes both:</p>
-    <ul>
-      <li><code>value</code> — annual mean at the patient’s lat/lng from the map identified by <code>data_map_start</code> (µg/m³). Constant for a given location regardless of hour; use for the <strong>Long-term</strong> panel</li>
-      <li><code>nowcast_value</code> — real-time nowcast concentration for that hour (µg/m³). Varies hour by hour; use for the <strong>Recent</strong> panel</li>
-    </ul>
-
-    <h3>What to fetch</h3>
-    <p>
-      One range call can cover both panels, but it must start <strong>at least seven hours before UK-local 00:00 on day −3</strong>. Those preceding hours are needed to calculate the rolling 8-hour O₃ result at 00:00. Convert that local boundary with the IANA timezone <code>Europe/London</code>, then send the resulting instant to the API as UTC. UK midnight is <code>00:00Z</code> during GMT and <code>23:00Z</code> on the preceding UTC date during BST. Fetch through the latest complete hour (or through the end of today if the service supplies it). For very long ranges, fetch in weekly chunks to avoid timeouts.
-    </p>
-
-    <h3>Example URL — last 3 days + today</h3>
-    <p>Eleanor Marsh (<code>lat=51.4933</code>, <code>lng=-0.0995</code>), UK calendar days 3–6 July 2026 during BST. UK-local 00:00 on 3 July is <code>2026-07-02T23:00:00Z</code>; subtracting seven hours makes the required request start <code>2026-07-02T16:00:00Z</code>:</p>
-    <div class="callout">
-      <strong>Example request URL</strong>
-      <pre style="margin:12px 0 0;background:#eef1f5;color:#1a2030;white-space:pre-wrap;word-break:break-all">https://swift-exposure-357937791793.europe-west2.run.app/exposure/london/coords?key=<span style="color:#1a4a78">&lt;api-key&gt;</span>&amp;lat=51.4933&amp;lng=-0.0995&amp;species=no2,pm10,pm25,o3&amp;from=2026-07-02T16:00:00Z&amp;to=2026-07-06T22:59:59Z</pre>
-    </div>
-    <p>Equivalent multi-line form:</p>
-    <pre><span class="comment">GET https://swift-exposure-357937791793.europe-west2.run.app/exposure/london/coords</span>
-  ?key=<span class="str">&lt;api-key&gt;</span>
-  &amp;lat=<span class="num">51.4933</span>
-  &amp;lng=<span class="num">-0.0995</span>
-  &amp;species=<span class="str">no2,pm10,pm25,o3</span>
-  &amp;from=<span class="str">2026-07-02T16:00:00Z</span>
-  &amp;to=<span class="str">2026-07-06T22:59:59Z</span></pre>
-
-    <h3>Example response (raw API)</h3>
-    <p>The range endpoint returns a JSON <strong>array</strong> of hourly records. This is <em>not</em> the widget’s internal shape (values below are from a live response at Eleanor Marsh’s coordinates):</p>
-    <pre>[
-  {
-    <span class="key">"timestamp"</span>: <span class="str">"2026-07-02T23:00:00.000+0000"</span>,
-    <span class="key">"data_map_start"</span>: <span class="str">"2022-01-01T00:00:00.000+0000"</span>,
-    <span class="key">"lat"</span>: <span class="num">51.4933</span>,
-    <span class="key">"lng"</span>: <span class="num">-0.0995</span>,
-    <span class="key">"results"</span>: [
-      { <span class="key">"species"</span>: <span class="str">"no2"</span>,  <span class="key">"value"</span>: <span class="num">36.2</span>, <span class="key">"nowcast_value"</span>: <span class="num">23.3</span> },
-      { <span class="key">"species"</span>: <span class="str">"pm10"</span>, <span class="key">"value"</span>: <span class="num">21.7</span>, <span class="key">"nowcast_value"</span>: <span class="num">25.1</span> },
-      { <span class="key">"species"</span>: <span class="str">"pm25"</span>, <span class="key">"value"</span>: <span class="num">11.6</span>, <span class="key">"nowcast_value"</span>: <span class="num">7.8</span> },
-      { <span class="key">"species"</span>: <span class="str">"o3"</span>,   <span class="key">"value"</span>: <span class="num">37.5</span>, <span class="key">"nowcast_value"</span>: <span class="num">55.2</span> }
-    ]
-  },
-  {
-    <span class="key">"timestamp"</span>: <span class="str">"2026-07-03T00:00:00.000+0000"</span>,
-    <span class="key">"data_map_start"</span>: <span class="str">"2022-01-01T00:00:00.000+0000"</span>,
-    <span class="key">"results"</span>: [
-      { <span class="key">"species"</span>: <span class="str">"no2"</span>,  <span class="key">"value"</span>: <span class="num">36.2</span>, <span class="key">"nowcast_value"</span>: <span class="num">22.3</span> },
-      { <span class="key">"species"</span>: <span class="str">"pm10"</span>, <span class="key">"value"</span>: <span class="num">21.7</span>, <span class="key">"nowcast_value"</span>: <span class="num">15.9</span> },
-      { <span class="key">"species"</span>: <span class="str">"pm25"</span>, <span class="key">"value"</span>: <span class="num">11.6</span>, <span class="key">"nowcast_value"</span>: <span class="num">5.9</span> },
-      { <span class="key">"species"</span>: <span class="str">"o3"</span>,   <span class="key">"value"</span>: <span class="num">37.5</span>, <span class="key">"nowcast_value"</span>: <span class="num">54.5</span> }
-    ]
-  }
-  <span class="comment">/* … one object per hour; value and data_map_start are constant per lat/lng, nowcast_value varies */</span>
-]</pre>
-    <p>
-      Each <code>timestamp</code> marks the <strong>start</strong> of the hour in <strong>GMT/UTC</strong>. Map <code>species</code> to <code>pm25</code>, <code>pm10</code>, <code>no2</code>, <code>o3</code>. Use <code>nowcast_value</code> for Recent hourly series; use <code>value</code> for Long-term annual concentrations (same at every hour for a given location). Derive <code>annualYear</code> from <code>data_map_start</code> — for example <code>2022-01-01T00:00:00.000+0000</code> → <code>2022</code> — rather than hard-coding the year.
-    </p>
-
-    <h3>Mapping API response → widget data</h3>
-    <p>
-      The prototype’s <code>mockPatientExposure()</code> in <code>js/air-quality.js</code> shows the <strong>widget’s expected shape</strong>, not the raw API. Your integration layer must transform the hourly array into:
-    </p>
-    <ul>
-      <li><code>annual</code> + <code>annualYear</code> — read <code>value</code> per species from any hour in the response (constant for a given lat/lng). Set <code>annualYear</code> from <code>data_map_start</code> (calendar year of that datetime — currently <strong>2022</strong> when the field is <code>2022-01-01T00:00:00.000+0000</code>)</li>
-      <li><code>recentDays[]</code> — group hours by UK-local calendar day using <code>nowcast_value</code>, retaining each timestamp rather than assuming a fixed 24-element array (a daylight-saving transition day has 23 or 25 hours). Then derive pollutant-specific DAQI inputs: PM₂.₅/PM₁₀ daily means; NO₂ and O₃ keep timestamped hourly series for max-of-hourly / rolling-8h calculations (see DAQI section)</li>
-    </ul>
-    <div class="callout">
-      <strong>Raw vs widget shape:</strong>
-      <ul style="margin-top:8px;margin-bottom:0">
-        <li><strong>API returns:</strong> flat array of <code>{ timestamp, data_map_start, results[{ species, value, nowcast_value }] }</code> in GMT</li>
-        <li><strong>Widget expects:</strong> <code>{ annual, annualYear, recentDays[{ offset, date, hourly, daily }] }</code> grouped by UK calendar day</li>
-      </ul>
-    </div>
-
-    <h2>Calculating DAQI banding (Recent panel)</h2>
-    <div class="callout">
-      <strong>Normative official references:</strong>
-      <a href="https://www.gov.uk/government/publications/health-effects-of-air-pollution/pollutant-concentrations-for-the-daily-air-quality-index-daqi">Current GOV.UK DAQI pollutant concentration table</a>
-      for concentration ranges and averaging periods, and DEFRA’s
-      <a href="https://uk-air.defra.gov.uk/reports/cat14/1304251155_Update_on_Implementation_of_the_DAQI_April_2013_Final.pdf">Update on Implementation of the DAQI (April 2013) (PDF)</a>
-      for implementation detail on data capture, final rounding, retrospective calculations and triggers.
-      Each pollutant uses a different averaging period; a historical daily summary is not a 24-hour mean for every pollutant.
-    </div>
-    <p>
-      The concentration thresholds below come directly from the current gov.uk table. Do not use the prototype or a third-party implementation as the normative source.
-    </p>
-
-    <h3>Step 1 — Pollutant-specific concentrations for DAQI</h3>
-    <p>
-      DAQI is calculated <strong>per pollutant</strong> using the averaging window defined for that pollutant on gov.uk. Group hourly API values into UK-local calendar days first (see timestamps section below), then apply the rules below. For completed past days (−3d, −2d, −1d), these rules apply directly. For <strong>today</strong> (the current UK calendar day), see the separate subsection below — PM₂.₅, PM₁₀, and O₃ require additional logic beyond these standard rules.
-    </p>
-
-    <h3>PM₂.₅ and PM₁₀ — 24-hour daily mean</h3>
-    <p>
-      For each completed UK calendar day, average the unrounded hourly means from <strong>UK-local midnight to midnight</strong> (time beginning). A normal day has 24 hours; the spring DST transition day has 23 and the autumn transition day has 25. Select hours by timestamp and local-day boundary, so the skipped or repeated clock hour is handled correctly.
-    </p>
-    <div class="formula">pmDailyMean = sum(valid unrounded hourly means in local day) / count(valid hourly means)</div>
-    <p>
-      DEFRA requires at least <strong>75% data capture</strong> for a daily mean (the 2013 guidance gives 18 hourly means for a normal 24-hour day). Applied to the actual DST-day duration, require at least 18 of 23 hours in spring and 19 of 25 hours in autumn. Do not silently calculate an official DAQI value below the required capture; mark it unavailable. The official document does not spell out the 23/25-hour arithmetic, so this is the direct application of its 75% rule to the UK-local interval.
-    </p>
-    <p>The daily PM index is derived from this mean in Step 2 (round once, then perform the threshold lookup).</p>
-
-    <h3>NO₂ — maximum hourly index (not a daily mean)</h3>
-    <p>
-      DAQI for NO₂ is based on <strong>hourly mean</strong> concentrations — do <strong>not</strong> compute a 24-hour mean and do not reduce the calculation to a single 200 µg/m³ test. For a completed-day summary, keep each valid hourly mean unrounded until its final comparison, round it once (Step 2), map that rounded concentration to the full index 1–10 table, then take the maximum of those hourly indices across the UK-local day. DEFRA’s 75% capture rule requires an hourly mean derived from sub-hourly measurements to contain at least three valid 15-minute means; the exposure API already supplies hourly values, so their upstream completeness should be confirmed with the service owner.
-    </p>
-    <div class="formula">no2DayIndex = max( daqiIndex(roundOnce(hourlyNO2[h])) for valid hours in the local day )</div>
-    <p><strong>Boundary condition:</strong> after final integer rounding, 200 µg/m³ is still Low/index 3. A rounded concentration of <strong>at least 201 µg/m³ (≥201)</strong> is Moderate or above, and <strong>201 µg/m³ is the first Moderate/index 4 value</strong>.</p>
-
-    <h3>O₃ — rolling 8-hour mean</h3>
-    <p>
-      DAQI for O₃ uses a <strong>rolling 8-hour mean</strong> at each hour: the mean of the current hour and the previous seven elapsed hourly slots (eight hours total). Compute this from <strong>00:00 on the −3 day</strong>. For each completed UK calendar day, take the <strong>maximum</strong> valid rolling-8h index among windows ending within that local midnight-to-midnight interval. Current-day presentation is addressed separately below.
-    </p>
-    <div class="formula">rolling8h[h] = mean( unrounded hourlyO3[h−7] … hourlyO3[h] )
-o3DayIndex = max( daqiIndex(roundOnce(rolling8h[h])) for valid windows ending in that local day )</div>
-    <p>
-      A rolling window is valid with at least <strong>six of its eight hourly means</strong> (75% capture), according to DEFRA’s 2013 guidance. At UK-local 00:00, the window includes the prior seven elapsed hours, which may fall on the <strong>previous UK calendar day</strong>. Request at least seven hours before UK-local midnight on −3d; no additional “BST margin” is needed if the boundary is converted correctly with <code>Europe/London</code>. Assign each rolling result to the local date of the hour at which its window ends.
-    </p>
-
-    <h3>Today (current day)</h3>
-    <p>
-      The <strong>−3d</strong>, <strong>−2d</strong>, and <strong>−1d</strong> columns are completed UK calendar days only. Use the Step 1 rules above (full PM midnight-to-midnight means; NO₂ max hourly index; O₃ max rolling-8h index). Do <strong>not</strong> apply triggers retrospectively to those days.
-    </p>
-    <p>
-      The <strong>Today</strong> column shows the <strong>current</strong> situation for each pollutant, then takes the maximum across pollutants (Step 3). “Current” means different things per pollutant: NO₂ follows the latest hour only; PM₂.₅, PM₁₀ and O₃ use predictive <strong>triggers</strong> that can remain in force after they fire, optionally superseded by a higher measurement-based index.
-    </p>
-
-    <h4>What “current” means per pollutant</h4>
-    <ul>
-      <li><strong>NO₂</strong> — index of the <strong>latest complete UK-local hour only</strong>. A high hour earlier today (e.g. ≥201 µg/m³ three hours ago) does <strong>not</strong> keep Today elevated. No separate trigger table.</li>
-      <li><strong>PM₂.₅ / PM₁₀</strong> — from UK-local midnight, run the trigger system on consecutive hourly means. An activated trigger index <strong>stays in force</strong> until it is superseded by a <strong>higher</strong> partial-day mean index (from 19:00 onward — see below) or until UK-local midnight resets the day. A later fall in hourly concentrations does not by itself clear the trigger.</li>
-      <li><strong>O₃</strong> — same trigger persistence idea, but the measurement that can supersede is the <strong>current rolling 8-hour mean</strong> index (only if higher than the active trigger). Clear the O₃ trigger after about <strong>four hours</strong> without a continuing trigger condition, or at UK-local midnight. If the rolling 8-hour index is higher than the trigger, use the rolling index.</li>
-    </ul>
-
-    <h4>How a trigger activates</h4>
-    <p>
-      A trigger uses <strong>two consecutive hourly means</strong> (time beginning), biased to rising concentrations: the first hour is greater than or equal to the trigger threshold for an index level, and the second hour is greater than or equal to the first. When that happens, that index level becomes the active trigger for the pollutant (and may step up if a higher index trigger fires later). Triggers are for real-time Today information only — never for −3d/−2d/−1d.
-    </p>
-
-    <h4>Sources for trigger thresholds</h4>
-    <p>
-      DEFRA’s
-      <a href="https://uk-air.defra.gov.uk/reports/cat14/1304251155_Update_on_Implementation_of_the_DAQI_April_2013_Final.pdf">Update on Implementation of the DAQI (April 2013)</a>
-      publishes official <strong>band</strong> triggers only (Moderate or above, High or above, Very High or above). Those band anchors are: PM₁₀ = <strong>68</strong>, <strong>107</strong>, <strong>177</strong> µg/m³; PM₂.₅ = <strong>50</strong>, <strong>74</strong>, <strong>101</strong> µg/m³; O₃ = <strong>105</strong>, <strong>170</strong> µg/m³, and Very High for O₃ <strong>not determined</strong>.
-    </p>
-    <p>
-      DEFRA commissioned Environmental Research Group (ERG), King’s College London, to develop those band triggers. ERG then extended the same method to produce <strong>per–index-point (1–10) triggers</strong> so a Today ladder can resolve individual DAQI levels, not only broad bands. The index-point table below is that ERG extension. Treat it as <strong>proprietary</strong> implementation data for this NHS integration — do not republish it as a public DEFRA specification, and do not invent or interpolate alternative index-point triggers.
-    </p>
-
-    <h4>Index-point trigger thresholds (µg/m³)</h4>
-    <p>Hourly mean thresholds used by the two-hour rising rule. Band-anchor cells (index 4 / 7 / 10) match DEFRA 2013; other cells are the ERG index-point extension. There is no O₃ trigger for index 10.</p>
-    <table>
-      <thead>
-        <tr>
-          <th>DAQI index</th>
-          <th>Band</th>
-          <th>PM₂.₅</th>
-          <th>PM₁₀</th>
-          <th>O₃</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr><td>1</td><td>Low</td><td>8</td><td>12</td><td>14</td></tr>
-        <tr><td>2</td><td>Low</td><td>17</td><td>22</td><td>34</td></tr>
-        <tr><td>3</td><td>Low</td><td>33</td><td>44</td><td>68</td></tr>
-        <tr><td>4</td><td>Moderate</td><td><strong>50</strong></td><td><strong>68</strong></td><td><strong>105</strong></td></tr>
-        <tr><td>5</td><td>Moderate</td><td>56</td><td>79</td><td>126</td></tr>
-        <tr><td>6</td><td>Moderate</td><td>61</td><td>95</td><td>146</td></tr>
-        <tr><td>7</td><td>High</td><td><strong>74</strong></td><td><strong>107</strong></td><td><strong>170</strong></td></tr>
-        <tr><td>8</td><td>High</td><td>84</td><td>118</td><td>198</td></tr>
-        <tr><td>9</td><td>High</td><td>95</td><td>130</td><td>224</td></tr>
-        <tr><td>10</td><td>Very High</td><td><strong>101</strong></td><td><strong>177</strong></td><td>—</td></tr>
-      </tbody>
-    </table>
-
-    <h4>PM₂.₅ / PM₁₀ — superseding the trigger with a partial-day mean</h4>
-    <p>
-      From UK-local <strong>midnight</strong> (use <code>Europe/London</code> — during BST, UK midnight is <strong>23:00 UTC</strong> on the previous calendar date, not 00:00 GMT), operate on triggers as above.
-    </p>
-    <p>
-      From UK-local <strong>19:00</strong>, enough complete hours exist for a 75% day mean: the mean of hours <strong>00:00 through 18:00</strong> inclusive (19 hourly slots on a normal day). Round once, map to a DAQI index. If that index is <strong>strictly greater</strong> than the active trigger index, it replaces the trigger as the pollutant’s Today value. If it is lower or equal, keep the trigger. As later hours complete (19:00, 20:00, …), extend the mean from UK midnight through the latest complete hour and apply the same replace-only-if-higher rule. At UK-local midnight, clear triggers and start again.
-    </p>
-    <div class="formula">pmTodayIndex = max( activeTriggerIndex, daySoFarIndex )   // daySoFarIndex only from 19:00; only replaces when higher
- // activeTriggerIndex persists until replaced or midnight</div>
-
-    <h4>O₃ — superseding with the rolling 8-hour mean</h4>
-    <p>
-      Compute the current valid rolling 8-hour mean, round once, and map to an index. Today’s O₃ value is the maximum of the active trigger index (if any) and that rolling index. The rolling index replaces the trigger only when it is higher; otherwise the trigger remains until the ~four-hour clear or midnight.
-    </p>
-    <div class="formula">o3TodayIndex = max( activeTriggerIndex, rolling8hIndex )</div>
-
-    <h4>Combining pollutants for Today</h4>
-    <div class="formula">todayLevel = max( pm25TodayIndex, pm10TodayIndex, no2LatestHourIndex, o3TodayIndex )</div>
-
-    <h3>Timestamps and UK calendar days</h3>
-    <p>
-      The exposure service returns hourly records where each <code>timestamp</code> is the <strong>start</strong> of that hour, always in <strong>GMT (UTC)</strong>. The widget, however, labels days as UK calendar dates (−3d, −2d, −1d, Today) — midnight to midnight in <strong>UK local time</strong>.
-    </p>
-    <p>
-      During <strong>BST</strong> (British Summer Time, roughly late March to late October), UK local time is UTC+1. A single UK calendar day therefore spans two GMT dates. You must <strong>not</strong> group records by GMT date alone.
-    </p>
-
-    <div class="callout">
-      <strong>BST example — UK 6 July 2026 (a summer day):</strong>
-      <p style="margin:8px 0 0">
-        UK-local 6 Jul 00:00–23:00 corresponds to these GMT timestamps (time beginning):
+    <!-- ========== SHARED: API ========== -->
+    <div class="shared" id="getting-data">
+      <h2>Getting the data (shared)</h2>
+      <p>
+        One exposure-service <strong>range</strong> request supplies both the Long-term and Recent panels.
+        Forecast comes from a separate London Air page. Geocode the patient’s home to <code>lat</code> / <code>lng</code> (not postcode — postcode is display-only in the header).
       </p>
-      <ul style="margin-top:8px;margin-bottom:0">
-        <li>UK 00:00 → <code>2026-07-05T23:00:00Z</code></li>
-        <li>UK 01:00 → <code>2026-07-06T00:00:00Z</code></li>
-        <li>…</li>
-        <li>UK 23:00 → <code>2026-07-06T22:00:00Z</code></li>
+      <p>
+        Example patient: <strong>Eleanor Marsh</strong>, SE1 → <code>lat=51.4933</code>, <code>lng=-0.0995</code>.
+      </p>
+
+      <table>
+        <thead>
+          <tr><th>Use</th><th>Endpoint</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>Hourly range (use this)</td>
+            <td><code>https://swift-exposure-357937791793.europe-west2.run.app/exposure/london/coords</code><br>
+              Params: <code>key</code>, <code>lat</code>, <code>lng</code>, <code>species=no2,pm10,pm25,o3</code>, <code>from</code>, <code>to</code> (ISO UTC)</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <p>Each hourly record includes:</p>
+      <ul>
+        <li><code>timestamp</code> — start of the hour in GMT/UTC</li>
+        <li><code>data_map_start</code> — annual-map base date (e.g. <code>2022-01-01T00:00:00.000+0000</code>) → calendar year for the Long-term label</li>
+        <li><code>results[]</code> with per species:
+          <ul>
+            <li><code>value</code> — annual mean at lat/lng (constant) → <strong>Annual average</strong></li>
+            <li><code>nowcast_value</code> — hourly nowcast → <strong>Previous days</strong> and <strong>Today</strong></li>
+          </ul>
+        </li>
       </ul>
-      <p style="margin:8px 0 0">
-        To compute the PM daily mean for “6 Jul”, select exactly these 24 hourly records — not all records where the UTC date is 6 Jul. The same local-day selection applies when taking NO₂ hourly maxima or O₃ rolling-8h maxima for that day. For O₃ at UK 00:00 on 6 Jul, the rolling window also needs UK-local hours from 17:00–23:00 on 5 Jul — i.e. <code>2026-07-05T16:00:00Z</code> through <code>2026-07-05T22:00:00Z</code> during BST.
+
+      <div class="callout">
+        <strong>Fetch window for Recent:</strong>
+        Start at least <strong>seven hours before UK-local midnight on day −3</strong>
+        (needed for the first O₃ rolling 8-hour window). Use IANA timezone <code>Europe/London</code>.
+        During BST, UK midnight is <code>23:00Z</code> on the previous UTC date.
+        Example for UK days 3–6 Jul 2026:
+        <code>from=2026-07-02T16:00:00Z</code> → <code>to=2026-07-06T22:59:59Z</code>.
+      </div>
+
+      <p class="refs">
+        Official DAQI references:
+        <a href="https://www.gov.uk/government/publications/health-effects-of-air-pollution/pollutant-concentrations-for-the-daily-air-quality-index-daqi">GOV.UK concentration table</a>
+        ·
+        <a href="https://uk-air.defra.gov.uk/reports/cat14/1304251155_Update_on_Implementation_of_the_DAQI_April_2013_Final.pdf">DEFRA April 2013 implementation (PDF)</a>
       </p>
     </div>
 
-    <p><strong>Implementation checklist:</strong></p>
-    <ol>
-      <li>Parse each API <code>timestamp</code> as a UTC instant and convert it to UK local time using <code>Europe/London</code>, which handles GMT, BST and transition days automatically.</li>
-      <li>Assign each hour to a UK calendar date based on its local time.</li>
-      <li>For each completed UK date, collect all timestamps in its local midnight-to-midnight interval (23, 24 or 25 hours). PM₂.₅/PM₁₀: daily mean with at least 75% capture. NO₂: max hourly index for the historical-day summary. O₃: max valid rolling-8h index, using prior-day hours where needed and at least six values per window.</li>
-      <li>Set <code>from</code> to the UTC instant exactly seven hours before UK-local 00:00 on −3d. Set <code>to</code> to the latest complete hour needed. Do not append a guessed one-day BST buffer.</li>
-      <li>Handle Today separately using the trigger and supersede rules in the Today section above (NO₂ = latest hour only; PM/O₃ triggers persist until superseded or cleared).</li>
-    </ol>
-    <p>Outside BST (GMT = UK local), UK midnight aligns with GMT midnight and grouping is straightforward — but always use UK-local assignment so the logic works year-round.</p>
+    <!-- ========== 1. ANNUAL ========== -->
+    <section class="section" id="annual">
+      <div class="section__kicker">Section 1 · Long-term panel</div>
+      <h2>Annual average</h2>
+      <p class="section-intro">
+        Compare the patient’s annual mean exposure to WHO guidelines.
+        This uses a <strong>different scale from DAQI</strong> — keep annual WHO maths separate from daily index levels.
+      </p>
 
-    <h3>Step 2 — Round, then map to DAQI index</h3>
-    <p>
-      Before comparing a concentration to DAQI levels, round it <strong>once to an integer</strong>. DEFRA’s 2013 guidance is explicit that rounding is the <strong>last step</strong>: calculate hourly, rolling 8-hour and daily means from unrounded inputs, then round once immediately before the index comparison. Do not pre-round hourly inputs used in a longer mean and do not round via an intermediate decimal place.
-    </p>
-    <div class="callout">
-      <strong>Prescribed rounding evidence and implementation note:</strong>
-      <ul style="margin-top:8px;margin-bottom:0">
-        <li>The official example says <strong>50.486 → 50</strong> directly; it warns that first producing 50.5 and then rounding again would incorrectly produce 51.</li>
-        <li>DEFRA’s document requires one final integer rounding step but does not specify how exact <code>x.5</code> ties are handled. The <strong>NHS integration project’s explicit implementation convention</strong> is that exact ties round upward: <strong>50.5 → 51</strong>. This is a project decision, not a rule attributed to the DEFRA document.</li>
-        <li>DAQI concentrations are nonnegative, so a safe cross-language expression is <code>floor(value + 0.5)</code> at the final comparison only. In JavaScript, use <code>Math.floor(value + 0.5)</code>; do not generalise JavaScript’s <code>Math.round()</code> behaviour to negative numbers.</li>
+      <div class="outcome">
+        <div class="outcome__label">End product</div>
+        <div class="mock-widget" aria-hidden="true">
+          <div class="mock-widget__title">Air quality at patient's home <span>· Eleanor Marsh · SE1</span></div>
+          <div class="mock-panel">
+            <div class="mock-panel__label">Long-term</div>
+            <div class="mock-panel__sub">Annual mean · 2022</div>
+            <div class="mock-annual">
+              <div class="mock-annual__who"><span>WHO</span></div>
+              <div class="mock-bar">
+                <div class="mock-bar__ratio" style="color:#FF089A">2.3×</div>
+                <div class="mock-bar__track">
+                  <div class="mock-bar__above" style="height:28%;background:#FF089A"></div>
+                  <div class="mock-bar__below" style="height:52%;background:#FFE6F5"></div>
+                </div>
+                <div class="mock-bar__val">12</div>
+              </div>
+              <div class="mock-bar">
+                <div class="mock-bar__ratio" style="color:#8000FF">1.4×</div>
+                <div class="mock-bar__track">
+                  <div class="mock-bar__above" style="height:12%;background:#8000FF"></div>
+                  <div class="mock-bar__below" style="height:52%;background:#F2E5FF"></div>
+                </div>
+                <div class="mock-bar__val">22</div>
+              </div>
+              <div class="mock-bar">
+                <div class="mock-bar__ratio" style="color:#EBA602">3.6×</div>
+                <div class="mock-bar__track">
+                  <div class="mock-bar__above" style="height:48%;background:#EBA602"></div>
+                  <div class="mock-bar__below" style="height:52%;background:#FDF6E6"></div>
+                </div>
+                <div class="mock-bar__val">36</div>
+              </div>
+              <div class="mock-bar">
+                <div class="mock-bar__ratio" style="color:#0387E2">0.6×</div>
+                <div class="mock-bar__track">
+                  <div class="mock-bar__above" style="height:0;background:#0387E2"></div>
+                  <div class="mock-bar__below" style="height:31%;background:#E5F3FC"></div>
+                </div>
+                <div class="mock-bar__val">38</div>
+              </div>
+            </div>
+            <div class="mock-key">
+              <div class="mock-key__item"><span class="mock-key__swatch" style="background:#FF089A"></span>PM₂.₅</div>
+              <div class="mock-key__item"><span class="mock-key__swatch" style="background:#8000FF"></span>PM₁₀</div>
+              <div class="mock-key__item"><span class="mock-key__swatch" style="background:#EBA602"></span>NO₂</div>
+              <div class="mock-key__item"><span class="mock-key__swatch" style="background:#0387E2"></span>O₃</div>
+            </div>
+          </div>
+        </div>
+        <p class="outcome__caption">Four pollutant bars, shared WHO dotted line at mid-height, multiplier above, µg/m³ below, year from <code>data_map_start</code>.</p>
+      </div>
+
+      <h3>Data to extract</h3>
+      <ul>
+        <li>From any hour in the range response, read <code>value</code> for <code>pm25</code>, <code>pm10</code>, <code>no2</code>, <code>o3</code> (same at every hour for a given lat/lng).</li>
+        <li>Set <code>annualYear</code> from the calendar year of <code>data_map_start</code> (e.g. <code>2022-01-01…</code> → <strong>2022</strong>).</li>
       </ul>
-    </div>
-    <p>
-      Compare each rounded value against the lower-bound thresholds for that pollutant. The index is the highest band whose threshold the rounded value meets or exceeds (levels 1–10). Gov.uk publishes these as integer ranges (e.g. O₃ level 3 = 67–100, level 4 = 101–120); the lower-bound table below is equivalent.
-    </p>
-    <table>
-      <thead>
-        <tr><th>Pollutant</th><th>Thresholds (µg/m³) for levels 1–10</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>PM₂.₅</td><td>0, 12, 24, 36, 42, 48, 54, 59, 65, 71</td></tr>
-        <tr><td>PM₁₀</td><td>0, 17, 34, 51, 59, 67, 76, 84, 92, 101</td></tr>
-        <tr><td>NO₂</td><td>0, 68, 135, 201, 268, 335, 401, 468, 535, 601</td></tr>
-        <tr><td>O₃</td><td>0, 34, 67, 101, 121, 141, 161, 188, 214, 241</td></tr>
-      </tbody>
-    </table>
 
-    <h3>Step 3 — Take the highest index across pollutants</h3>
-    <p>For each <strong>completed day</strong>, the displayed DAQI level is the <strong>maximum</strong> index across PM₂.₅, PM₁₀, NO₂, and O₃ — using each pollutant’s Step 1 result (PM daily mean; NO₂ max hourly; O₃ max rolling-8h). For <strong>Today</strong>, derive each pollutant’s current index as in the Today section (NO₂ latest hour; PM/O₃ active trigger with optional higher measurement supersede), then take the maximum across available pollutants.</p>
-    <div class="formula">dayLevel = max(pmDayIndex, pm10DayIndex, no2DayIndex, o3DayIndex)   // completed days
-todayLevel = max(pm25TodayIndex, pm10TodayIndex, no2LatestHourIndex, o3TodayIndex)</div>
+      <h3>WHO guidelines (µg/m³)</h3>
+      <table>
+        <thead>
+          <tr><th>Pollutant</th><th>WHO annual guideline</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>PM₂.₅</td><td>5</td></tr>
+          <tr><td>PM₁₀</td><td>15</td></tr>
+          <tr><td>NO₂</td><td>10</td></tr>
+          <tr><td>O₃</td><td>60</td></tr>
+        </tbody>
+      </table>
 
-    <h3>Step 4 — Render the ladder</h3>
-    <p>
-      Display a 10-segment vertical ladder per day. <strong>Fill rule:</strong> segments 1 through <code>dayLevel</code> are coloured; segments above <code>dayLevel</code> are grey (<code>#eceef2</code>). Show the DAQI key strip below the Recent panel (Low · Moderate · High · V.High).
-    </p>
-    <p>
-      Use these hex colours for the active ladder segments (index 1–10). They match the prototype’s <code>DAQI_COLORS</code> in <code>js/air-quality.js</code> and the UK DAQI palette used in the widget:
-    </p>
-    <table>
-      <thead>
-        <tr><th>Index</th><th>Band</th><th>Hex</th><th>Swatch</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>1</td><td>Low</td><td><code>#A3CC7A</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#A3CC7A;vertical-align:middle"></span></td></tr>
-        <tr><td>2</td><td>Low</td><td><code>#66A33E</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#66A33E;vertical-align:middle"></span></td></tr>
-        <tr><td>3</td><td>Low</td><td><code>#2B8200</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#2B8200;vertical-align:middle"></span></td></tr>
-        <tr><td>4</td><td>Moderate</td><td><code>#EEBF8F</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#EEBF8F;vertical-align:middle"></span></td></tr>
-        <tr><td>5</td><td>Moderate</td><td><code>#FE994D</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#FE994D;vertical-align:middle"></span></td></tr>
-        <tr><td>6</td><td>Moderate</td><td><code>#F46200</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#F46200;vertical-align:middle"></span></td></tr>
-        <tr><td>7</td><td>High</td><td><code>#D80000</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#D80000;vertical-align:middle"></span></td></tr>
-        <tr><td>8</td><td>High</td><td><code>#A30000</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#A30000;vertical-align:middle"></span></td></tr>
-        <tr><td>9</td><td>High</td><td><code>#7A0000</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#7A0000;vertical-align:middle"></span></td></tr>
-        <tr><td>10</td><td>Very High</td><td><code>#000000</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#000000;vertical-align:middle;border:1px solid #d0d6e0"></span></td></tr>
-        <tr><td>—</td><td>Inactive (above reached level)</td><td><code>#eceef2</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#eceef2;vertical-align:middle;border:1px solid #d0d6e0"></span></td></tr>
-      </tbody>
-    </table>
-
-    <h2>Forecast data source</h2>
-    <p>
-      Forecast banding comes from the Environmental Research Group (ERG) London Air forecast — not the exposure service.
-    </p>
-    <ul>
-      <li><strong>URL:</strong> <a href="https://londonair.org.uk/data/londonair/LondonAirForecast.asp">londonair.org.uk/data/londonair/LondonAirForecast.asp</a></li>
-      <li><strong>Use banding level only</strong> — do not use a numeric index from the forecast page</li>
-      <li><strong>Credit:</strong> display ERG logo below the Forecast panel (see Design 3.2a/3.2b)</li>
-    </ul>
-
-    <h3>Band → display index mapping</h3>
-    <p>Map the text band to the <strong>highest index in that band</strong>, then fill all segments below:</p>
-    <table>
-      <thead>
-        <tr><th>Forecast band</th><th>Display index</th><th>Segments filled</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>Low</td><td>3</td><td>1, 2, 3</td></tr>
-        <tr><td>Moderate</td><td>6</td><td>1–6</td></tr>
-        <tr><td>High</td><td>9</td><td>1–9</td></tr>
-        <tr><td>V.High</td><td>10</td><td>1–10</td></tr>
-      </tbody>
-    </table>
-    <p>Apply the same fill rule as Recent: colour segments 1..index, grey above.</p>
-
-    <h2>Long-term bar mathematics (Designs 3.1 / 3.2)</h2>
-    <p>
-      The long-term panel compares annual mean concentrations to WHO air quality guidelines. It uses a <strong>separate scale</strong> from DAQI — do not mix annual WHO comparison with daily index levels.
-    </p>
-
-    <h3>WHO guidelines (µg/m³)</h3>
-    <table>
-      <thead>
-        <tr><th>Pollutant</th><th>WHO annual guideline</th></tr>
-      </thead>
-      <tbody>
-        <tr><td>PM₂.₅</td><td>5</td></tr>
-        <tr><td>PM₁₀</td><td>15</td></tr>
-        <tr><td>NO₂</td><td>10</td></tr>
-        <tr><td>O₃</td><td>60</td></tr>
-      </tbody>
-    </table>
-
-    <h3>Bar height</h3>
-    <p>The WHO dotted line is fixed at <strong>52%</strong> of the bar track height.</p>
-
-    <p><strong>Below the line</strong> (concentration up to the WHO guideline):</p>
-    <div class="formula">if annual ≥ WHO:  belowHeight = 52% of track
+      <h3>Bar height maths</h3>
+      <p>The WHO dotted line is fixed at <strong>52%</strong> of the bar track.</p>
+      <p><strong>Below the line</strong> (up to the guideline):</p>
+      <div class="formula">if annual ≥ WHO:  belowHeight = 52% of track
 else:             belowHeight = (annual / WHO) × 52%</div>
-
-    <p><strong>Above the line</strong> (excess over WHO):</p>
-    <div class="formula">excessRatio = (annual − WHO) / WHO
+      <p><strong>Above the line</strong> (excess over WHO):</p>
+      <div class="formula">excessRatio = (annual − WHO) / WHO
 aboveHeight = (excessRatio / maxExcessAcrossPollutants) × 48% of track</div>
+      <p>The pollutant with the largest excess fills the zone above the line; others scale proportionally.</p>
 
-    <p>The pollutant with the largest excess ratio fills the zone above the line; others scale proportionally.</p>
+      <h3>Display</h3>
+      <ul>
+        <li>Concentrations as <strong>integers</strong> (µg/m³)</li>
+        <li>Ratio as <strong>3.6×</strong> (no “WHO” suffix)</li>
+        <li>Solid colour above WHO, light fill below; pollutant names in the key strip</li>
+      </ul>
+    </section>
 
-    <h3>Display conventions</h3>
-    <ul>
-      <li>Show annual concentrations as <strong>integers</strong> (µg/m³)</li>
-      <li>Show ratio as <strong>3.6×</strong> — no “WHO” suffix on the multiplier</li>
-      <li>Label the year from <code>annualYear</code>, taken from <code>data_map_start</code> (e.g. <strong>2022</strong>)</li>
-      <li>Use pollutant bar colours (solid above WHO, light fill below); names in the key strip below the panel</li>
-    </ul>
+    <!-- ========== 2. PREVIOUS DAYS ========== -->
+    <section class="section" id="previous-days">
+      <div class="section__kicker">Section 2 · Recent panel</div>
+      <h2>Previous days (−3d, −2d, −1d)</h2>
+      <p class="section-intro">
+        Three completed UK calendar days as DAQI ladders.
+        Use full-day statistics only — triggers belong in the <a href="#today">Today</a> section, not on past days.
+      </p>
 
-    <h2>Panel-by-panel summary</h2>
+      <div class="outcome">
+        <div class="outcome__label">End product</div>
+        <div class="mock-widget" aria-hidden="true">
+          <div class="mock-panel" style="display:block;width:100%;max-width:280px">
+            <div class="mock-panel__label">Recent</div>
+            <div class="mock-panel__sub">Daily air quality index</div>
+            <div class="mock-days">
+              <div class="mock-day">
+                <div class="mock-ladder">
+                  <div class="mock-seg" style="background:#A3CC7A"></div>
+                  <div class="mock-seg" style="background:#66A33E"></div>
+                  <div class="mock-seg" style="background:#2B8200"></div>
+                  <div class="mock-seg"></div><div class="mock-seg"></div><div class="mock-seg"></div>
+                  <div class="mock-seg"></div><div class="mock-seg"></div><div class="mock-seg"></div><div class="mock-seg"></div>
+                </div>
+                <div class="mock-day__name">−3d</div>
+                <div class="mock-day__date">3 Jul</div>
+              </div>
+              <div class="mock-day">
+                <div class="mock-ladder">
+                  <div class="mock-seg" style="background:#A3CC7A"></div>
+                  <div class="mock-seg" style="background:#66A33E"></div>
+                  <div class="mock-seg" style="background:#2B8200"></div>
+                  <div class="mock-seg" style="background:#EEBF8F"></div>
+                  <div class="mock-seg"></div><div class="mock-seg"></div>
+                  <div class="mock-seg"></div><div class="mock-seg"></div><div class="mock-seg"></div><div class="mock-seg"></div>
+                </div>
+                <div class="mock-day__name">−2d</div>
+                <div class="mock-day__date">4 Jul</div>
+              </div>
+              <div class="mock-day">
+                <div class="mock-ladder">
+                  <div class="mock-seg" style="background:#A3CC7A"></div>
+                  <div class="mock-seg" style="background:#66A33E"></div>
+                  <div class="mock-seg" style="background:#2B8200"></div>
+                  <div class="mock-seg"></div><div class="mock-seg"></div><div class="mock-seg"></div>
+                  <div class="mock-seg"></div><div class="mock-seg"></div><div class="mock-seg"></div><div class="mock-seg"></div>
+                </div>
+                <div class="mock-day__name">−1d</div>
+                <div class="mock-day__date">5 Jul</div>
+              </div>
+            </div>
+            <div class="mock-daqi-key">
+              <span><i style="background:#2B8200"></i>Low</span>
+              <span><i style="background:#F46200"></i>Moderate</span>
+              <span><i style="background:#D80000"></i>High</span>
+              <span><i style="background:#000"></i>V.High</span>
+            </div>
+          </div>
+        </div>
+        <p class="outcome__caption">Fill segments 1…dayLevel in DAQI colours; grey above. Day label = UK calendar date.</p>
+      </div>
 
-    <h3>Long-term</h3>
-    <ul>
-      <li><strong>Data:</strong> <code>value</code> per species from the same range call (annual mean at lat/lng from the map identified by <code>data_map_start</code>); set <code>annualYear</code> from that field’s calendar year</li>
-      <li><strong>Render:</strong> four vertical bars (PM₂.₅, PM₁₀, NO₂, O₃), shared WHO dotted line at 52%, ratio above bar, concentration below</li>
-      <li><strong>Key strip:</strong> pollutant colour swatches + names below the panel</li>
-    </ul>
+      <h3>Pipeline</h3>
+      <ol class="steps">
+        <li>Group <code>nowcast_value</code> hours into UK-local calendar days with <code>Europe/London</code> (handles GMT/BST; a transition day has 23 or 25 hours).</li>
+        <li>For each completed day, compute a pollutant-specific input (below).</li>
+        <li>Round <strong>once</strong> to an integer, then map to DAQI 1–10 (see <a href="#daqi-shared">shared DAQI tables</a>).</li>
+        <li><code>dayLevel = max</code> across the four pollutant indices. Render the ladder.</li>
+      </ol>
 
-    <h3>Recent</h3>
-    <ul>
-      <li><strong>Data:</strong> <code>nowcast_value</code> from the same range call; group into UK-local calendar days (−3d through today), adjusting for BST</li>
-      <li><strong>Process:</strong> group timestamped data into UK-local days (DST-aware) → for −3d/−2d/−1d use PM daily means, NO₂ max hourly index and O₃ max rolling-8h index, enforcing 75% data capture → round once and compare with the official thresholds → max across pollutants. For <strong>Today</strong>, use the current-situation rules and ERG index-point trigger table in the Today section (no retrospective triggers on past days).</li>
-      <li><strong>Render:</strong> four day columns (−3d, −2d, −1d, Today) with 10-segment DAQI ladders</li>
-      <li><strong>Key strip:</strong> DAQI band legend below the panel</li>
-    </ul>
+      <h3>Per-pollutant rules (completed days only)</h3>
 
-    <h3>Forecast</h3>
-    <ul>
-      <li><strong>Data:</strong> text band from <a href="https://londonair.org.uk/data/londonair/LondonAirForecast.asp">London Air forecast</a></li>
-      <li><strong>Process:</strong> map band to display index (Low→3, Moderate→6, High→9, V.High→10)</li>
-      <li><strong>Render:</strong> single DAQI ladder for tomorrow; band name and date below</li>
-      <li><strong>Credit:</strong> ERG logo below the panel</li>
-    </ul>
+      <h4>PM₂.₅ and PM₁₀ — 24-hour daily mean</h4>
+      <p>Average unrounded hourly means from <strong>UK-local midnight to midnight</strong> (time beginning). Require ≥75% capture (18 of 24 hours on a normal day; 18/23 spring DST; 19/25 autumn DST).</p>
+      <div class="formula">pmDailyMean = sum(valid hours in local day) / count(valid hours)</div>
 
-    <h2>Widget header</h2>
-    <p>Use the title <a href="js/stack-widget.js#L55"><strong>“Air quality at patient's home”</strong></a> followed by patient name and location sector (e.g. <code>· Eleanor Marsh · SE1</code>).</p>
+      <h4>NO₂ — maximum hourly index</h4>
+      <p>Map each hour to an index, then take the day’s maximum (rather than a 24-hour mean). After rounding, <strong>200 → still Low (3)</strong>; <strong>≥201 → Moderate (4)+</strong>.</p>
+      <div class="formula">no2DayIndex = max( daqiIndex(roundOnce(hourlyNO2[h])) for hours in local day )</div>
+
+      <h4>O₃ — max of rolling 8-hour means</h4>
+      <p>At each hour: mean of that hour plus the previous seven. Day index = maximum valid window ending in that local day. Window needs ≥6 of 8 hours. Windows at 00:00 need prior-day hours — hence the seven-hour fetch buffer before −3d.</p>
+      <div class="formula">rolling8h[h] = mean(hourlyO3[h−7] … hourlyO3[h])
+o3DayIndex = max( daqiIndex(roundOnce(rolling8h[h])) for valid windows in local day )</div>
+
+      <div class="callout">
+        <strong>BST reminder:</strong> During summer, UK 00:00 is the previous day’s <code>23:00Z</code>. Group hours by UK local date rather than by GMT date alone.
+        Example — UK 6 Jul 2026: local 00:00 → <code>2026-07-05T23:00:00Z</code> … local 23:00 → <code>2026-07-06T22:00:00Z</code>.
+      </div>
+    </section>
+
+    <!-- ========== 3. TODAY ========== -->
+    <section class="section" id="today">
+      <div class="section__kicker">Section 3 · Recent panel</div>
+      <h2>Today</h2>
+      <p class="section-intro">
+        Shows the <strong>current</strong> situation — not a finished calendar day, and not “worst so far” for every pollutant.
+        NO₂ follows the latest hour; PM and O₃ use <strong>triggers</strong> that can stay in force until superseded or cleared at midnight.
+      </p>
+
+      <div class="outcome">
+        <div class="outcome__label">End product</div>
+        <div class="mock-widget" aria-hidden="true">
+          <div class="mock-panel">
+            <div class="mock-panel__label">Recent · Today column</div>
+            <div class="mock-panel__sub">Current DAQI level</div>
+            <div class="mock-days">
+              <div class="mock-day mock-day--focus">
+                <div class="mock-ladder">
+                  <div class="mock-seg" style="background:#A3CC7A"></div>
+                  <div class="mock-seg" style="background:#66A33E"></div>
+                  <div class="mock-seg" style="background:#2B8200"></div>
+                  <div class="mock-seg" style="background:#EEBF8F"></div>
+                  <div class="mock-seg" style="background:#FE994D"></div>
+                  <div class="mock-seg" style="background:#F46200"></div>
+                  <div class="mock-seg" style="background:#D80000"></div>
+                  <div class="mock-seg"></div><div class="mock-seg"></div><div class="mock-seg"></div>
+                </div>
+                <div class="mock-day__name">Today</div>
+                <div class="mock-day__date">6 Jul</div>
+              </div>
+            </div>
+            <div class="mock-daqi-key">
+              <span><i style="background:#2B8200"></i>Low</span>
+              <span><i style="background:#F46200"></i>Moderate</span>
+              <span><i style="background:#D80000"></i>High</span>
+              <span><i style="background:#000"></i>V.High</span>
+            </div>
+          </div>
+        </div>
+        <p class="outcome__caption">Same ladder chrome as previous days; value comes from Today rules below, then <code>max</code> across pollutants.</p>
+      </div>
+
+      <h3>What “current” means</h3>
+      <ul>
+        <li><strong>NO₂</strong> — index of the <strong>latest complete UK-local hour only</strong>. A high reading three hours ago leaves the current hour unaffected. NO₂ has no separate trigger table.</li>
+        <li><strong>PM₂.₅ / PM₁₀</strong> — from UK midnight, run triggers on consecutive hours. An activated trigger <strong>stays</strong> until a <strong>higher</strong> partial-day mean replaces it (from 19:00) or midnight clears it. Falling hours alone leave the trigger in place.</li>
+        <li><strong>O₃</strong> — same persistence; measurement that can supersede is the <strong>current rolling 8-hour</strong> index (only if higher). Clear after ~four hours without a continuing trigger, or at midnight.</li>
+      </ul>
+
+      <h3>How a trigger activates</h3>
+      <p>
+        Two consecutive hourly means, rising: first hour ≥ trigger threshold for an index level, second hour ≥ first.
+        Triggers are for Today only; past days (−3d/−2d/−1d) use completed-day statistics instead.
+      </p>
+
+      <h3>Trigger threshold sources</h3>
+      <p>
+        DEFRA’s
+        <a href="https://uk-air.defra.gov.uk/reports/cat14/1304251155_Update_on_Implementation_of_the_DAQI_April_2013_Final.pdf">April 2013 update</a>
+        publishes official <strong>band</strong> triggers only (Moderate / High / Very High):
+        PM₁₀ = <strong>68</strong>, <strong>107</strong>, <strong>177</strong>;
+        PM₂.₅ = <strong>50</strong>, <strong>74</strong>, <strong>101</strong>;
+        O₃ = <strong>105</strong>, <strong>170</strong> (Very High for O₃ not determined).
+      </p>
+      <p>
+        DEFRA commissioned Environmental Research Group (ERG), King’s College London, for those band triggers.
+        ERG then extended the method to <strong>per–index-point (1–10)</strong> triggers so the Today ladder can resolve individual levels.
+        Treat the table below as <strong>proprietary</strong> for this NHS integration — keep it for implementers rather than republishing it as a public DEFRA specification, and prefer these values over deriving alternatives.
+      </p>
+
+      <h3>Index-point triggers (µg/m³)</h3>
+      <p>Bold cells = DEFRA 2013 band anchors. O₃ has no trigger value for index 10 (left blank).</p>
+      <table>
+        <thead>
+          <tr>
+            <th>Index</th><th>Band</th><th>PM₂.₅</th><th>PM₁₀</th><th>O₃</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>1</td><td>Low</td><td>8</td><td>12</td><td>14</td></tr>
+          <tr><td>2</td><td>Low</td><td>17</td><td>22</td><td>34</td></tr>
+          <tr><td>3</td><td>Low</td><td>33</td><td>44</td><td>68</td></tr>
+          <tr><td>4</td><td>Moderate</td><td><strong>50</strong></td><td><strong>68</strong></td><td><strong>105</strong></td></tr>
+          <tr><td>5</td><td>Moderate</td><td>56</td><td>79</td><td>126</td></tr>
+          <tr><td>6</td><td>Moderate</td><td>61</td><td>95</td><td>146</td></tr>
+          <tr><td>7</td><td>High</td><td><strong>74</strong></td><td><strong>107</strong></td><td><strong>170</strong></td></tr>
+          <tr><td>8</td><td>High</td><td>84</td><td>118</td><td>198</td></tr>
+          <tr><td>9</td><td>High</td><td>95</td><td>130</td><td>224</td></tr>
+          <tr><td>10</td><td>Very High</td><td><strong>101</strong></td><td><strong>177</strong></td><td>—</td></tr>
+        </tbody>
+      </table>
+
+      <h3>PM — superseding with a partial-day mean</h3>
+      <p>
+        From UK midnight, use triggers.
+        From UK <strong>19:00</strong>, mean hours <strong>00:00–18:00</strong> (75% capture), round once, map to an index.
+        Replace the trigger <strong>only if that index is higher</strong>. Extend the mean as later hours complete.
+        Clear at UK midnight.
+      </p>
+      <div class="formula">pmTodayIndex = max(activeTriggerIndex, daySoFarIndex)  // daySoFar from 19:00; replace only if higher</div>
+
+      <h3>O₃ — superseding with rolling 8-hour</h3>
+      <div class="formula">o3TodayIndex = max(activeTriggerIndex, rolling8hIndex)</div>
+
+      <h3>Combine pollutants</h3>
+      <div class="formula">todayLevel = max(pm25TodayIndex, pm10TodayIndex, no2LatestHourIndex, o3TodayIndex)</div>
+    </section>
+
+    <!-- ========== 4. FORECAST ========== -->
+    <section class="section" id="forecast">
+      <div class="section__kicker">Section 4 · Forecast panel</div>
+      <h2>Forecast</h2>
+      <p class="section-intro">
+        Tomorrow’s air quality band from London Air (ERG) — not the exposure service.
+      </p>
+
+      <div class="outcome">
+        <div class="outcome__label">End product</div>
+        <div class="mock-widget" aria-hidden="true">
+          <div class="mock-panel">
+            <div class="mock-panel__label">Forecast</div>
+            <div class="mock-panel__sub">Tomorrow · Low</div>
+            <div class="mock-days">
+              <div class="mock-day">
+                <div class="mock-ladder">
+                  <div class="mock-seg" style="background:#A3CC7A"></div>
+                  <div class="mock-seg" style="background:#66A33E"></div>
+                  <div class="mock-seg" style="background:#2B8200"></div>
+                  <div class="mock-seg"></div><div class="mock-seg"></div><div class="mock-seg"></div>
+                  <div class="mock-seg"></div><div class="mock-seg"></div><div class="mock-seg"></div><div class="mock-seg"></div>
+                </div>
+                <div class="mock-day__name">Tomorrow</div>
+                <div class="mock-day__date">7 Jul</div>
+              </div>
+            </div>
+            <div class="mock-key" style="border:none;padding-top:4px;justify-content:center">
+              <div class="mock-key__item" style="opacity:0.85">
+                <img src="images/ERG_logo_blue.png" alt="" width="72" height="auto" style="height:14px;width:auto">
+              </div>
+            </div>
+          </div>
+        </div>
+        <p class="outcome__caption">Single DAQI ladder filled to the top of the forecast band; band name and date below; ERG credit under the panel.</p>
+      </div>
+
+      <h3>Data source</h3>
+      <ul>
+        <li><strong>URL:</strong> <a href="https://londonair.org.uk/data/londonair/LondonAirForecast.asp">londonair.org.uk/data/londonair/LondonAirForecast.asp</a></li>
+        <li>Use the <strong>text band only</strong> (Low / Moderate / High / V.High) — not a numeric index from that page</li>
+        <li>Display the ERG logo below the panel</li>
+      </ul>
+
+      <h3>Band → ladder fill</h3>
+      <p>Map the band to the <strong>highest index in that band</strong>, then fill segments 1…index (same colours as Recent):</p>
+      <table>
+        <thead>
+          <tr><th>Forecast band</th><th>Display index</th><th>Segments filled</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Low</td><td>3</td><td>1–3</td></tr>
+          <tr><td>Moderate</td><td>6</td><td>1–6</td></tr>
+          <tr><td>High</td><td>9</td><td>1–9</td></tr>
+          <tr><td>V.High</td><td>10</td><td>1–10</td></tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ========== APPENDIX ========== -->
+    <details class="appendix" id="daqi-shared">
+      <summary>Shared DAQI reference — rounding, thresholds, colours</summary>
+      <div class="appendix-body">
+        <p>Used by <a href="#previous-days">Previous days</a> and <a href="#today">Today</a>.</p>
+
+        <h3>Rounding</h3>
+        <p>
+          Round <strong>once to an integer</strong> as the last step before comparing to thresholds.
+          Keep hourly inputs unrounded until that final comparison (avoid rounding intermediate means).
+          Project convention for exact <code>.5</code> ties: round upward (<strong>50.5 → 51</strong>).
+          Use <code>Math.floor(value + 0.5)</code> for nonnegative concentrations.
+        </p>
+
+        <h3>Concentration thresholds (µg/m³) for levels 1–10</h3>
+        <table>
+          <thead>
+            <tr><th>Pollutant</th><th>Lower bounds</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>PM₂.₅</td><td>0, 12, 24, 36, 42, 48, 54, 59, 65, 71</td></tr>
+            <tr><td>PM₁₀</td><td>0, 17, 34, 51, 59, 67, 76, 84, 92, 101</td></tr>
+            <tr><td>NO₂</td><td>0, 68, 135, 201, 268, 335, 401, 468, 535, 601</td></tr>
+            <tr><td>O₃</td><td>0, 34, 67, 101, 121, 141, 161, 188, 214, 241</td></tr>
+          </tbody>
+        </table>
+
+        <h3>Ladder hex colours</h3>
+        <table>
+          <thead>
+            <tr><th>Index</th><th>Band</th><th>Hex</th><th>Swatch</th></tr>
+          </thead>
+          <tbody>
+            <tr><td>1</td><td>Low</td><td><code>#A3CC7A</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#A3CC7A;vertical-align:middle"></span></td></tr>
+            <tr><td>2</td><td>Low</td><td><code>#66A33E</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#66A33E;vertical-align:middle"></span></td></tr>
+            <tr><td>3</td><td>Low</td><td><code>#2B8200</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#2B8200;vertical-align:middle"></span></td></tr>
+            <tr><td>4</td><td>Moderate</td><td><code>#EEBF8F</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#EEBF8F;vertical-align:middle"></span></td></tr>
+            <tr><td>5</td><td>Moderate</td><td><code>#FE994D</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#FE994D;vertical-align:middle"></span></td></tr>
+            <tr><td>6</td><td>Moderate</td><td><code>#F46200</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#F46200;vertical-align:middle"></span></td></tr>
+            <tr><td>7</td><td>High</td><td><code>#D80000</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#D80000;vertical-align:middle"></span></td></tr>
+            <tr><td>8</td><td>High</td><td><code>#A30000</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#A30000;vertical-align:middle"></span></td></tr>
+            <tr><td>9</td><td>High</td><td><code>#7A0000</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#7A0000;vertical-align:middle"></span></td></tr>
+            <tr><td>10</td><td>Very High</td><td><code>#000000</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#000000;vertical-align:middle;border:1px solid #d0d6e0"></span></td></tr>
+            <tr><td>—</td><td>Inactive</td><td><code>#eceef2</code></td><td><span style="display:inline-block;width:28px;height:14px;border-radius:3px;background:#eceef2;vertical-align:middle;border:1px solid #d0d6e0"></span></td></tr>
+          </tbody>
+        </table>
+      </div>
+    </details>
 
     <div class="callout">
-      <strong>Prototype note:</strong> This repository uses mock data in <code>js/air-quality.js</code> for design review. Replace <code>mockPatientExposure()</code> with live API calls following the patterns above before clinical deployment. The prototype still simplifies DAQI by using daily means for all pollutants, but <code>daqiLevel()</code> now applies the project’s single final integer-rounding convention before threshold lookup. Production integrations must also apply the pollutant-specific aggregation rules in Step 1.
+      <strong>Widget header:</strong> title
+      <a href="js/stack-widget.js#L55">“Air quality at patient's home”</a>
+      · patient name · location sector (e.g. SE1).
+    </div>
+    <div class="callout">
+      <strong>Prototype note:</strong> This repo uses mock data in <code>js/air-quality.js</code> for design review.
+      Replace with live API calls following the sections above before clinical deployment.
+      Production must apply the pollutant-specific aggregation and Today trigger rules — the prototype still simplifies some of that path.
     </div>
   </article>
   <script src="js/inactivity-logout.js" defer></script>

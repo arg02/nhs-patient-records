@@ -32,16 +32,22 @@ Epidemiology and WHO/COMEAP health-risk methods express long-term mortality/morb
 
 ## Product / design
 
-_Add further items here as they come up (e.g. promoting a 3.2 variant to the main showcase, live data wiring)._
+| Item | Status |
+|------|--------|
+| Restructure [nhs-data-guide.html](nhs-data-guide.html) into Annual / Previous days / Today / Forecast with end-product mockups | **Done locally (Jul 2026)** — preview before Vercel push |
+| NHS feedback: guide was overwhelming → clearer sections | Addressed in local restructure; await review then deploy |
+| Promote a 3.2 variant to the main showcase | Open |
+| Wire prototype to live exposure API (replace mock) | Open — rules are in the data guide |
+| Prototype still simplifies some Today / pollutant-specific paths vs the guide | Open — keep guide normative; align JS when integrating |
 
 ---
 
-## Project documentation gaps
+## Project documentation
 
 | Doc | Status |
 |-----|--------|
-| [README.md](README.md) | Exists — pages, concepts, maths, structure, deploy |
-| [nhs-data-guide.html](nhs-data-guide.html) | Exists — NHS integration / data rules |
-| This roadmap | Exists — open research & next steps |
-| `AGENTS.md` / Cursor rules | **Missing** — no agent guidance for Cursor yet |
-| Spec / design-decision log | **Missing** — decisions live in README “Key design decisions” only |
+| [README.md](README.md) | Exists — pages, concepts, maths, hosting, structure |
+| [AGENTS.md](AGENTS.md) | Exists — agent workflow, invariants, “update docs after meaningful work” |
+| [ROADMAP.md](ROADMAP.md) | This file |
+| [nhs-data-guide.html](nhs-data-guide.html) | Exists — NHS integration (four-section layout) |
+| Spec / design-decision log | Still thin — key decisions live in README; expand if decisions proliferate |
