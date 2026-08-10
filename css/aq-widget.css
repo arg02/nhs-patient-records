@@ -797,12 +797,18 @@
 }
 
 /* 3.2f — hourly Today above Long-term | Recent | Forecast.
-   Today block width is synced in JS to the main row (see syncV32fTodayWidth). */
+   Ladders span keeps a Today-sized spacer so overall width matches 3.2d/e;
+   Today block width is synced in JS to the full main row. */
 .strip-stack--v32f {
   --v32d-compact-pad-x: 20px;
   --day-slot-w: 56px;
   --v32d-recent-w: 322px;
   --day-compact-w: calc(var(--day-slot-w) + 2 * var(--v32d-compact-pad-x));
+  /* Same outer ladders span as 3.2d/e: Recent + Today slot + Forecast */
+  --v32f-ladders-w: calc(
+    var(--v32d-recent-w) + var(--v32-zone-gap) + var(--day-compact-w)
+    + var(--v32-zone-gap) + var(--day-compact-w)
+  );
   width: max-content;
   max-width: 100%;
 }
@@ -820,7 +826,7 @@
   flex-direction: column;
   min-width: 0;
   box-sizing: border-box;
-  /* width set by syncV32fTodayWidth to match .zone-main-row */
+  flex: 0 0 auto;
 }
 .strip-stack--v32f .zone-main-row {
   display: flex;
@@ -842,13 +848,16 @@
 .strip-stack--v32f .zone-ladders-span {
   position: relative;
   display: grid;
-  grid-template-columns: max-content max-content;
+  /* Fill the same outer span as 3.2d/e (Recent+Today+Forecast); Recent grows, Forecast stays compact */
+  grid-template-columns: 1fr var(--day-compact-w);
   grid-template-rows: 1fr;
   gap: var(--v32-zone-gap);
   align-items: stretch;
-  justify-items: start;
-  width: max-content;
+  justify-items: stretch;
+  width: var(--v32f-ladders-w);
+  max-width: 100%;
   min-height: 100%;
+  box-sizing: border-box;
 }
 .strip-stack--v32f .zone-long-block > .zone-card {
   box-sizing: border-box;
@@ -864,9 +873,8 @@
   flex: 1;
 }
 .strip-stack--v32f .zone-ladders-span > .zone-recent-block {
-  flex: 0 0 auto;
-  width: var(--v32d-recent-w);
-  max-width: 100%;
+  width: 100%;
+  max-width: none;
   display: flex;
   flex-direction: column;
   min-width: 0;
@@ -876,9 +884,8 @@
   position: relative;
 }
 .strip-stack--v32f .zone-ladders-span > .zone-forecast-block {
-  flex: 0 0 auto;
-  width: var(--day-compact-w);
-  max-width: var(--day-compact-w);
+  width: 100%;
+  max-width: none;
   display: flex;
   flex-direction: column;
   min-width: 0;

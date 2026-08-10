@@ -448,14 +448,17 @@ const ZONES_V32F = `
   </div>
 `;
 
+/** Match hourly Today to the full main row (same outer width as 3.2d/e). */
 function syncV32fTodayWidth(strip) {
   const todayBlock = strip?.querySelector('[data-today-block]');
+  const todayCard = strip?.querySelector('[data-today]');
   const mainRow = strip?.querySelector('[data-main-row]');
   if (!todayBlock || !mainRow) return;
-  // Match hourly Today card to Long-term | Recent | Forecast row width.
-  todayBlock.style.width = '';
   const mainWidth = Math.round(mainRow.getBoundingClientRect().width);
-  if (mainWidth > 0) todayBlock.style.width = `${mainWidth}px`;
+  if (mainWidth <= 0) return;
+  const px = `${mainWidth}px`;
+  if (todayBlock.style.width !== px) todayBlock.style.width = px;
+  if (todayCard) todayCard.style.width = '100%';
 }
 
 function updateStackV32F(strip, data, species = DEFAULT_SPECIES) {
