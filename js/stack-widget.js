@@ -10,7 +10,7 @@ import {
   todayCardHtml,
   todayHourlyCardHtml,
   combinedLaddersCardHtml,
-} from './widget-render.js?v=29';
+} from './widget-render.js?v=32';
 import { whoAnnualChartAligned } from './who-chart-v31.js?v=6';
 import { whoAnnualChartV32 } from './who-chart-v32.js?v=8';
 import { whoAnnualChartV32A, whoAnnualChartV32B, whoAnnualChartV32C, pollutantKeyStripAlignedHtml } from './who-chart-v32a.js?v=7';

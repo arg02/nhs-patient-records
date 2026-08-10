@@ -646,7 +646,8 @@ export function todayCardHtml(recentDays, species, { ladderSize } = {}) {
 
 /**
  * Expanded Today card — one mini DAQI ladder per completed hour so far.
- * Lag-window hours (default 3–6h before "now") get a soft highlight.
+ * Lag-window hours (default 3–6h before "now") get a shared dotted grey outline box
+ * with the caption directly underneath. The current (latest) hour is not outlined.
  */
 export function todayHourlyCardHtml(hourlySeries, { ladderSize } = {}) {
   const lh = ladderSize?.height ?? LADDER_HEIGHT;
@@ -664,30 +665,50 @@ export function todayHourlyCardHtml(hourlySeries, { ladderSize } = {}) {
   }
 
   const labelHours = new Set([0, 6, 9, 12, hours[hours.length - 1]?.hour].filter((h) => h != null));
+  const lagIndexes = hours
+    .map((h, i) => (h.inLagWindow && !h.isLatest ? i : -1))
+    .filter((i) => i >= 0);
+  const lagStart = lagIndexes[0];
+  const lagEnd = lagIndexes[lagIndexes.length - 1];
+  const lagCount = lagIndexes.length;
 
-  const slots = hours.map((h) => {
+  const visualSlots = hours.map((h, i) => {
+    const inLagBox = h.inLagWindow && !h.isLatest;
     const classes = [
       'hour-slot',
-      h.inLagWindow ? 'hour-slot--lag' : '',
-      h.isLatest ? 'hour-slot--latest' : '',
+      inLagBox ? 'hour-slot--lag' : '',
+      i === lagStart ? 'hour-slot--lag-start' : '',
+      i === lagEnd ? 'hour-slot--lag-end' : '',
     ].filter(Boolean).join(' ');
+    const title = `${h.label}:00 · DAQI ${h.level ?? '—'}${h.driver ? ` (${h.driver.toUpperCase()})` : ''}${inLagBox ? ' · 3–6h lag window' : ''}`;
+    return `<div class="day-slot day-slot--visual"><div class="${classes}" title="${title}">${daqiStackedBar(h.level, { height: lh, width: lw })}</div></div>`;
+  }).join('');
+
+  const nameSlots = hours.map((h) => {
     const name = labelHours.has(h.hour) ? h.label : '';
-    const title = `${h.label}:00 · DAQI ${h.level ?? '—'}${h.driver ? ` (${h.driver.toUpperCase()})` : ''}${h.inLagWindow ? ' · 3–6h lag window' : ''}`;
-    return {
-      visual: `<div class="${classes}" title="${title}">${daqiStackedBar(h.level, { height: lh, width: lw })}</div>`,
-      name,
-      date: '',
-    };
-  });
+    return `<div class="day-slot day-slot--name">${name}</div>`;
+  }).join('');
+
+  const lagCaptionRow = lagCount > 0
+    ? `<div class="hourly-lag-caption-row" aria-hidden="true">
+        <div class="hourly-lag-caption-pad" style="flex:${lagStart} 1 0"></div>
+        <div class="hourly-lag-caption" style="flex:${lagCount} 1 0">3–6h lag window</div>
+        <div class="hourly-lag-caption-pad" style="flex:${Math.max(0, hours.length - lagEnd - 1)} 1 0"></div>
+      </div>`
+    : '';
 
   return `
     <div class="zone-label">Today · hourly <span class="zone-label-date">${dateChip}</span></div>
     <div class="zone-main zone-main--days zone-main--hourly">
       <div class="day-panel day-panel--hourly">
-        ${forecastLadderAlignHtml(slots)}
-        <div class="hourly-lag-hint" aria-hidden="true">
-          <span class="hourly-lag-swatch"></span>
-          3–6h lag window
+        <div class="day-stack day-stack--ladders day-stack--span-band day-stack--hourly">
+          <div class="day-stack-main">
+            <div class="recent-band-plot">
+              <div class="day-visual-row">${visualSlots}</div>
+            </div>
+            <div class="day-name-row">${nameSlots}</div>
+            ${lagCaptionRow}
+          </div>
         </div>
       </div>
     </div>
