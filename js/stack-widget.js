@@ -448,6 +448,16 @@ const ZONES_V32F = `
   </div>
 `;
 
+function syncV32fTodayWidth(strip) {
+  const todayBlock = strip?.querySelector('[data-today-block]');
+  const mainRow = strip?.querySelector('[data-main-row]');
+  if (!todayBlock || !mainRow) return;
+  // Match hourly Today card to Long-term | Recent | Forecast row width.
+  todayBlock.style.width = '';
+  const mainWidth = Math.round(mainRow.getBoundingClientRect().width);
+  if (mainWidth > 0) todayBlock.style.width = `${mainWidth}px`;
+}
+
 function updateStackV32F(strip, data, species = DEFAULT_SPECIES) {
   const year = data.annualYear ?? 2022;
   const todayDay = data.recentDays.find((d) => d.offset === 0);
@@ -485,7 +495,10 @@ function updateStackV32F(strip, data, species = DEFAULT_SPECIES) {
   bandLayer.querySelector('[data-band-axis]').innerHTML = bandAxisLabelsHtml();
   bandLayer.querySelector('[data-band-lines]').innerHTML = bandAxisLinesHtml();
   requestAnimationFrame(() => {
-    requestAnimationFrame(() => syncV32cLaddersBandLayer(strip));
+    requestAnimationFrame(() => {
+      syncV32fTodayWidth(strip);
+      syncV32cLaddersBandLayer(strip);
+    });
   });
 }
 
@@ -494,8 +507,13 @@ export function createStackWidgetV32F(data, { species = DEFAULT_SPECIES } = {}) 
   updateStackV32F(strip, data, species);
   strip._update = () => updateStackV32F(strip, data, species);
   if (!strip._v32fBandObserver) {
-    strip._v32fBandObserver = new ResizeObserver(() => syncV32cLaddersBandLayer(strip));
+    strip._v32fBandObserver = new ResizeObserver(() => {
+      syncV32fTodayWidth(strip);
+      syncV32cLaddersBandLayer(strip);
+    });
     strip._v32fBandObserver.observe(strip);
+    const mainRow = strip.querySelector('[data-main-row]');
+    if (mainRow) strip._v32fBandObserver.observe(mainRow);
   }
   return strip;
 }

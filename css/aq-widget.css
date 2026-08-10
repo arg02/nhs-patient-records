@@ -796,8 +796,8 @@
   position: relative;
 }
 
-/* 3.2f — hourly Today above Long-term | Recent | Forecast;
-   Today card width matches the main row (long + recent + forecast). */
+/* 3.2f — hourly Today above Long-term | Recent | Forecast.
+   Today block width is synced in JS to the main row (see syncV32fTodayWidth). */
 .strip-stack--v32f {
   --v32d-compact-pad-x: 20px;
   --day-slot-w: 56px;
@@ -807,9 +807,9 @@
   max-width: 100%;
 }
 .strip-stack--v32f .aq-zones {
-  display: grid;
-  grid-template-columns: max-content;
-  justify-items: stretch;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
   gap: var(--v32-zone-gap);
   width: max-content;
   max-width: 100%;
@@ -819,8 +819,8 @@
   display: flex;
   flex-direction: column;
   min-width: 0;
-  width: 100%;
   box-sizing: border-box;
+  /* width set by syncV32fTodayWidth to match .zone-main-row */
 }
 .strip-stack--v32f .zone-main-row {
   display: flex;
