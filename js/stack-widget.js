@@ -1,4 +1,4 @@
-import { clinicalGuidanceHtml, recentDaysForV33, recentDaysForLadder } from './air-quality.js?v=9';
+import { clinicalGuidanceHtml, recentDaysForV33, recentDaysForLadder, todayHourlyPrototypeSeries } from './air-quality.js?v=11';
 import {
   whoAnnualChart,
   recentCardHtml,
@@ -8,8 +8,9 @@ import {
   bandAxisLinesHtml,
   syncV32cLaddersBandLayer,
   todayCardHtml,
+  todayHourlyCardHtml,
   combinedLaddersCardHtml,
-} from './widget-render.js?v=27';
+} from './widget-render.js?v=29';
 import { whoAnnualChartAligned } from './who-chart-v31.js?v=6';
 import { whoAnnualChartV32 } from './who-chart-v32.js?v=8';
 import { whoAnnualChartV32A, whoAnnualChartV32B, whoAnnualChartV32C, pollutantKeyStripAlignedHtml } from './who-chart-v32a.js?v=7';
@@ -418,6 +419,83 @@ export function createStackWidgetV32E(data, { species = DEFAULT_SPECIES } = {}) 
   if (!strip._v32eBandObserver) {
     strip._v32eBandObserver = new ResizeObserver(() => syncV32cLaddersBandLayer(strip));
     strip._v32eBandObserver.observe(strip);
+  }
+  return strip;
+}
+
+/** 3.2f — hourly Today on its own row above Long-term | Recent | Forecast */
+const ZONES_V32F = `
+  <div class="zone-today-block" data-today-block>
+    <section class="zone-card zone-today" data-today></section>
+  </div>
+  <div class="zone-main-row" data-main-row>
+    <div class="zone-long-block" data-long-block>
+      <section class="zone-card zone-long" data-long></section>
+    </div>
+    <div class="zone-ladders-span" data-ladders-span>
+      <div class="ladders-band-layer" aria-hidden="true">
+        <div class="ladders-band-axis" data-band-axis></div>
+        <div class="ladders-band-lines" data-band-lines></div>
+      </div>
+      <div class="zone-recent-block" data-recent-block>
+        <section class="zone-card zone-recent" data-recent></section>
+      </div>
+      <div class="zone-forecast-block" data-forecast-block>
+        <section class="zone-card zone-forecast" data-forecast></section>
+        <div class="erg-credit-wrap erg-credit-wrap--outside" data-erg-credit></div>
+      </div>
+    </div>
+  </div>
+`;
+
+function updateStackV32F(strip, data, species = DEFAULT_SPECIES) {
+  const year = data.annualYear ?? 2022;
+  const todayDay = data.recentDays.find((d) => d.offset === 0);
+  const hourly = todayHourlyPrototypeSeries({
+    asOfHour: 14,
+    date: todayDay?.date ?? new Date(),
+  });
+
+  strip.querySelector('[data-long]').innerHTML = `
+    <div class="zone-label-stack">
+      <div class="zone-label">Long-term</div>
+      <div class="zone-year">(${year})</div>
+    </div>
+    <div class="zone-main">${whoAnnualChartV32C(data.annual)}</div>
+  `;
+  strip.querySelector('[data-recent]').innerHTML = recentCardHtml(pastDaysForLadder(data.recentDays), species, {
+    visual: 'ladders',
+    ladderSize: LADDER_SIZE,
+    legendOutside: true,
+    spanBand: true,
+    dividerBeforeToday: false,
+  });
+  strip.querySelector('[data-today]').innerHTML = todayHourlyCardHtml(hourly, {
+    ladderSize: { ...LADDER_SIZE, hourlyWidth: 9 },
+  });
+  strip.querySelector('[data-forecast]').innerHTML = forecastCardHtml(data.forecast, species, {
+    type: 'ladder',
+    ladderSize: LADDER_SIZE,
+    ladderChartAlign: true,
+    compact: true,
+  });
+  strip.querySelector('[data-erg-credit]').innerHTML = ergCreditHtml('blue');
+
+  const bandLayer = strip.querySelector('.ladders-band-layer');
+  bandLayer.querySelector('[data-band-axis]').innerHTML = bandAxisLabelsHtml();
+  bandLayer.querySelector('[data-band-lines]').innerHTML = bandAxisLinesHtml();
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => syncV32cLaddersBandLayer(strip));
+  });
+}
+
+export function createStackWidgetV32F(data, { species = DEFAULT_SPECIES } = {}) {
+  const strip = shellV32A(data, ZONES_V32F, 'f');
+  updateStackV32F(strip, data, species);
+  strip._update = () => updateStackV32F(strip, data, species);
+  if (!strip._v32fBandObserver) {
+    strip._v32fBandObserver = new ResizeObserver(() => syncV32cLaddersBandLayer(strip));
+    strip._v32fBandObserver.observe(strip);
   }
   return strip;
 }

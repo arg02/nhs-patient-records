@@ -28,16 +28,34 @@ Epidemiology and WHO/COMEAP health-risk methods express long-term mortality/morb
 
 **Prototype hook:** `HEALTH_ADVICE.longTerm` in [`js/air-quality.js`](js/air-quality.js) is still a placeholder for long-term clinical copy.
 
+### Short-term hourly NO₂ / asthma admissions (Birmingham–Solihull)
+
+**Source (Aug 2026):** Shukla et al., BMJ Open 16:e110612 — [doi:10.1136/bmjopen-2025-110612](https://doi.org/10.1136/bmjopen-2025-110612). Full PDF reviewed locally (CC BY).
+
+**Headline findings:** time-series of **18 943** adult (≥16) acute asthma admissions at four Birmingham–Solihull hospitals (Jun 2016–May 2022); Poisson GAM + DLNM on **hourly NO₂** vs hourly admissions; mean NO₂ **18 µg/m³** over lag **0–24 h** → **RR 1.13** (95% CI 1.01–1.26) for **daytime** admissions vs **no exposure**; **RR 1.11** (1.01–1.23) **per +10 µg/m³**; significant association at lag **3–6 h**; stronger in most deprived areas. Authors’ framing: high-temporal resolution for **healthcare preparedness / resource allocation**, not individual prediction.
+
+**Product design takeaways (not locked):**
+
+1. **3.2f hourly Today** is justified as an **optional NO₂ context strip**, not a replacement for the single Today ladder (latest-hour NO₂ / PM·O₃ triggers stay normative).
+2. Lag tint is **NO₂-specific**; overall-max DAQI hours can misattribute PM/O₃ peaks.
+3. Paper contrast is absolute mean vs **zero**, not “rising” — avoid rise-implies-admissions messaging; 18 µg/m³ is still **DAQI Low** (NO₂ Moderate ≥68) so this paper does **not** redefine DEFRA Moderate+ action bands.
+4. Footer: population association / preparedness language; no personal admission risk %; keep DAQI advice as DEFRA bands.
+5. No change implied for Recent (−3/−2/−1) or Forecast from this paper alone.
+
+**Next prototype experiments:** compact Today + expandable hourly NO₂; tint only when lag-window hours exceed a stated absolute µg/m³ (not any uptick); µg/m³ tooltips beside DAQI; Low-band (~40–60) commute peak mock alongside Moderate peak.
+
 ---
 
 ## Product / design
 
 | Item | Status |
 |------|--------|
-| Restructure [nhs-data-guide.html](nhs-data-guide.html) into Annual / Previous days / Today / Forecast with end-product mockups | **Done** (Jul 2026) — live on GitHub Pages |
+| Restructure [nhs-data-guide.html](nhs-data-guide.html) into Annual / Previous days / Today / Forecast with end-product mockups | **Done** (Jul 2026) — deploy via Vercel only |
+| Keep GitHub Pages unpublished (proprietary trigger table) | **Policy** — Vercel password gate is the public host; remind if asked to push to Pages |
 | Promote a 3.2 variant to the main showcase | Open |
 | Wire prototype to live exposure API (replace mock) | Open — rules are in the data guide |
 | Prototype still simplifies some Today / pollutant-specific paths vs the guide | Open — keep guide normative; align JS when integrating |
+| Explore hourly Today panel (3.2f) — lag-sensitive short-term view | **Prototype** (Aug 2026) — mock NO₂ morning peak; 3–6h lag tint; layout experiment: hourly Today **full-width row above** Long-term \| Recent \| Forecast (not squeezed in ladders span); decide whether this supplements or replaces the single Today ladder; framing caveats from Shukla et al. (see research note above) |
 
 ---
 

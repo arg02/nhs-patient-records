@@ -13,9 +13,10 @@ Static HTML/CSS/JS prototypes for an NHS Cerner-style air quality widget (Long-t
 
 ## Hosting
 
-- **GitHub Pages:** https://arg02.github.io/nhs-patient-records/ (public; `main` branch root)
-- **Vercel:** password gate via `middleware.js`, `SITE_PASSWORD` env, inactivity logout
-- Local preview: `python3 serve.py 8080` (or `8765`)
+- **Vercel only** (password-protected): `middleware.js`, `SITE_PASSWORD`, inactivity logout. This is the shareable site.
+- **GitHub Pages stays OFF.** The NHS data guide includes proprietary ERG index-point triggers; a public Pages site would expose them without a password. Pages has been deliberately unpublished.
+- If the user asks to “push to GitHub Pages”, **remind them Pages is off for that reason**, then push to `main` so **Vercel** deploys instead (unless they explicitly insist on re-enabling Pages).
+- Local preview: `python3 serve.py 8080` (or `8765`) — no password gate. `js/inactivity-logout.js` is a no-op on localhost / 127.0.0.1 (it must not redirect to `/__logout`); `serve.py` also no-ops `/__logout` and `/__activity`.
 
 ## After meaningful work — update docs in the same task
 
@@ -30,6 +31,8 @@ Do **not** wait to be asked. When you finish a new feature, lock a product/data 
 
 Keep README factual; put unresolved research on the roadmap; keep AGENTS short and actionable.
 
+Also update `~/Sites/global/projects/nhs-patient-records.md` (and a `learnings/` note when the session was decision-heavy). If the user asks to “push to GitHub Pages,” remind them Pages stays off and deploy via Vercel instead.
+
 ## Hard invariants
 
 1. **WHO annual ≠ DAQI daily** — keep long-term WHO maths and DAQI index levels on separate scales.
@@ -39,6 +42,7 @@ Keep README factual; put unresolved research on the roadmap; keep AGENTS short a
 5. **Rounding** — once, last step before DAQI compare; project convention `.5` → up (`Math.floor(value + 0.5)`).
 6. **UK calendar days** — group with `Europe/London` (BST-aware); timestamps are GMT hour-start.
 7. **Commits / push** — only when the user asks. Prefer local preview before Vercel push when they say so.
+8. **No GitHub Pages** — stay unpublished; Vercel is the host. Remind the user if they ask for Pages.
 
 ## Where to look
 
@@ -46,6 +50,7 @@ Keep README factual; put unresolved research on the roadmap; keep AGENTS short a
 |------|----------|
 | DAQI thresholds, colours, mock patient | `js/air-quality.js` |
 | Ladder / widget factories | `js/widget-render.js`, `js/stack-widget.js` |
+| Hourly Today exploration (3.2f) | `concept32.html#design-3-2f`, `todayHourlyPrototypeSeries` / `todayHourlyCardHtml`; layout: hourly row above Long-term \| Recent \| Forecast |
 | Styles | `css/aq-widget.css`, `css/site-nav.css` |
 | Password / logout / activity | `middleware.js`, `js/inactivity-logout.js` |
 | Fill / threshold tests | `scripts/verify-fill-logic.mjs` |

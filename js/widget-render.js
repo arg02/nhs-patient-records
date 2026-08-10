@@ -644,6 +644,56 @@ export function todayCardHtml(recentDays, species, { ladderSize } = {}) {
   `;
 }
 
+/**
+ * Expanded Today card — one mini DAQI ladder per completed hour so far.
+ * Lag-window hours (default 3–6h before "now") get a soft highlight.
+ */
+export function todayHourlyCardHtml(hourlySeries, { ladderSize } = {}) {
+  const lh = ladderSize?.height ?? LADDER_HEIGHT;
+  const lw = ladderSize?.hourlyWidth ?? 9;
+  const hours = hourlySeries?.hours ?? [];
+  const dateChip = formatDateChip(hourlySeries?.date ?? new Date());
+
+  if (!hours.length) {
+    return `
+      <div class="zone-label">Today · hourly</div>
+      <div class="zone-main zone-main--days zone-main--hourly">
+        <div class="day-panel day-panel--hourly"></div>
+      </div>
+    `;
+  }
+
+  const labelHours = new Set([0, 6, 9, 12, hours[hours.length - 1]?.hour].filter((h) => h != null));
+
+  const slots = hours.map((h) => {
+    const classes = [
+      'hour-slot',
+      h.inLagWindow ? 'hour-slot--lag' : '',
+      h.isLatest ? 'hour-slot--latest' : '',
+    ].filter(Boolean).join(' ');
+    const name = labelHours.has(h.hour) ? h.label : '';
+    const title = `${h.label}:00 · DAQI ${h.level ?? '—'}${h.driver ? ` (${h.driver.toUpperCase()})` : ''}${h.inLagWindow ? ' · 3–6h lag window' : ''}`;
+    return {
+      visual: `<div class="${classes}" title="${title}">${daqiStackedBar(h.level, { height: lh, width: lw })}</div>`,
+      name,
+      date: '',
+    };
+  });
+
+  return `
+    <div class="zone-label">Today · hourly <span class="zone-label-date">${dateChip}</span></div>
+    <div class="zone-main zone-main--days zone-main--hourly">
+      <div class="day-panel day-panel--hourly">
+        ${forecastLadderAlignHtml(slots)}
+        <div class="hourly-lag-hint" aria-hidden="true">
+          <span class="hourly-lag-swatch"></span>
+          3–6h lag window
+        </div>
+      </div>
+    </div>
+  `;
+}
+
 export function forecastCardHtml(forecast, species, { type = 'blob', ladderSize, balanceLegend = false, ladderChartAlign = false, compact = false } = {}) {
   const level = forecastBandToDaqi(forecast.band);
   const lh = ladderSize?.height ?? LADDER_HEIGHT;

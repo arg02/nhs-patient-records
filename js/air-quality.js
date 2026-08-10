@@ -224,6 +224,72 @@ export function daqiLevelForDay(day) {
   return max || null;
 }
 
+/**
+ * Prototype hourly series for an expanded Today panel.
+ * Deterministic commute-peak NO₂ story: Moderate (~DAQI 3) around 09–10,
+ * so at asOfHour=14 the elevated window sits in the 3–6h lag band linked to
+ * short-term respiratory admissions in some urban epidemiology.
+ *
+ * Each hour’s `level` is max DAQI across pollutants (Today “overall” index).
+ */
+export function todayHourlyPrototypeSeries({ asOfHour = 14, date = new Date() } = {}) {
+  const hourCount = Math.max(1, Math.min(24, asOfHour));
+
+  // µg/m³ by hour (UK local, time-beginning). NO₂ drives a Moderate (DAQI 4–5) peak.
+  const no2ByHour = [
+    32, 28, 26, 24, 30, 48, 72, 120, 210, 255, 225, 150, 95, 78,
+    70, 64, 58, 52, 48, 44, 40, 38, 36, 34,
+  ];
+  const pm10ByHour = [
+    12, 11, 10, 10, 11, 13, 16, 20, 24, 28, 26, 22, 18, 16,
+    15, 14, 13, 12, 12, 11, 11, 11, 10, 10,
+  ];
+  const pm25ByHour = [
+    6, 5, 5, 5, 6, 7, 9, 11, 13, 15, 14, 12, 10, 9,
+    8, 8, 7, 7, 6, 6, 6, 5, 5, 5,
+  ];
+  const o3ByHour = [
+    28, 26, 24, 22, 25, 30, 34, 38, 42, 48, 52, 50, 46, 42,
+    40, 38, 36, 34, 32, 30, 28, 28, 27, 26,
+  ];
+
+  const hours = [];
+  for (let h = 0; h < hourCount; h++) {
+    const values = {
+      no2: no2ByHour[h],
+      pm25: pm25ByHour[h],
+      pm10: pm10ByHour[h],
+      o3: o3ByHour[h],
+    };
+    let level = 0;
+    let driver = null;
+    for (const p of POLLUTANTS) {
+      const lv = daqiLevel(values[p.key], p.key);
+      if (lv != null && lv > level) {
+        level = lv;
+        driver = p.key;
+      }
+    }
+    const lagHoursAgo = asOfHour - 1 - h; // completed hour distance from "now"
+    hours.push({
+      hour: h,
+      label: `${String(h).padStart(2, '0')}`,
+      values,
+      level: level || null,
+      driver,
+      inLagWindow: lagHoursAgo >= 3 && lagHoursAgo <= 6,
+      isLatest: h === hourCount - 1,
+    });
+  }
+
+  return {
+    asOfHour,
+    date,
+    hours,
+    peakLevel: hours.reduce((m, x) => Math.max(m, x.level ?? 0), 0) || null,
+  };
+}
+
 export const HEALTH_ADVICE = {
   longTerm:
     'Clinical guidance here about risk that long-term exposure above WHO confers on an individual.',

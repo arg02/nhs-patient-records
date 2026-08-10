@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Screenshot — Design 3.2f hourly Today</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/aq-widget.css?v=74">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      background: #e4e7ec;
+      font-family: "DM Sans", sans-serif;
+      padding: 24px;
+    }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="module">
+    import { mockPatientExposure } from './js/air-quality.js?v=11';
+    import { createStackWidgetV32F } from './js/stack-widget.js?v=49';
+    document.getElementById('root').appendChild(createStackWidgetV32F(mockPatientExposure()));
+  </script>
+</body>
+</html>

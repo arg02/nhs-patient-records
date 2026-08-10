@@ -4,9 +4,7 @@ Prototype widgets exploring how long-term WHO exposure, recent daily air quality
 
 **Docs for agents:** [AGENTS.md](AGENTS.md) · **Open work:** [ROADMAP.md](ROADMAP.md) · **NHS integration:** [nhs-data-guide.html](nhs-data-guide.html)
 
-**Live sites:**
-- [GitHub Pages](https://arg02.github.io/nhs-patient-records/) (public)
-- [Vercel](https://nhs-patient-records.vercel.app/) (password-protected via `SITE_PASSWORD`)
+**Live site:** [Vercel](https://nhs-patient-records.vercel.app/) (password-protected via `SITE_PASSWORD`). GitHub Pages is kept **unpublished** so the proprietary trigger table in the NHS data guide is not public.
 
 Local preview: `python3 serve.py 8080` (or `8765`).
 
@@ -61,6 +59,8 @@ Detailed iteration history lives in [concept3.html](concept3.html) and [concept3
 | **3.2** | Ratio **above** bar, concentration **below**; WHO label left, µg/m³ right | DAQI ladders |
 | **3.2a** | Coloured × ratios; pollutant key strip; WHO µg/m³ on bars; year label; ERG credit (dark logo) | DAQI ladders — see [concept32.html](concept32.html) |
 | **3.2b** | Same as 3.2a | Same; light-blue ERG logo under Forecast |
+| **3.2c–e** | Same long-term as 3.2a/c | Layout splits: band-axis Recent; separate Recent/Today/Forecast (3.2d); combined panel (3.2e) |
+| **3.2f** | Same as 3.2d long-term | **Hourly Today** on its own row above Long-term \| Recent \| Forecast; mini DAQI ladders (hours so far); 3–6h lag tint; mock NO₂ commute peak |
 | **3.3** | Alternative annual profile; coloured × ratios | DAQI **circle stacks** (varied demo levels) |
 | **3.4** | Reuses 3.3 long-term chart | Full **13-level CAQI** circle stacks + five-group legend |
 | **3.5** | Reuses 3.2 aligned chart | Full CAQI **WHO-line pill bars** (horizontal colour strips) + legend |
@@ -128,7 +128,7 @@ Demo overrides (not “real” readings) are applied per variant for visual vari
 ├── ROADMAP.md              # Open research & next steps
 ├── index.html              # Concepts 1–3 showcase
 ├── concept3.html           # Design 3 iteration workspace (3.0–3.5)
-├── concept32.html          # Design 3.2 coloured-ratio fork (3.2a / 3.2b)
+├── concept32.html          # Design 3.2 coloured-ratio fork (3.2a–f; 3.2f = hourly Today)
 ├── nhs-data-guide.html     # NHS implementer guide (4 sections + mockups)
 ├── middleware.js           # Vercel password gate, logout, activity refresh
 ├── images/                 # ERG logos for forecast credit
@@ -192,15 +192,15 @@ node scripts/verify-fill-logic.mjs
 
 ## Deployment
 
-**GitHub Pages** (public): push to `main`; site at https://arg02.github.io/nhs-patient-records/
+**Vercel** (password-protected): push to `main`; set `SITE_PASSWORD` in the project. Middleware serves the password form and `/__logout` / `/__activity`.
 
-**Vercel** (password-protected): same push; set `SITE_PASSWORD` in the project. Middleware serves the password form and `/__logout` / `/__activity`.
+**GitHub Pages:** leave unpublished. The integration guide includes proprietary ERG index-point triggers that should stay behind the Vercel password gate.
 
 ```bash
 git push origin main
 ```
 
-Local: `python3 serve.py 8080` (no password gate).
+Local: `python3 serve.py 8080` (no password gate). Inactivity logout and `/__logout` / `/__activity` are Vercel-only; the local server and script skip them so preview is not bounced to `/__logout`.
 
 ---
 
