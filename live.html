@@ -187,8 +187,10 @@
       : (summary.dataHour != null
         ? `data hour ${String(summary.dataHour).padStart(2, '0')}:00 UK`
         : 'no data hours yet');
+    const { lat, lng } = bundle.widgetData.live;
     metaEl.textContent = [
       `Source: ${summary.source}`,
+      `location ${Number(lat).toFixed(5)}, ${Number(lng).toFixed(5)}`,
       `UK calendar day ${summary.ukDateKey} (grouping only)`,
       dataLabel,
       `Today level ${summary.todayLevel}`,
