@@ -3,7 +3,7 @@
   "version": "1.0.1",
   "private": true,
   "type": "module",
-  "description": "Static air quality patient-record prototype with a Vercel password gate.",
+  "description": "Static air quality patient-record prototype with Firebase Hosting password gate.",
   "scripts": {
     "start": "node cloud_run/server.mjs",
     "ingest:live": "node scripts/hourly-ingest.mjs --live",
@@ -21,7 +21,6 @@
     "serve": "python3 serve.py 8080"
   },
   "dependencies": {
-    "@google-cloud/storage": "^7.17.0",
-    "@vercel/functions": "^3.7.5"
+    "@google-cloud/storage": "^7.17.0"
   }
 }

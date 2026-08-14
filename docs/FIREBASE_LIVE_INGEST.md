@@ -135,7 +135,7 @@ Responses use `Cache-Control: no-store`. Implementation: `cloud_run/server.mjs` 
 | `scripts/hourly-ingest.mjs` | Shared ingest (`--gcs` for Cloud Run) |
 | `scripts/deploy_live_ingest.sh` | One-shot deploy |
 | `.firebaserc` / `firebase.json` | Hosting + `siteGate` rewrites; `/data/live/**` via function proxy |
-| `functions/index.js` | `siteGate` — password gate (ports `middleware.js`) |
+| `functions/index.js` | `siteGate` — password gate + live JSON proxy |
 | `scripts/prepare_firebase_public.sh` | Copy static site → `public/` + `functions/hosting-pages/` |
 
 ## Smoke tests
@@ -176,7 +176,7 @@ curl -sS -o /dev/null -w '%{http_code}
 firebase functions:list --project nhs-patient-records                  # siteGate, europe-west2
 ```
 
-Manual: log in with `SITE_PASSWORD` (same as Vercel), confirm `live.html` loads `/data/live/` JSON and inactivity logout.
+Manual: log in with `SITE_PASSWORD`, confirm `live.html` loads `/data/live/` JSON and inactivity logout.
 
 ### Build `public/`
 
@@ -190,7 +190,7 @@ Includes root `*.html`, `css/`, `js/`, `images/`. **Excludes** `data/live/` (liv
 
 ### Secret Manager — SITE_PASSWORD
 
-Create manually (same value as Vercel `SITE_PASSWORD`; do not commit):
+Create manually (do not commit):
 
 ```bash
 gcloud config set project nhs-patient-records
@@ -210,8 +210,6 @@ Firebase Functions v2 binds `SITE_PASSWORD` on deploy via `defineSecret` in `fun
 
 ### Auth model (`siteGate` function)
 
-Ports [middleware.js](../middleware.js) exactly:
-
 | Route | Behaviour |
 |-------|-----------|
 | `POST /__auth` | Form login → `__session` cookie (SHA-256 of `v1:password`, 30 min; Hosting only forwards this name to Cloud Run) |
@@ -222,7 +220,7 @@ Ports [middleware.js](../middleware.js) exactly:
 
 **Static assets** (`css/`, `js/`, `images/`) are served directly from Hosting without the gate (HTML and live JSON stay protected).
 
-**Why `__session` (not `nhs_aq_gate`)?** Firebase Hosting strips all cookies except `__session` when rewriting to Cloud Run (including Functions v2). Vercel middleware keeps `nhs_aq_gate`; same hash and 30-minute rolling refresh. Proxying `/data/live/**` through `siteGate` keeps live JSON behind the same session as HTML.
+**Why `__session`?** Firebase Hosting strips all cookies except `__session` when rewriting to Cloud Run (including Functions v2). Proxying `/data/live/**` through `siteGate` keeps live JSON behind the same session as HTML.
 
 Grant the Functions runtime SA **`roles/run.invoker`** on `live-ingest` (if not already):
 
@@ -277,9 +275,30 @@ Build steps mirror local `npm run deploy:firebase`: `npm run prepare:firebase` �
    - Name: `FIREBASE_SERVICE_ACCOUNT_NHS_PATIENT_RECORDS`
    - Value: paste the entire JSON file contents.
 
+
+### IAM — Service Account User on runtime SAs (run in Terminal)
+
+Project-level `roles/iam.serviceAccountUser` on the CI service account is **not** enough for Cloud Functions v2 deploy: Firebase must **act as** the App Engine default service account (and sometimes the Compute default SA). Grant **Service Account User** on those accounts to `github-actions-firebase-deploy@nhs-patient-records.iam.gserviceaccount.com`:
+
+```bash
+gcloud config set project nhs-patient-records
+
+gcloud iam service-accounts add-iam-policy-binding nhs-patient-records@appspot.gserviceaccount.com \
+  --member="serviceAccount:github-actions-firebase-deploy@nhs-patient-records.iam.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountUser"
+
+# If deploy still reports Missing iam.serviceAccounts.ActAs on the compute SA:
+gcloud iam service-accounts add-iam-policy-binding 401361224018-compute@developer.gserviceaccount.com \
+  --member="serviceAccount:github-actions-firebase-deploy@nhs-patient-records.iam.gserviceaccount.com" \
+  --role="roles/iam.serviceAccountUser"
+```
+
+Symptom without the appspot binding: `Missing iam.serviceAccounts.ActAs on nhs-patient-records@appspot.gserviceaccount.com`.
+
+Also ensure project roles on the CI SA include `roles/secretmanager.secretAccessor` **and** `roles/secretmanager.viewer` (deploy reads secret metadata via `secretmanager.secrets.get`), and that `cloudbilling.googleapis.com` is enabled on the project if Firebase tries to enable it during deploy.
+
 **Do not** put `SITE_PASSWORD` in GitHub — it must already exist in [Secret Manager](#secret-manager--site_password) before CI deploy succeeds.
 
 ### Out of scope for this workflow
 
 - **Cloud Run `live-ingest`** + Scheduler — deploy with `./scripts/deploy_live_ingest.sh` / `npm run deploy:live-ingest` when ingest code or infra changes.
-- **Vercel** — separate deploy on push to `main` (parallel until cutover).

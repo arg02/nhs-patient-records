@@ -13,10 +13,10 @@ Static HTML/CSS/JS prototypes for an NHS Cerner-style air quality widget (Long-t
 
 ## Hosting
 
-- **Current:** [Vercel](https://nhs-patient-records.vercel.app/) (password-protected): `middleware.js`, `SITE_PASSWORD`, inactivity logout.
-- **Firebase (production, deployed):** https://nhs-patient-records.web.app — **Firebase Hosting** + **`siteGate` Cloud Function** v2 (`europe-west2`) + **Cloud Run** (`live-ingest`) + **Cloud Scheduler** (`5 * * * *` Europe/London) → GCS `gs://nhs-patient-records-live/live/*.json`. GCP project **`nhs-patient-records`** (#401361224018). Build: `npm run prepare:firebase`; deploy: `npm run deploy:firebase` or push to `main` (GitHub Actions `.github/workflows/firebase-deploy-merge.yml` after `FIREBASE_SERVICE_ACCOUNT_NHS_PATIENT_RECORDS` secret) — see [docs/FIREBASE_LIVE_INGEST.md](docs/FIREBASE_LIVE_INGEST.md). Cloud Run ingest: `./scripts/deploy_live_ingest.sh` (separate from Hosting CI). Runs **in parallel with Vercel** until cutover.
+- **Production:** https://nhs-patient-records.web.app — **Firebase Hosting** + **`siteGate` Cloud Function** v2 (`europe-west2`, `SITE_PASSWORD` in Secret Manager) + **Cloud Run** (`live-ingest`) + **Cloud Scheduler** (`5 * * * *` Europe/London) → GCS `gs://nhs-patient-records-live/live/*.json`. GCP project **`nhs-patient-records`** (#401361224018). Build: `npm run prepare:firebase`; deploy: `npm run deploy:firebase` or push to `main` (GitHub Actions `.github/workflows/firebase-deploy-merge.yml` after `FIREBASE_SERVICE_ACCOUNT_NHS_PATIENT_RECORDS` secret) — see [docs/FIREBASE_LIVE_INGEST.md](docs/FIREBASE_LIVE_INGEST.md). Cloud Run ingest: `./scripts/deploy_live_ingest.sh` (separate from Hosting CI).
+- **Vercel removed (Aug 2026)** — was the previous host; all production traffic is Firebase only.
 - **GitHub Pages stays OFF.** The NHS data guide includes proprietary ERG index-point triggers; a public Pages site would expose them without a password.
-- If the user asks to “push to GitHub Pages”, **remind them Pages is off for that reason**, then push to `main` so **Vercel** deploys (Firebase is also live at nhs-patient-records.web.app; cutover TBD) (unless they explicitly insist on re-enabling Pages).
+- If the user asks to “push to GitHub Pages”, **remind them Pages is off for that reason**, then push to `main` so **Firebase CI** deploys (unless they explicitly insist on re-enabling Pages).
 - Local preview: `python3 serve.py 8080` (or `8765`) — no password gate. `js/inactivity-logout.js` is a no-op on localhost / 127.0.0.1 (it must not redirect to `/__logout`); `serve.py` also no-ops `/__logout` and `/__activity`.
 
 ## After meaningful work — update docs in the same task
@@ -32,7 +32,7 @@ Do **not** wait to be asked. When you finish a new feature, lock a product/data 
 
 Keep README factual; put unresolved research on the roadmap; keep AGENTS short and actionable.
 
-Also update `~/Sites/global/projects/nhs-patient-records.md` (and a `learnings/` note when the session was decision-heavy). If the user asks to “push to GitHub Pages,” remind them Pages stays off and deploy via Vercel instead.
+Also update `~/Sites/global/projects/nhs-patient-records.md` (and a `learnings/` note when the session was decision-heavy). If the user asks to “push to GitHub Pages,” remind them Pages stays off and deploy via Firebase instead.
 
 ## Hard invariants
 
@@ -42,8 +42,8 @@ Also update `~/Sites/global/projects/nhs-patient-records.md` (and a `learnings/`
 4. **Tone (NHS-facing copy)** — prefer positive / descriptive phrasing over “do not” / “never” imperatives (reads as aggressive in UK English).
 5. **Rounding** — once, last step before DAQI compare; project convention `.5` → up (`Math.floor(value + 0.5)`).
 6. **UK calendar days** — group with `Europe/London` (BST-aware); timestamps are GMT hour-start.
-7. **Commits / push** — only when the user asks. Prefer local preview before Vercel push when they say so.
-8. **No GitHub Pages** — stay unpublished; Vercel is the host. Remind the user if they ask for Pages.
+7. **Commits / push** — only when the user asks. Prefer local preview before Firebase push when they say so.
+8. **No GitHub Pages** — stay unpublished; Firebase is the host. Remind the user if they ask for Pages.
 
 ## Where to look
 
@@ -56,7 +56,7 @@ Also update `~/Sites/global/projects/nhs-patient-records.md` (and a `learnings/`
 | Production live ingest (GCP) | `cloud_run/server.mjs` — `/run`, `/health`, `/data/live/*.json`; [docs/FIREBASE_LIVE_INGEST.md](docs/FIREBASE_LIVE_INGEST.md) |
 | Local hourly cron (like aq-model-testing) | `scripts/run_live_hourly.sh` + `setup_live_hourly_cron.sh` (`npm run cron:install`); logs in `logs/`; keep `npm run serve` up separately |
 | Styles | `css/aq-widget.css`, `css/site-nav.css` |
-| Password / logout / activity | `middleware.js` (Vercel, cookie `nhs_aq_gate`), `functions/index.js` (`siteGate`, cookie `__session` — Hosting only forwards that name to Functions), `js/inactivity-logout.js` |
+| Password / logout / activity | `functions/index.js` (`siteGate`, cookie `__session` — Hosting only forwards that name to Functions), `js/inactivity-logout.js` |
 | Firebase CI | `.github/workflows/firebase-deploy-merge.yml` — secret `FIREBASE_SERVICE_ACCOUNT_NHS_PATIENT_RECORDS` |
 | Fill / threshold tests | `scripts/verify-fill-logic.mjs` |
 

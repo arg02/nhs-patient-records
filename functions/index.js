@@ -11,9 +11,9 @@ const { GoogleAuth } = require("google-auth-library");
 const sitePassword = defineSecret("SITE_PASSWORD");
 
 // Firebase Hosting → Cloud Run (Functions v2) forwards only the __session cookie on
-// GET rewrites; Vercel middleware uses nhs_aq_gate (see middleware.js). Same token value.
+// GET rewrites.
 const COOKIE_NAME = "__session";
-const COOKIE_MAX_AGE = 30 * 60; // 30-minute inactivity window (matches middleware.js)
+const COOKIE_MAX_AGE = 30 * 60; // 30-minute inactivity window
 const SITE_VERSION = "v2026.08.14-ci1";
 const HOSTING_PAGES = path.join(__dirname, "hosting-pages");
 const LIVE_INGEST_URL =

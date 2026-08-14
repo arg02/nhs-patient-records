@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Local dev server with caching disabled so edits always show on refresh.
 
-Auth routes (/__logout, /__activity, /__auth) are Vercel middleware only.
+Auth routes (/__logout, /__activity, /__auth) are handled by Firebase siteGate in production.
 Locally they are harmless no-ops so nav “Sign out” and stale bookmarks do not 404.
 """
 import sys

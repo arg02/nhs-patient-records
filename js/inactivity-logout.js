@@ -5,7 +5,7 @@ const CHECK_INTERVAL_MS = 1000;
 const ACTIVITY_KEY = 'nhs_aq_last_activity';
 
 // Local preview (serve.py) has no password gate / __activity / __logout —
-// those exist only on hosted deploys (Vercel or Firebase Hosting). Skip
+// those exist only on Firebase Hosting. Skip
 // entirely so a failed heartbeat cannot bounce the browser to /__logout.
 const host = window.location.hostname;
 if (host === 'localhost' || host === '127.0.0.1' || host === '[::1]') {

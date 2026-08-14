@@ -4,7 +4,7 @@ Prototype widgets exploring how long-term WHO exposure, recent daily air quality
 
 **Docs for agents:** [AGENTS.md](AGENTS.md) · **Open work:** [ROADMAP.md](ROADMAP.md) · **NHS integration:** [nhs-data-guide.html](nhs-data-guide.html)
 
-**Live site:** [Vercel](https://nhs-patient-records.vercel.app/) (password-protected via `SITE_PASSWORD`). **Firebase Hosting** at https://nhs-patient-records.web.app — `npm run deploy:firebase` locally, or push to `main` after adding the GitHub Actions secret (see [docs/FIREBASE_LIVE_INGEST.md](docs/FIREBASE_LIVE_INGEST.md)). GitHub Pages is kept **unpublished** so the proprietary trigger table in the NHS data guide is not public.
+**Live site:** https://nhs-patient-records.web.app (password-protected via Firebase `siteGate` + `SITE_PASSWORD` in Secret Manager). Deploy locally with `npm run deploy:firebase`, or push to `main` (GitHub Actions — see [docs/FIREBASE_LIVE_INGEST.md](docs/FIREBASE_LIVE_INGEST.md)). GitHub Pages is kept **unpublished** so the proprietary trigger table in the NHS data guide is not public.
 
 Local preview: `python3 serve.py 8080` (or `npm run serve`).
 
@@ -147,7 +147,7 @@ Demo overrides (not “real” readings) are applied per variant for visual vari
 ├── concept3.html           # Design 3 iteration workspace (3.0–3.5)
 ├── concept32.html          # Design 3.2 coloured-ratio fork (3.2a–f; 3.2f = hourly Today)
 ├── nhs-data-guide.html     # NHS implementer guide (4 sections + mockups)
-├── middleware.js           # Vercel password gate, logout, activity refresh
+├── functions/              # siteGate Cloud Function (password gate, live JSON proxy)
 ├── images/                 # ERG logos for forecast credit
 ├── css/aq-widget.css       # Shared widget styles
 ├── js/
@@ -201,15 +201,13 @@ node scripts/verify-fill-logic.mjs
 
 6. **Legend placement** — DAQI/CAQI keys sit **outside** the Recent card (below it) so the three panels stay equal height and the key reads as shared scale reference. Design 3.2a adds a pollutant key below Long-term and ERG credit below Forecast.
 
-7. **Static prototypes + thin edge auth** — Widget is static HTML/JS; Vercel Edge Middleware only gates access (password cookie, sign-out, inactivity timeout). No application backend.
+7. **Static prototypes + thin edge auth** — Widget is static HTML/JS; Firebase `siteGate` gates HTML and `/data/live/**` (password cookie, sign-out, inactivity timeout). No application backend beyond Hosting + Functions.
 
 8. **NHS guide structure** — Integration instructions are organised by **widget panel outcome** (Annual · Previous days · Today · Forecast), each with an end-product mockup, so implementers can find one job at a time.
 
 ---
 
 ## Deployment
-
-**Vercel** (password-protected): push to `main`; set `SITE_PASSWORD` in the project. Middleware serves the password form and `/__logout` / `/__activity`.
 
 **Firebase Hosting + `siteGate`** (password-protected, multi-page — no SPA catch-all):
 
@@ -221,7 +219,7 @@ firebase deploy --only hosting,functions --project nhs-patient-records
 # or: npm run deploy:firebase
 ```
 
-**GitHub Actions (Firebase):** push to `main` runs [`.github/workflows/firebase-deploy-merge.yml`](.github/workflows/firebase-deploy-merge.yml) — same build as above (`prepare:firebase` → `functions` `npm ci` → `firebase deploy --only hosting,functions --non-interactive`). Add repo secret **`FIREBASE_SERVICE_ACCOUNT_NHS_PATIENT_RECORDS`** (GCP service account JSON). `SITE_PASSWORD` stays in GCP Secret Manager only. Cloud Run ingest is **not** part of this workflow — use `./scripts/deploy_live_ingest.sh` when ingest changes.
+**GitHub Actions:** push to `main` runs [`.github/workflows/firebase-deploy-merge.yml`](.github/workflows/firebase-deploy-merge.yml) — same build as above (`prepare:firebase` → `functions` `npm ci` → `firebase deploy --only hosting,functions --non-interactive`). Add repo secret **`FIREBASE_SERVICE_ACCOUNT_NHS_PATIENT_RECORDS`** (GCP service account JSON). `SITE_PASSWORD` stays in GCP Secret Manager only. Cloud Run ingest is **not** part of this workflow — use `./scripts/deploy_live_ingest.sh` when ingest changes.
 
 **Production live ingest (GCP):** project **`nhs-patient-records`** (#401361224018) — Cloud Run `live-ingest` + Cloud Scheduler `:05` Europe/London → `gs://nhs-patient-records-live/live/*.json`. No backfill; days −1/−2/−3 fill as calendar days pass. Requires Blaze billing + `EXPOSURE_API_KEY` in Secret Manager. Full steps: [docs/FIREBASE_LIVE_INGEST.md](docs/FIREBASE_LIVE_INGEST.md) · `./scripts/deploy_live_ingest.sh`
 
@@ -231,7 +229,7 @@ firebase deploy --only hosting,functions --project nhs-patient-records
 git push origin main
 ```
 
-Local: `python3 serve.py 8080` (no password gate). Inactivity logout and `/__logout` / `/__activity` are hosted-deploy only (Vercel or Firebase); the local server and script skip them so preview is not bounced to `/__logout`.
+Local: `python3 serve.py 8080` (no password gate). Inactivity logout and `/__logout` / `/__activity` are Firebase-hosted only; the local server and script skip them so preview is not bounced to `/__logout`.
 
 ---
 

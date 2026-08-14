@@ -1,6 +1,6 @@
 {
   "name": "nhs-patient-records-functions",
-  "description": "Password gate for Firebase Hosting (ports middleware.js)",
+  "description": "Password gate for Firebase Hosting (siteGate)",
   "engines": {
     "node": "20"
   },

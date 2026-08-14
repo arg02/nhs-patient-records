@@ -50,8 +50,8 @@ Epidemiology and WHO/COMEAP health-risk methods express long-term mortality/morb
 
 | Item | Status |
 |------|--------|
-| Restructure [nhs-data-guide.html](nhs-data-guide.html) into Annual / Previous days / Today / Forecast with end-product mockups | **Done** (Jul 2026) — deploy via Vercel only |
-| Keep GitHub Pages unpublished (proprietary trigger table) | **Policy** — Vercel password gate is the public host; remind if asked to push to Pages |
+| Restructure [nhs-data-guide.html](nhs-data-guide.html) into Annual / Previous days / Today / Forecast with end-product mockups | **Done** (Jul 2026) |
+| Keep GitHub Pages unpublished (proprietary trigger table) | **Policy** — Firebase password gate is the public host; remind if asked to push to Pages |
 | Promote a 3.2 variant to the main showcase | Open |
 | Wire prototype to live exposure API (replace mock) | Open — rules are in the data guide |
 | Prototype still simplifies some Today / pollutant-specific paths vs the guide | Open — keep guide normative; align JS when integrating |
@@ -59,13 +59,14 @@ Epidemiology and WHO/COMEAP health-risk methods express long-term mortality/morb
 | **Live Today calculation page** | **Local works** — `data/live/{YYYY-MM-DD}.json` (today+−1/−2/−3, `_old/` archive); seed once then latest data hour only (wall−2, GMT→UK). Forecast from London Air **Future** on each cron run (`index.json`). Panels show data hour + µg/m³ charts. Firebase still for production cron. |
 | Local hourly cron | **Done** — crontab `:05` → `scripts/run_live_hourly.sh` (same pattern as aq-model-testing nowcast effect). Install: `npm run cron:install`. Serve separately. |
 | Hourly cron + previous-hour / trigger storage (production) | **Deployed** — Cloud Run `live-ingest-00003-snp` + Scheduler `:05` → GCS. `GET /data/live/*.json` on same service; `live.html` uses `window.LIVE_DATA_BASE`. |
-| **Firebase Hosting (full stack)** | **Deployed** — https://nhs-patient-records.web.app · `siteGate` v2 (`europe-west2`, `SITE_PASSWORD` secret) gates `*.html` and `/data/live/**`; CSS/JS static. Deploy: `npm run prepare:firebase` + `npm run deploy:firebase`. Parallel with Vercel until cutover. |
+| **Firebase Hosting (full stack)** | **Production** — https://nhs-patient-records.web.app · `siteGate` v2 (`europe-west2`, `SITE_PASSWORD` secret) gates `*.html` and `/data/live/**`; CSS/JS static. Deploy: push to `main` or `npm run deploy:firebase`. |
+| **Vercel cutover** | **Done (Aug 2026)** — Vercel retired; Firebase is sole production host. |
 
 ---
 
 ## Firebase migration (production)
 
-**Direction (Aug 2026):** GCP project **`nhs-patient-records`** (#401361224018). Hourly ingest on **Cloud Run** (not Cloud Functions) in **`europe-west2`**; **Cloud Scheduler** `5 * * * *` **Europe/London** → `GET /run`. Output: **Cloud Storage** `gs://nhs-patient-records-live/live/*.json` (mirrors local `data/live/`). **No production seed/backfill** — days −1/−2/−3 accumulate over calendar days. **Firebase Hosting + `siteGate`** deployed at https://nhs-patient-records.web.app (parallel with Vercel until cutover).
+**Direction (Aug 2026):** GCP project **`nhs-patient-records`** (#401361224018). Hourly ingest on **Cloud Run** (not Cloud Functions) in **`europe-west2`**; **Cloud Scheduler** `5 * * * *` **Europe/London** → `GET /run`. Output: **Cloud Storage** `gs://nhs-patient-records-live/live/*.json` (mirrors local `data/live/`). **No production seed/backfill** — days −1/−2/−3 accumulate over calendar days. **Firebase Hosting + `siteGate`** at https://nhs-patient-records.web.app (sole production host since Aug 2026).
 
 **Deploy / ops:** [docs/FIREBASE_LIVE_INGEST.md](docs/FIREBASE_LIVE_INGEST.md) · `./scripts/deploy_live_ingest.sh` · `npm run deploy:live-ingest`
 
@@ -106,11 +107,9 @@ Secret Manager: EXPOSURE_API_KEY, SITE_PASSWORD
 1. **Init** — Firebase project `nhs-patient-records`, `.firebaserc`, Secret Manager `EXPOSURE_API_KEY`. **Done (scaffold).**
 2. **Ingest** — Cloud Run + GCS + Scheduler. **Deployed** — `./scripts/deploy_live_ingest.sh` / `npm run deploy:live-ingest`.
 3. **Hosting** — `scripts/prepare_firebase_public.sh` copies `*.html`, `css/`, `js/`, `images/` to `public/` (not `data/live/`). **Done (scaffold).**
-4. **Auth** — `siteGate` function ports `middleware.js` cookie logic; `inactivity-logout.js` unchanged. **Deployed** (`npm run deploy:firebase`, Aug 2026).
+4. **Auth** — `siteGate` function implements password gate + session cookie; `inactivity-logout.js` unchanged. **Deployed** (`npm run deploy:firebase`, Aug 2026).
 5. **CI** — GitHub Actions on `main` → `.github/workflows/firebase-deploy-merge.yml` (Hosting + `siteGate`). **Done (Aug 2026)** — add `FIREBASE_SERVICE_ACCOUNT_NHS_PATIENT_RECORDS` secret to enable.
-6. **Cutover** — parallel Vercel + Firebase, then retire Vercel middleware.
-
-**Fastest cron-only path:** Phase 2 on GCP while Vercel still hosts static + auth; sync or proxy `/data/live/**` from Storage.
+6. **Cutover** — **Done (Aug 2026)** — Vercel retired; Firebase is sole production host.
 
 ---
 
