@@ -88,9 +88,23 @@ export function forecastBandToDaqi(band) {
   return FORECAST_BAND_DAQI[key] ?? FORECAST_BAND_DAQI[band.toLowerCase()] ?? null;
 }
 
-export function dailyMeanFromHourly(hourlyValues) {
+/** NHS past-day PM rule: ≥75% hourly capture before a daily mean is valid. */
+export const PM_DAILY_MIN_CAPTURE_PCT = 0.75;
+
+/**
+ * Daily mean from hourly values. Optional minCapturePct gates the mean
+ * (valid hours must be ≥ ceil(totalSlots × minCapturePct)).
+ * totalSlots defaults to 24; uses array length when non-empty (23/25 on DST days).
+ */
+export function dailyMeanFromHourly(hourlyValues, options = {}) {
+  const totalSlots = hourlyValues.length > 0 ? hourlyValues.length : 24;
   const valid = hourlyValues.filter((v) => v != null && !Number.isNaN(v));
   if (!valid.length) return null;
+  const { minCapturePct } = options;
+  if (minCapturePct != null) {
+    const minRequired = Math.ceil(totalSlots * minCapturePct);
+    if (valid.length < minRequired) return null;
+  }
   return valid.reduce((a, b) => a + b, 0) / valid.length;
 }
 

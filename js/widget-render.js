@@ -531,7 +531,8 @@ function dayStackHtml(items, { ladders = false, circles = false, dividerBeforeTo
 function dayLadderLevel(day, species) {
   // Today uses trigger / latest-hour overall index when provided by live calc
   if (day.offset === 0 && day.todayMeta?.level != null) return day.todayMeta.level;
-  // Past days from live store: overall DAQI from daily means
+  // Past days from live store: per-pollutant index when available
+  if (day.pollutantIndices?.[species] != null) return day.pollutantIndices[species];
   if (day.offset > 0 && day.overallLevel != null) return day.overallLevel;
   return daqiLevel(day.daily?.[species], species);
 }

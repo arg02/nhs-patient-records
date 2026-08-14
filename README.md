@@ -8,7 +8,7 @@ Prototype widgets exploring how long-term WHO exposure, recent daily air quality
 
 Local preview: `python3 serve.py 8080` (or `npm run serve`).
 
-**Live Today calc (local cron + per-day JSON):** same pattern as aq-model-testing — crontab runs a shell wrapper that writes JSON; `serve.py` serves it.
+**Live Today calc (local dev):** production hourly ingest runs on **GCP** (Scheduler → Cloud Run → GCS). For localhost `live.html` against `data/live/`, optional Mac crontab (same pattern as aq-model-testing) or `npm run cron:local`.
 
 ```bash
 npm run ingest:seed-live      # cold start: −3…today via /coords

@@ -122,6 +122,8 @@ async function readDay(storage, dateKey) {
 async function writeDay(storage, day) {
   const summary = summarizeDay(day);
   day.dailyMeans = summary.dailyMeans;
+  day.pollutantIndices = summary.pollutantIndices;
+  day.dayLevel = summary.dayLevel;
   day.dayMaxDaqi = summary.dayMaxDaqi;
   const filled = lastFilledHour(day.hourly);
   // Complete past day when we have hour 23

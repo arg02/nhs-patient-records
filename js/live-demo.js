@@ -6,10 +6,10 @@
 import {
   mockPatientExposure,
   daqiLevel,
-  daqiLevelForDay,
   daqiColor,
   formatDateChip,
   dailyMeanFromHourly,
+  PM_DAILY_MIN_CAPTURE_PCT,
   DAQI_THRESHOLDS,
   DAQI_COLORS,
   roundDaqiConcentration,
@@ -26,6 +26,7 @@ import {
   latestDataHour,
   DATA_LAG_HOURS,
   lastFilledHour,
+  completedDayPollutantIndices,
 } from './live-store.js?v=4';
 import { forecastForWidget } from './london-air-forecast.js?v=1';
 
@@ -113,9 +114,10 @@ export function buildLiveDemoBundle({ index = null, todayDay = null, pastDays = 
 
     if (offset === 0) {
       const level = state.todayLevel;
+      const pmOpts = { minCapturePct: PM_DAILY_MIN_CAPTURE_PCT };
       const daily = {
-        pm25: dailyMeanFromHourly(series.pm25 || []),
-        pm10: dailyMeanFromHourly(series.pm10 || []),
+        pm25: dailyMeanFromHourly(series.pm25 || [], pmOpts),
+        pm10: dailyMeanFromHourly(series.pm10 || [], pmOpts),
         no2: dailyMeanFromHourly(series.no2 || []),
         o3: dailyMeanFromHourly(series.o3 || []),
       };
@@ -133,22 +135,27 @@ export function buildLiveDemoBundle({ index = null, todayDay = null, pastDays = 
     }
 
     const stored = byOffset[offset];
-    const daily = stored?.dailyMeans || {
-      pm25: dailyMeanFromHourly(stored?.hourly?.pm25 || []),
-      pm10: dailyMeanFromHourly(stored?.hourly?.pm10 || []),
-      no2: dailyMeanFromHourly(stored?.hourly?.no2 || []),
-      o3: dailyMeanFromHourly(stored?.hourly?.o3 || []),
-    };
-    const hasLive = daily.pm25 != null || daily.no2 != null;
+    const completed = stored?.hourly
+      ? (stored.dayLevel != null && stored.dailyMeans
+        ? {
+          daily: stored.dailyMeans,
+          indices: stored.pollutantIndices || null,
+          dayLevel: stored.dayLevel ?? stored.dayMaxDaqi ?? null,
+        }
+        : completedDayPollutantIndices(stored.hourly))
+      : null;
+    const daily = completed?.daily ?? null;
+    const hasLive = daily != null && (daily.pm25 != null || daily.no2 != null);
     const fallback = base.recentDays.find((d) => d.offset === offset);
     const useDaily = hasLive ? daily : fallback?.daily;
+    const overallLevel = hasLive ? (completed?.dayLevel ?? null) : null;
     return {
       offset,
       date,
       daily: useDaily,
-      dayMaxDaqi: stored?.dayMaxDaqi ?? null,
-      // Overall day DAQI from daily means (guide) — drives ladder when live
-      overallLevel: hasLive && useDaily ? daqiLevelForDay({ daily: useDaily }) : null,
+      pollutantIndices: hasLive ? completed?.indices ?? null : null,
+      dayMaxDaqi: overallLevel ?? stored?.dayMaxDaqi ?? null,
+      overallLevel,
     };
   });
 

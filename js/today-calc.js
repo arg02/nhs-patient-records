@@ -192,12 +192,12 @@ export function applyHour(state, hourSample) {
     }
   }
 
-  // PM partial-day mean from 19:00
+  // PM partial-day mean from 19:00 UK (00:00–18:00)
   const pmNotes = {};
-  if (hour >= 18) {
+  if (hour > 18) {
     for (const sp of ['pm25', 'pm10']) {
       const series = state.hours.map((h) => h?.[sp]);
-      const partial = partialDayMean(series, hour);
+      const partial = partialDayMean(series, 18);
       pmNotes[sp] = partial;
       if (partial.ok) {
         const idx = daqiLevel(partial.mean, sp);

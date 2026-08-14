@@ -8,8 +8,10 @@
 import {
   DAQI_THRESHOLDS,
   daqiLevel,
+  dailyMeanFromHourly,
   forecastBandToDaqi,
   mockPatientExposure,
+  PM_DAILY_MIN_CAPTURE_PCT,
   recentDaysForLadder,
   recentDaysForV33,
   roundDaqiConcentration,
@@ -21,6 +23,7 @@ import { recentDaysForV34, forecastForV34 } from '../js/who-data-v34.js';
 import { recentDaysForV35, forecastForV35 } from '../js/who-data-v35.js';
 import { caqiLevel } from '../js/who-caqi-v35.js';
 import { triggerIndexFromPair, partialDayMean, rolling8hMean } from '../js/today-calc.js';
+import { completedDayPollutantIndices } from '../js/live-store.js';
 
 const GREY = '#eceef2';
 const species = 'pm25';
@@ -137,6 +140,21 @@ report['ERG trigger rounding (pm10)'] = [
   },
 ];
 
+report['PM daily mean 75% capture gate'] = (() => {
+  const pmOpts = { minCapturePct: PM_DAILY_MIN_CAPTURE_PCT };
+  const sparse24 = (nValid, value = 20) => {
+    const arr = Array(24).fill(null);
+    for (let i = 0; i < nValid; i++) arr[i] = value;
+    return arr;
+  };
+  const at17 = dailyMeanFromHourly(sparse24(17), pmOpts);
+  const at18 = dailyMeanFromHourly(sparse24(18), pmOpts);
+  return [
+    { validHours: 17, totalSlots: 24, expected: null, actual: at17, ok: at17 === null },
+    { validHours: 18, totalSlots: 24, expected: 20, actual: at18, ok: at18 === 20 },
+  ];
+})();
+
 report['Partial-day mean → DAQI (pm25)'] = [
   {
     hourly: Array(19).fill(11.5),
@@ -166,6 +184,60 @@ report['Rolling 8h O₃ → DAQI'] = [
     ok: daqiLevel(rolling8hMean(Array(8).fill(33.4), 7), 'o3') === 1,
   },
 ];
+
+report['Past-day NO₂ max hourly index'] = (() => {
+  const hourly = {
+    pm25: Array(24).fill(20),
+    pm10: Array(24).fill(30),
+    no2: Array(24).fill(67),
+    o3: Array(24).fill(50),
+  };
+  hourly.no2[10] = 200.49;
+  hourly.no2[14] = 201;
+  const { indices } = completedDayPollutantIndices(hourly);
+  return [{
+    peakHour: 14,
+    expected: 4,
+    actual: indices.no2,
+    ok: indices.no2 === 4,
+  }];
+})();
+
+report['Past-day O₃ max rolling-8h index'] = (() => {
+  const o3 = Array(24).fill(33);
+  o3[12] = 105;
+  o3[13] = 105;
+  o3[14] = 105;
+  o3[15] = 105;
+  o3[16] = 105;
+  o3[17] = 105;
+  o3[18] = 105;
+  o3[19] = 105;
+  const { indices } = completedDayPollutantIndices({ pm25: Array(24).fill(20), pm10: Array(24).fill(30), no2: Array(24).fill(50), o3 });
+  return [{
+    expectedMin: 4,
+    actual: indices.o3,
+    ok: indices.o3 != null && indices.o3 >= 4,
+  }];
+})();
+
+report['Completed-day ladder = max of four indices'] = (() => {
+  const hourly = {
+    pm25: Array(24).fill(11),
+    pm10: Array(24).fill(16),
+    no2: Array(24).fill(67),
+    o3: Array(24).fill(33),
+  };
+  hourly.no2[9] = 201;
+  const { indices, dayLevel } = completedDayPollutantIndices(hourly);
+  const expected = Math.max(indices.pm25 || 0, indices.pm10 || 0, indices.no2 || 0, indices.o3 || 0);
+  return [{
+    indices,
+    expected,
+    actual: dayLevel,
+    ok: dayLevel === expected && dayLevel === indices.no2,
+  }];
+})();
 
 report['DAQI rounded boundaries'] = [
   { pollutant: 'no2', input: 200.49, expected: 3 },

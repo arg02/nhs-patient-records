@@ -54,10 +54,10 @@ Epidemiology and WHO/COMEAP health-risk methods express long-term mortality/morb
 | Keep GitHub Pages unpublished (proprietary trigger table) | **Policy** — Firebase password gate is the public host; remind if asked to push to Pages |
 | Promote a 3.2 variant to the main showcase | Open |
 | Wire prototype to live exposure API (replace mock) | Open — rules are in the data guide |
-| Prototype still simplifies some Today / pollutant-specific paths vs the guide | Open — keep guide normative; align JS when integrating |
+| Prototype still simplifies some Today / pollutant-specific paths vs the guide | Open — see **Guide alignment gaps** below; keep [nhs-data-guide.html](nhs-data-guide.html) normative |
 | Explore hourly Today panel (3.2f) — lag-sensitive short-term view | **Prototype** (Aug 2026) — dotted lag outline under hours; full-width row above Long-term \| Recent \| Forecast |
 | **Live Today calculation page** | **Local works** — `data/live/{YYYY-MM-DD}.json` (today+−1/−2/−3, `_old/` archive); seed once then latest data hour only (wall−2, GMT→UK). Forecast from London Air **Future** on each cron run (`index.json`). Panels show data hour + µg/m³ charts. Firebase still for production cron. |
-| Local hourly cron | **Done** — crontab `:05` → `scripts/run_live_hourly.sh` (same pattern as aq-model-testing nowcast effect). Install: `npm run cron:install`. Serve separately. |
+| Local hourly cron | **Optional dev only** — Mac crontab removed Aug 2026; production ingest is GCP Scheduler. `npm run cron:install` if you want local `data/live/` updates again. |
 | Hourly cron + previous-hour / trigger storage (production) | **Deployed** — Cloud Run `live-ingest-00003-snp` + Scheduler `:05` → GCS. `GET /data/live/*.json` on same service; `live.html` uses `window.LIVE_DATA_BASE`. |
 | **Firebase Hosting (full stack)** | **Production** — https://nhs-patient-records.web.app · `siteGate` v2 (`europe-west2`, `SITE_PASSWORD` secret) gates `*.html` and `/data/live/**`; CSS/JS static. Deploy: push to `main` or `npm run deploy:firebase`. |
 | **Vercel cutover** | **Done (Aug 2026)** — Vercel retired; Firebase is sole production host. |
@@ -110,6 +110,23 @@ Secret Manager: EXPOSURE_API_KEY, SITE_PASSWORD
 4. **Auth** — `siteGate` function implements password gate + session cookie; `inactivity-logout.js` unchanged. **Deployed** (`npm run deploy:firebase`, Aug 2026).
 5. **CI** — GitHub Actions on `main` → `.github/workflows/firebase-deploy-merge.yml` (Hosting + `siteGate`). **Done (Aug 2026)** — add `FIREBASE_SERVICE_ACCOUNT_NHS_PATIENT_RECORDS` secret to enable.
 6. **Cutover** — **Done (Aug 2026)** — Vercel retired; Firebase is sole production host.
+
+---
+
+## Guide alignment gaps (live path, Aug 2026 audit)
+
+Normative spec: [nhs-data-guide.html](nhs-data-guide.html). **Today** is largely aligned; **Previous days** has the largest gaps.
+
+| Priority | Gap | Guide | Code |
+|----------|-----|-------|------|
+| **Done** | PM₂.₅/PM₁₀ past-day mean requires ≥75% capture | §Previous days | `dailyMeanFromHourly(..., { minCapturePct: 0.75 })` |
+| **Done** | Past-day **NO₂** = max hourly index, not daily mean | §Previous days | `completedDayPollutantIndices()` in `js/live-store.js` |
+| **Done** | Past-day **O₃** = max rolling-8h index (≥6/8 h), not daily mean | §Previous days | `rolling8hMean` per hour in `completedDayPollutantIndices()` |
+| **Done** | Completed-day ladder = `max` of four pollutant indices with correct inputs | §Pipeline step 4 | `dayLevel` / `pollutantIndices` in ingest + `live-demo.js` |
+| **Done** | PM partial-day supersede from **19:00** (00:00–18:00), not hour 18 | §Today PM | `applyHour()` uses `hour > 18` + `partialDayMean(..., 18)` |
+| **Medium** | O₃ fetch buffer ≥7h before −3d midnight for early windows | §Getting data | Seed `hoursNeeded()` starts at −3d hour 0 |
+| **Low** | DST day length (23/25 h) for capture denominators | §Previous days | Fixed 24-slot arrays |
+| **Intentional** | Today PM/O₃ fallback to latest-hour when no trigger yet | — | `today-calc.js` ~267–273; prototype simplification |
 
 ---
 

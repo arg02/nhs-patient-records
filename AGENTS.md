@@ -54,7 +54,7 @@ Also update `~/Sites/global/projects/nhs-patient-records.md` (and a `learnings/`
 | Hourly Today exploration (3.2f) | `concept32.html#design-3-2f`, `todayHourlyPrototypeSeries` / `todayHourlyCardHtml`; layout: hourly row above Long-term \| Recent \| Forecast |
 | Live Today calc (3.2b + explainers) | `live.html`, `js/live-demo.js`, `js/live-storage.js`, … — local default `data/live/`; hosted/`?storage=gcs` → `/data/live/` (see `window.LIVE_DATA_BASE` in `live.html`) |
 | Production live ingest (GCP) | `cloud_run/server.mjs` — `/run`, `/health`, `/data/live/*.json`; [docs/FIREBASE_LIVE_INGEST.md](docs/FIREBASE_LIVE_INGEST.md) |
-| Local hourly cron (like aq-model-testing) | `scripts/run_live_hourly.sh` + `setup_live_hourly_cron.sh` (`npm run cron:install`); logs in `logs/`; keep `npm run serve` up separately |
+| Local hourly cron (optional dev) | **Production:** Cloud Scheduler → Cloud Run (no Mac crontab). **Localhost:** `run_live_hourly.sh` + `setup_live_hourly_cron.sh` (`npm run cron:install` / `cron:remove`); logs in `logs/`; keep `npm run serve` up separately |
 | Styles | `css/aq-widget.css`, `css/site-nav.css` |
 | Password / logout / activity | `functions/index.js` (`siteGate`, cookie `__session` — Hosting only forwards that name to Functions), `js/inactivity-logout.js` |
 | Firebase CI | `.github/workflows/firebase-deploy-merge.yml` — secret `FIREBASE_SERVICE_ACCOUNT_NHS_PATIENT_RECORDS` |

@@ -744,7 +744,7 @@ aboveHeight = (excessRatio / maxExcessAcrossPollutants) × 48% of track</div>
       <h3>Per-pollutant rules (completed days only)</h3>
 
       <h4>PM₂.₅ and PM₁₀ — 24-hour daily mean</h4>
-      <p>Average unrounded hourly means from <strong>UK-local midnight to midnight</strong> (time beginning). Require ≥75% capture (18 of 24 hours on a normal day; 18/23 spring DST; 19/25 autumn DST).</p>
+      <p>Average unrounded hourly means from <strong>UK-local midnight to midnight</strong> (time beginning). Require ≥75% capture (18 of 24 hours on a normal day; 18/23 spring DST; 19/25 autumn DST). Implemented in <code>dailyMeanFromHourly</code> (<code>minCapturePct: 0.75</code>) via <code>summarizeDay</code> in <code>js/live-store.js</code>.</p>
       <div class="formula">pmDailyMean = sum(valid hours in local day) / count(valid hours)</div>
 
       <h4>NO₂ — maximum hourly index</h4>

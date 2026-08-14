@@ -9,8 +9,9 @@
 import {
   dailyMeanFromHourly,
   daqiLevel,
-  daqiLevelForDay,
+  PM_DAILY_MIN_CAPTURE_PCT,
 } from './air-quality.js';
+import { rolling8hMean } from './today-calc.js';
 
 export const DEFAULT_LAT = 51.51582459205555;
 export const DEFAULT_LNG = -0.22380761638931398;
@@ -121,26 +122,67 @@ export function lastFilledHour(hourly) {
   return last;
 }
 
-/** Daily means + max hourly-overall DAQI for a day file. */
+/**
+ * NHS guide §Previous days — per-pollutant inputs and completed-day ladder level.
+ * PM = daily mean (≥75% capture); NO₂ = max hourly index; O₃ = max rolling-8h index.
+ */
+export function completedDayPollutantIndices(hourly) {
+  const pmOpts = { minCapturePct: PM_DAILY_MIN_CAPTURE_PCT };
+  const daily = {
+    pm25: dailyMeanFromHourly(hourly?.pm25 || [], pmOpts),
+    pm10: dailyMeanFromHourly(hourly?.pm10 || [], pmOpts),
+    no2: null,
+    o3: null,
+  };
+
+  const indices = {
+    pm25: daqiLevel(daily.pm25, 'pm25'),
+    pm10: daqiLevel(daily.pm10, 'pm10'),
+    no2: null,
+    o3: null,
+  };
+
+  const no2Arr = hourly?.no2 || [];
+  for (let h = 0; h < no2Arr.length; h++) {
+    const ug = no2Arr[h];
+    if (ug == null || Number.isNaN(ug)) continue;
+    const idx = daqiLevel(ug, 'no2');
+    if (idx != null && (indices.no2 == null || idx > indices.no2)) {
+      indices.no2 = idx;
+      daily.no2 = ug;
+    }
+  }
+
+  const o3Arr = hourly?.o3 || [];
+  for (let h = 0; h < o3Arr.length; h++) {
+    const roll = rolling8hMean(o3Arr, h);
+    if (roll == null) continue;
+    const idx = daqiLevel(roll, 'o3');
+    if (idx != null && (indices.o3 == null || idx > indices.o3)) {
+      indices.o3 = idx;
+      daily.o3 = roll;
+    }
+  }
+
+  const dayLevel = Math.max(
+    indices.pm25 || 0,
+    indices.pm10 || 0,
+    indices.no2 || 0,
+    indices.o3 || 0,
+  ) || null;
+
+  return { daily, indices, dayLevel };
+}
+
+/** Completed-day stats for a day file (ingest + live UI). */
 export function summarizeDay(day) {
-  const daily = {};
-  for (const sp of ['pm25', 'pm10', 'no2', 'o3']) {
-    daily[sp] = dailyMeanFromHourly(day.hourly?.[sp] || []);
-  }
-  let dayMaxDaqi = 0;
-  for (let h = 0; h < 24; h++) {
-    const levels = ['pm25', 'pm10', 'no2', 'o3'].map((sp) =>
-      daqiLevel(day.hourly?.[sp]?.[h], sp),
-    );
-    const overall = Math.max(0, ...levels.filter((x) => x != null));
-    if (overall > dayMaxDaqi) dayMaxDaqi = overall;
-  }
-  const dayObj = { daily };
-  const fromMeans = daqiLevelForDay(dayObj);
+  const { daily, indices, dayLevel } = completedDayPollutantIndices(day.hourly);
   return {
     dailyMeans: daily,
-    dayMaxDaqi: dayMaxDaqi || null,
-    daqiFromDailyMeans: fromMeans || null,
+    pollutantIndices: indices,
+    dayLevel,
+    dayMaxDaqi: dayLevel,
+    daqiFromDailyMeans: dayLevel,
   };
 }
 
