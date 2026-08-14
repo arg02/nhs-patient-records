@@ -2,3 +2,19 @@
 .cursor/
 node_modules/
 .vercel/
+
+# Firebase Hosting build output (regenerate with npm run prepare:firebase)
+public/*
+!public/README.md
+functions/node_modules/
+functions/hosting-pages/
+
+# local secrets
+.env
+.env.local
+*firebase*adminsdk*.json
+
+# Local runtime\logs
+logs/
+.firebase/
+__pycache__/

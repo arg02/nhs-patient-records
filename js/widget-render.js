@@ -528,6 +528,14 @@ function dayStackHtml(items, { ladders = false, circles = false, dividerBeforeTo
   `;
 }
 
+function dayLadderLevel(day, species) {
+  // Today uses trigger / latest-hour overall index when provided by live calc
+  if (day.offset === 0 && day.todayMeta?.level != null) return day.todayMeta.level;
+  // Past days from live store: overall DAQI from daily means
+  if (day.offset > 0 && day.overallLevel != null) return day.overallLevel;
+  return daqiLevel(day.daily?.[species], species);
+}
+
 function dayItemFromRecent(d, species, visualFn) {
   return {
     visual: visualFn(d),
@@ -542,24 +550,24 @@ export function recentCardHtml(recentDays, species, { visual = 'blobs', ladderSi
 
   if (visual === 'dots') {
     items = days.map((d) => dayItemFromRecent(d, species, (day) => {
-      const level = daqiLevel(day.daily[species], species);
+      const level = dayLadderLevel(day, species);
       return `<div class="daqi-dot daqi-dot--lg" style="background:${daqiColor(level)}"></div>`;
     }));
   } else if (visual === 'ladders') {
     const h = ladderSize?.height ?? LADDER_HEIGHT;
     const w = ladderSize?.width ?? 28;
     items = days.map((d) => dayItemFromRecent(d, species, (day) => {
-      const level = daqiLevel(day.daily[species], species);
+      const level = dayLadderLevel(day, species);
       return daqiStackedBar(level, { height: h, width: w });
     }));
   } else if (visual === 'circles') {
     items = days.map((d) => dayItemFromRecent(d, species, (day) => {
-      const level = daqiLevel(day.daily[species], species);
+      const level = dayLadderLevel(day, species);
       return daqiCircleStack(level);
     }));
   } else {
     items = days.map((d) => dayItemFromRecent(d, species, (day) => {
-      const level = daqiLevel(day.daily[species], species);
+      const level = dayLadderLevel(day, species);
       return daqiIndexBlob(level, { large: true });
     }));
   }
@@ -627,7 +635,7 @@ export function todayCardHtml(recentDays, species, { ladderSize } = {}) {
     `;
   }
 
-  const level = daqiLevel(day.daily[species], species);
+  const level = dayLadderLevel(day, species);
   const items = [{
     visual: daqiStackedBar(level, { height: lh, width: lw }),
     name: '',

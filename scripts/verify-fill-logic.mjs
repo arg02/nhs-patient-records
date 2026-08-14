@@ -20,6 +20,7 @@ import { caqiWhoPillBar } from '../js/who-recent-v35.js';
 import { recentDaysForV34, forecastForV34 } from '../js/who-data-v34.js';
 import { recentDaysForV35, forecastForV35 } from '../js/who-data-v35.js';
 import { caqiLevel } from '../js/who-caqi-v35.js';
+import { triggerIndexFromPair, partialDayMean, rolling8hMean } from '../js/today-calc.js';
 
 const GREY = '#eceef2';
 const species = 'pm25';
@@ -104,6 +105,67 @@ report['DAQI final rounding'] = [
   actual: roundDaqiConcentration(input),
   ok: roundDaqiConcentration(input) === expected,
 }));
+
+report['ERG trigger rounding (pm10)'] = [
+  {
+    previous: 21.6,
+    current: 23.0,
+    expected: 2,
+    actual: triggerIndexFromPair(21.6, 23.0, 'pm10'),
+    ok: triggerIndexFromPair(21.6, 23.0, 'pm10') === 2,
+  },
+  {
+    previous: 21.4,
+    current: 23.0,
+    expected: 1,
+    actual: triggerIndexFromPair(21.4, 23.0, 'pm10'),
+    ok: triggerIndexFromPair(21.4, 23.0, 'pm10') === 1,
+  },
+  {
+    previous: 10.0,
+    current: 10.0,
+    expected: null,
+    actual: triggerIndexFromPair(10.0, 10.0, 'pm10'),
+    ok: triggerIndexFromPair(10.0, 10.0, 'pm10') === null,
+  },
+  {
+    previous: 21.6,
+    current: 21.4,
+    expected: null,
+    actual: triggerIndexFromPair(21.6, 21.4, 'pm10'),
+    ok: triggerIndexFromPair(21.6, 21.4, 'pm10') === null,
+  },
+];
+
+report['Partial-day mean → DAQI (pm25)'] = [
+  {
+    hourly: Array(19).fill(11.5),
+    expected: 2,
+    actual: daqiLevel(partialDayMean(Array(19).fill(11.5), 18).mean, 'pm25'),
+    ok: daqiLevel(partialDayMean(Array(19).fill(11.5), 18).mean, 'pm25') === 2,
+  },
+  {
+    hourly: Array(19).fill(11.4),
+    expected: 1,
+    actual: daqiLevel(partialDayMean(Array(19).fill(11.4), 18).mean, 'pm25'),
+    ok: daqiLevel(partialDayMean(Array(19).fill(11.4), 18).mean, 'pm25') === 1,
+  },
+];
+
+report['Rolling 8h O₃ → DAQI'] = [
+  {
+    hourly: Array(8).fill(33.5),
+    expected: 2,
+    actual: daqiLevel(rolling8hMean(Array(8).fill(33.5), 7), 'o3'),
+    ok: daqiLevel(rolling8hMean(Array(8).fill(33.5), 7), 'o3') === 2,
+  },
+  {
+    hourly: Array(8).fill(33.4),
+    expected: 1,
+    actual: daqiLevel(rolling8hMean(Array(8).fill(33.4), 7), 'o3'),
+    ok: daqiLevel(rolling8hMean(Array(8).fill(33.4), 7), 'o3') === 1,
+  },
+];
 
 report['DAQI rounded boundaries'] = [
   { pollutant: 'no2', input: 200.49, expected: 3 },

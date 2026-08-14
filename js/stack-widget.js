@@ -10,7 +10,7 @@ import {
   todayCardHtml,
   todayHourlyCardHtml,
   combinedLaddersCardHtml,
-} from './widget-render.js?v=32';
+} from './widget-render.js?v=33';
 import { whoAnnualChartAligned } from './who-chart-v31.js?v=6';
 import { whoAnnualChartV32 } from './who-chart-v32.js?v=8';
 import { whoAnnualChartV32A, whoAnnualChartV32B, whoAnnualChartV32C, pollutantKeyStripAlignedHtml } from './who-chart-v32a.js?v=7';
@@ -54,7 +54,7 @@ function shell(data, zonesHtml) {
   strip.className = 'aq-strip strip-stack';
   strip.innerHTML = `
     <div class="aq-meta">
-      <div><strong>Air quality at patient's home</strong><span class="place"> · ${data.patient.name} · SE1</span></div>
+      <div><strong>Air quality at patient's home</strong><span class="place"> · ${data.patient.name} · ${data.patient.place || data.patient.address || data.patient.postcode || ''}</span></div>
       <div class="pollutants" data-pollutants></div>
     </div>
     <div class="aq-body">
@@ -164,7 +164,9 @@ function updateStackV32Variant(strip, data, species = DEFAULT_SPECIES, { variant
   `;
   strip.querySelector('[data-long-key]').innerHTML = keyHtml;
   const recentEl = strip.querySelector('[data-recent]');
-  recentEl.innerHTML = recentCardHtml(recentDaysForLadder(data.recentDays), species, {
+  // Live store already has real daily means / Today meta — do not remapp to concept demo ladders
+  const ladderDays = data.live ? data.recentDays : recentDaysForLadder(data.recentDays);
+  recentEl.innerHTML = recentCardHtml(ladderDays, species, {
     visual: 'ladders',
     ladderSize: LADDER_SIZE,
     legendOutside: true,
@@ -185,7 +187,7 @@ function shellV32A(data, zonesHtml, variant = 'a') {
   strip.className = `aq-strip strip-stack strip-stack--v32${variant}`;
   strip.innerHTML = `
     <div class="aq-meta">
-      <div><strong>Air quality at patient's home</strong><span class="place"> · ${data.patient.name} · SE1</span></div>
+      <div><strong>Air quality at patient's home</strong><span class="place"> · ${data.patient.name} · ${data.patient.place || data.patient.address || data.patient.postcode || ''}</span></div>
       <div class="pollutants" data-pollutants></div>
     </div>
     <div class="aq-body">

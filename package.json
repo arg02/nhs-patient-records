@@ -1,9 +1,27 @@
 {
   "name": "nhs-patient-records",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "private": true,
+  "type": "module",
   "description": "Static air quality patient-record prototype with a Vercel password gate.",
+  "scripts": {
+    "start": "node cloud_run/server.mjs",
+    "ingest:live": "node scripts/hourly-ingest.mjs --live",
+    "ingest:live:gcs": "node scripts/hourly-ingest.mjs --live --gcs",
+    "ingest:seed-live": "node scripts/hourly-ingest.mjs --seed --live",
+    "ingest:advance": "node scripts/hourly-ingest.mjs --advance",
+    "ingest:reset": "node scripts/hourly-ingest.mjs --seed",
+    "cron:local": "node scripts/run-local-cron.mjs --every 3600",
+    "cron:dev": "node scripts/run-local-cron.mjs --advance --every 30",
+    "cron:install": "./scripts/setup_live_hourly_cron.sh --yes",
+    "cron:remove": "./scripts/setup_live_hourly_cron.sh --remove",
+    "deploy:live-ingest": "./scripts/deploy_live_ingest.sh",
+    "prepare:firebase": "./scripts/prepare_firebase_public.sh",
+    "deploy:firebase": "./scripts/prepare_firebase_public.sh && (cd functions && npm ci) && firebase deploy --only hosting,functions --project nhs-patient-records",
+    "serve": "python3 serve.py 8080"
+  },
   "dependencies": {
+    "@google-cloud/storage": "^7.17.0",
     "@vercel/functions": "^3.7.5"
   }
 }

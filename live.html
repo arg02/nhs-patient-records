@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Live Today calculation — Design 3.2b</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/aq-widget.css?v=80">
+  <link rel="stylesheet" href="css/site-nav.css">
+  <link rel="stylesheet" href="css/live-demo.css?v=7">
+</head>
+<body>
+  <nav class="site-nav" aria-label="Prototype navigation">
+    <div class="site-nav__inner">
+      <a href="index.html" class="site-nav__link">All concepts</a>
+      <a href="concept3.html" class="site-nav__link">Design 3 iterations</a>
+      <a href="concept32.html" class="site-nav__link">Design 3.2 iterations</a>
+      <a href="live.html" class="site-nav__link site-nav__link--active" aria-current="page">Live Today calc</a>
+      <a href="nhs-data-guide.html" class="site-nav__link">NHS data integration guide</a>
+      <a href="/__logout" class="site-nav__link site-nav__link--sign-out">Sign out</a>
+    </div>
+  </nav>
+
+  <header class="page-hd">
+    <h1>Live Today calculation</h1>
+    <p>
+      Design <strong>3.2b</strong> fed by per-day JSON under <code>data/live/</code>
+      (today + −1/−2/−3; older days archive to <code>_old/</code>).
+      Nowcast = <strong>GMT hour floor − 2h</strong>
+      (e.g. 20:39Z → data <code>18:00Z</code>). Panels label the
+      <strong>data hour</strong> in GMT.
+      Seed once with <code>npm run ingest:seed</code>; thereafter
+      <code>npm run ingest</code> / <code>cron:local</code> append only the latest data hour.
+    </p>
+    <p class="page-hd__meta" id="live-meta">Loading…</p>
+  </header>
+
+  <div class="live-workspace">
+    <div id="widget-root"></div>
+    <section class="calc-section" aria-labelledby="calc-heading">
+      <h2 id="calc-heading">How Today was calculated</h2>
+      <p class="calc-intro" id="calc-intro"></p>
+      <div class="calc-grid" id="calc-grid"></div>
+    </section>
+  </div>
+
+  <script>
+    (function () {
+      var params = new URLSearchParams(window.location.search);
+      var host = window.location.hostname;
+      var isLocal = host === 'localhost' || host === '127.0.0.1';
+      var wantsGcs = params.get('storage') === 'gcs' || params.get('live') === 'gcs';
+      var override = params.get('liveDataBase') || window.LIVE_DATA_BASE;
+      if (override) {
+        window.LIVE_DATA_BASE = override.endsWith('/') ? override : override + '/';
+        return;
+      }
+      if (!isLocal && (wantsGcs || host.endsWith('.web.app') || host.endsWith('.firebaseapp.com'))) {
+        window.LIVE_DATA_BASE = '/data/live/';
+        return;
+      }
+      if (isLocal && wantsGcs && window.LIVE_DATA_CLOUD_RUN) {
+        var base = window.LIVE_DATA_CLOUD_RUN;
+        window.LIVE_DATA_BASE = base.endsWith('/') ? base : base + '/';
+        return;
+      }
+      window.LIVE_DATA_BASE = 'data/live/';
+    })();
+  </script>
+  <script src="js/inactivity-logout.js?v=2" defer></script>
+  <script type="module">
+    import { createStackWidgetV32B } from './js/stack-widget.js?v=56';
+    import {
+      buildLiveDemoBundle,
+      formatHourLabel,
+      formatGmtHour,
+      formatGmtStamp,
+      hourlyLineChartHtml,
+      hourHistoryTableHtml,
+      bindHourlyLineCharts,
+      UG_M3,
+      formatUgDisplay,
+    } from './js/live-demo.js?v=14';
+    import { daqiColor } from './js/air-quality.js?v=14';
+
+    const metaEl = document.getElementById('live-meta');
+    const introEl = document.getElementById('calc-intro');
+    const gridEl = document.getElementById('calc-grid');
+    const rootEl = document.getElementById('widget-root');
+
+    const liveDataBase = window.LIVE_DATA_BASE || 'data/live/';
+
+    async function loadJson(relativePath) {
+      try {
+        const url = `${liveDataBase}${relativePath}?t=${Date.now()}`;
+        const res = await fetch(url);
+        if (!res.ok) return null;
+        return res.json();
+      } catch {
+        return null;
+      }
+    }
+
+    async function loadLiveStore() {
+      const index = await loadJson('index.json');
+      if (!index?.keptDays?.length) return { index: null, todayDay: null, pastDays: [] };
+      const days = await Promise.all(
+        index.keptDays.map((key) => loadJson(`${key}.json`)),
+      );
+      const todayKey = index.wallClockUk?.dateKey || index.keptDays[index.keptDays.length - 1];
+      const todayDay = days.find((d) => d?.ukDateKey === todayKey) || null;
+      const pastDays = days.filter((d) => d && d.ukDateKey !== todayKey);
+      return { index, todayDay, pastDays };
+    }
+
+    function triggerTableHtml(p) {
+      const title = p.triggerTableKind === 'erg'
+        ? `ERG index-point triggers (${UG_M3})`
+        : `DAQI bands (${UG_M3}) — NO₂ has no ERG trigger table`;
+      const rows = p.triggerRows.map((r) => {
+        const active = p.triggerIndex === r.index || (p.triggerTableKind === 'daqi' && p.latestHourIndex === r.index);
+        const mark = p.triggerTableKind === 'erg' && p.triggerIndex === r.index
+          ? (p.triggerSinceGmtLabel ? `← since ${p.triggerSinceGmtLabel} GMT` : '← active')
+          : (p.triggerTableKind === 'daqi' && p.dataGmtLabel ? `← ${p.dataGmtLabel} GMT` : '');
+        return `<tr class="${active ? 'is-active' : ''}" style="--band:${r.color}">
+          <td class="daq-band__swatch"><span style="background:${r.color}"></span>${r.index}</td>
+          <td class="daq-band__ug">${p.triggerTableKind === 'erg' ? `\u2265 ${r.ug}` : r.range} <span class="unit">${UG_M3}</span></td>
+          <td class="daq-band__mark">${mark}</td>
+        </tr>`;
+      }).join('');
+      return `
+        <div class="calc-card__band">
+          <h4 class="calc-card__band-hd">${title}</h4>
+          <table class="daq-band" aria-label="${title}">
+            <thead><tr><th>Index</th><th>Threshold</th><th></th></tr></thead>
+            <tbody>${rows}</tbody>
+          </table>
+        </div>`;
+    }
+
+    function panelHtml(p) {
+      const chart = hourlyLineChartHtml(p.hours, {
+        chartMax: p.chartMax,
+        highlightHour: p.dataHourUk,
+      });
+
+      const fetchLabel = formatGmtStamp(p.fetchedAt) || '—';
+
+      const triggerSet = p.triggerIndex != null
+        ? `Index ${p.triggerIndex}${p.triggerSinceGmtLabel ? ` · set at ${p.triggerSinceGmtLabel} GMT` : ''}`
+        : 'none';
+
+      return `
+        <article class="calc-card" data-pollutant="${p.key}">
+          <header class="calc-card__hd">
+            <h3>${p.label}</h3>
+            <div class="calc-card__index" style="background:${daqiColor(p.todayIndex)}">DAQI ${p.todayIndex ?? '—'}</div>
+          </header>
+          <dl class="calc-card__facts">
+            <div><dt>Latest fetch</dt><dd>${fetchLabel}</dd></div>
+            <div><dt>Current data hour</dt><dd>${p.dataGmtLabel ?? '—'} GMT · ${formatUgDisplay(p.latestUg)} ${UG_M3} (hour index ${p.latestHourIndex ?? '—'})</dd></div>
+            <div><dt>Previous data hour</dt><dd>${p.previousGmtLabel ?? '—'} GMT · ${formatUgDisplay(p.previousUg)} ${UG_M3}</dd></div>
+            <div><dt>Active trigger</dt><dd>${triggerSet}</dd></div>
+            <div><dt>Today index used</dt><dd>${p.todayIndex ?? '—'}</dd></div>
+          </dl>
+          <p class="calc-card__method">${p.method}</p>
+          <div class="calc-card__chart">
+            <h4 class="calc-card__band-hd">${UG_M3} today (GMT) — line colour = active index each hour</h4>
+            ${chart}
+          </div>
+          ${hourHistoryTableHtml(p.hourHistory, { key: p.key })}
+          ${triggerTableHtml(p)}
+        </article>
+      `;
+    }
+
+    const store = await loadLiveStore();
+    const bundle = buildLiveDemoBundle(store);
+
+    rootEl.appendChild(createStackWidgetV32B(bundle.widgetData));
+
+    const { summary, pollutantPanels } = bundle;
+    const dataLabel = summary.dataHour != null && store.todayDay?.hourMeta?.[summary.dataHour]?.gmtTimestamp
+      ? `data hour ${formatGmtHour(store.todayDay.hourMeta[summary.dataHour].gmtTimestamp)} GMT`
+      : (summary.dataHour != null
+        ? `data hour ${String(summary.dataHour).padStart(2, '0')}:00 UK`
+        : 'no data hours yet');
+    metaEl.textContent = [
+      `Source: ${summary.source}`,
+      `UK calendar day ${summary.ukDateKey} (grouping only)`,
+      dataLabel,
+      `Today level ${summary.todayLevel}`,
+      summary.fetchedAt ? `fetched ${formatGmtStamp(summary.fetchedAt)}` : null,
+      summary.annual ? `annual (${summary.annualYear || '—'}) from exposure value` : null,
+      summary.forecast?.band
+        ? `forecast ${summary.forecast.band} (Future ID ${summary.forecast.forecastId ?? '—'})`
+        : null,
+      `JSON: ${liveDataBase}{date}.json`,
+      summary.note || null,
+    ].filter(Boolean).join(' · ');
+    introEl.textContent = `Overall Today DAQI ${summary.todayLevel} = max(PM₂.₅ ${pollutantPanels[0].todayIndex}, PM₁₀ ${pollutantPanels[1].todayIndex}, NO₂ ${pollutantPanels[2].todayIndex}, O₃ ${pollutantPanels[3].todayIndex}). Panel times are GMT (API timestamps); day files still keyed by UK calendar date.`;
+    gridEl.innerHTML = pollutantPanels.map(panelHtml).join('');
+    bindHourlyLineCharts(gridEl);
+  </script>
+</body>
+</html>

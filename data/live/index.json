@@ -1,0 +1,48 @@
+{
+  "patient": {
+    "name": "ERG",
+    "address": "Uren Building",
+    "place": "Uren Building"
+  },
+  "lat": 51.51582459205555,
+  "lng": -0.22380761638931398,
+  "source": "exposure-live",
+  "note": "Latest data hour 2026-08-14T15:00:00.000Z (GMT floor 2026-08-14T17:00:00.000Z − 2h; UK 2026-08-14 16:00).",
+  "seeded": true,
+  "lastFetchedAt": "2026-08-14T17:05:02.875Z",
+  "lastData": {
+    "ukDateKey": "2026-08-14",
+    "hour": 16,
+    "gmtTimestamp": "2026-08-14T15:00:00.000Z"
+  },
+  "wallClockUk": {
+    "dateKey": "2026-08-14",
+    "hour": 18
+  },
+  "dataLagHours": 2,
+  "keptDays": [
+    "2026-08-11",
+    "2026-08-12",
+    "2026-08-13",
+    "2026-08-14"
+  ],
+  "todayLevel": 4,
+  "annual": {
+    "no2": 27.883317571617958,
+    "pm10": 17.92749360955481,
+    "pm25": 10.30650836935155,
+    "o3": 41.90964904707471
+  },
+  "annualYear": 2022,
+  "forecast": {
+    "band": "Low",
+    "text": "largely dry with bright or sunny spells and mainly light winds.  \n\nBack trajectories indicate the arrival of a Atlantic relatively 'clean' air feed, it should aid dispersion of local emissions.\n\nAir pollution is forecast to remain 'Low' for the following pollutants:\n\nNitrogen Dioxide\nOzone\nPM10 particulate\nPM2.5 particulate\nSulphur Dioxide",
+    "date": "2026-08-15",
+    "forecastId": 54732,
+    "forecastType": "Future",
+    "publishedAt": "14/08/2026 10:13:37 GMT",
+    "validFrom": "14/08/2026 00:00:00 GMT",
+    "validTo": "17/08/2026 23:59:00 GMT",
+    "title": "Low air pollution forecast valid from Friday 14 August to end of Monday 17 August"
+  }
+}

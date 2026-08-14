@@ -1,0 +1,40 @@
+{
+  "Forecasts": [
+    {
+      "ForecastType": "Current",
+      "ForecastID": 54734,
+      "PublishedDateTime": "14/08/2026 10:27:09 GMT",
+      "ForecastTitle": "Moderate ozone air pollution forecast valid from Friday 14 August to end of Friday 14 August",
+      "ShareMessage": "Moderate #airpollution forecast valid to 14/08/2026 23:59 GMT. @LondonAir.",
+      "ShareMessageTwitter": "Moderate #airpollution forecast valid to 14/08/2026 23:59 GMT. @LondonAir.",
+      "ValidFrom": "14/08/2026 00:00:00 GMT",
+      "ValidTo": "14/08/2026 23:59:00 GMT",
+      "ForecastBand": "Moderate",
+      "NO2Band": "Low",
+      "O3Band": "Moderate",
+      "PM10Band": "Low",
+      "PM25Band": "Low",
+      "SO2Band": "Low",
+      "ForecastText": "Dry and settled with light winds with plenty of strong sunshine across the region. \n\nWith temperatures forecast to reach mid 30s, in these conditions, locally emitted and longer-range pollutants do react photochemically in the strong sunshine to form ground level ozone. Consequently, 'Moderate' levels of ozone are possible during the afternoons. Moderate levels have been consistently reached these past couple weeks and this will likely continue.\n\nAir pollution is forecast to remain 'Low' for the following pollutants:\n\nNitrogen Dioxide\nPM10 particulate\nPM2.5 particulate\nSulphur Dioxide",
+      "DisclaimerText": "This forecast is intended to provide information on expected pollution levels in areas of significant public exposure. It may not apply in very specific locations close to unusually strong or short-lived local sources of pollution."
+    },
+    {
+      "ForecastType": "Future",
+      "ForecastID": 54732,
+      "PublishedDateTime": "14/08/2026 10:13:37 GMT",
+      "ForecastTitle": "Low air pollution forecast valid from Friday 14 August to end of Monday 17 August",
+      "ShareMessage": "Low #airpollution forecast valid to 17/08/2026 23:59 GMT. @LondonAir.",
+      "ShareMessageTwitter": "Low #airpollution forecast valid to 17/08/2026 23:59 GMT. @LondonAir.",
+      "ValidFrom": "14/08/2026 00:00:00 GMT",
+      "ValidTo": "17/08/2026 23:59:00 GMT",
+      "ForecastBand": "Low",
+      "NO2Band": "Low",
+      "O3Band": "Low",
+      "PM10Band": "Low",
+      "PM25Band": "Low",
+      "SO2Band": "Low",
+      "ForecastText": "largely dry with bright or sunny spells and mainly light winds.  \n\nBack trajectories indicate the arrival of a Atlantic relatively 'clean' air feed, it should aid dispersion of local emissions.\n\nAir pollution is forecast to remain 'Low' for the following pollutants:\n\nNitrogen Dioxide\nOzone\nPM10 particulate\nPM2.5 particulate\nSulphur Dioxide",
+      "DisclaimerText": "This forecast is intended to provide information on expected pollution levels in areas of significant public exposure. It may not apply in very specific locations close to unusually strong or short-lived local sources of pollution."
+    }
+  ]
+}

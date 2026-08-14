@@ -18,6 +18,7 @@ export const config = {
 
 const COOKIE_NAME = 'nhs_aq_gate';
 const COOKIE_MAX_AGE = 30 * 60; // 30-minute inactivity window
+const SITE_VERSION = "v2026.08.14-ci1";
 
 async function tokenFor(password) {
   const data = new TextEncoder().encode(`v1:${password}`);
@@ -102,6 +103,15 @@ function loginPage({ error = false, notConfigured = false } = {}) {
       cursor: pointer;
     }
     button:hover { background: #143a5e; }
+    .site-version {
+      position: fixed;
+      bottom: 10px;
+      left: 12px;
+      font-size: 11px;
+      color: #9aa3b2;
+      font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+      pointer-events: none;
+    }
   </style>
 </head>
 <body>
@@ -111,6 +121,7 @@ function loginPage({ error = false, notConfigured = false } = {}) {
     ${message}
     ${form}
   </main>
+  <p class="site-version" aria-hidden="true">${SITE_VERSION}</p>
 </body>
 </html>`;
 }

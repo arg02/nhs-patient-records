@@ -1,0 +1,1091 @@
+{
+  "source": "demo-cron",
+  "note": "Demo backfill 2026-08-11 hours 00–12.",
+  "ukDateKey": "2026-08-11",
+  "asOfHour": 13,
+  "fetchedAt": "2026-08-11T12:19:33.013Z",
+  "lat": 51.51582459205555,
+  "lng": -0.22380761638931398,
+  "patient": {
+    "name": "ERG",
+    "address": "Uren Building",
+    "place": "Uren Building"
+  },
+  "place": "Uren Building",
+  "hourly": {
+    "pm25": [
+      9,
+      8,
+      8,
+      7,
+      8,
+      10,
+      12,
+      14,
+      22,
+      51,
+      54,
+      49,
+      40,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "pm10": [
+      16,
+      15,
+      14,
+      13,
+      15,
+      18,
+      22,
+      28,
+      40,
+      70,
+      75,
+      70,
+      55,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "no2": [
+      32,
+      28,
+      26,
+      24,
+      30,
+      48,
+      72,
+      98,
+      142,
+      188,
+      165,
+      118,
+      88,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ],
+    "o3": [
+      48,
+      46,
+      44,
+      42,
+      45,
+      50,
+      55,
+      70,
+      100,
+      108,
+      112,
+      110,
+      95,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null,
+      null
+    ]
+  },
+  "previousHour": {
+    "pm25": 40,
+    "pm10": 55,
+    "no2": 88,
+    "o3": 95,
+    "hour": 12
+  },
+  "triggers": {
+    "pm25": {
+      "index": 4,
+      "sinceHour": 10
+    },
+    "pm10": {
+      "index": 4,
+      "sinceHour": 10
+    },
+    "o3": {
+      "index": 4,
+      "sinceHour": 10,
+      "quietHours": 0
+    }
+  },
+  "indexes": {
+    "no2": 2,
+    "pm25": 4,
+    "pm10": 4,
+    "o3": 4
+  },
+  "todayLevel": 4,
+  "fetches": [
+    {
+      "at": "2026-08-11T12:19:33.013Z",
+      "ukDateKey": "2026-08-11",
+      "hour": 0,
+      "backfill": true,
+      "sample": {
+        "pm25": 9,
+        "pm10": 16,
+        "no2": 32,
+        "o3": 48
+      },
+      "indexes": {
+        "no2": 1,
+        "pm25": 1,
+        "pm10": 1,
+        "o3": 2
+      },
+      "todayLevel": 2,
+      "previousHour": {
+        "pm25": 9,
+        "pm10": 16,
+        "no2": 32,
+        "o3": 48,
+        "hour": 0
+      },
+      "triggers": {
+        "pm25": {
+          "index": null,
+          "sinceHour": null
+        },
+        "pm10": {
+          "index": null,
+          "sinceHour": null
+        },
+        "o3": {
+          "index": null,
+          "sinceHour": null,
+          "quietHours": 0
+        }
+      },
+      "steps": [
+        {
+          "kind": "no2",
+          "text": "NO₂ latest hour 00:00 = 32.0 µg/m³ → rounded 32 → DAQI 1.",
+          "index": 1,
+          "ug": 32
+        },
+        {
+          "kind": "pm25-none",
+          "text": "PM₂.₅ 9.0 µg/m³ — no new trigger (prev —; active none).",
+          "index": null
+        },
+        {
+          "kind": "pm10-none",
+          "text": "PM₁₀ 16.0 µg/m³ — no new trigger (prev —; active none).",
+          "index": null
+        },
+        {
+          "kind": "o3-none",
+          "text": "O₃ 48.0 µg/m³ — no new trigger (prev —; active none).",
+          "index": null
+        }
+      ]
+    },
+    {
+      "at": "2026-08-11T12:19:33.013Z",
+      "ukDateKey": "2026-08-11",
+      "hour": 1,
+      "backfill": true,
+      "sample": {
+        "pm25": 8,
+        "pm10": 15,
+        "no2": 28,
+        "o3": 46
+      },
+      "indexes": {
+        "no2": 1,
+        "pm25": 1,
+        "pm10": 1,
+        "o3": 2
+      },
+      "todayLevel": 2,
+      "previousHour": {
+        "pm25": 8,
+        "pm10": 15,
+        "no2": 28,
+        "o3": 46,
+        "hour": 1
+      },
+      "triggers": {
+        "pm25": {
+          "index": null,
+          "sinceHour": null
+        },
+        "pm10": {
+          "index": null,
+          "sinceHour": null
+        },
+        "o3": {
+          "index": null,
+          "sinceHour": null,
+          "quietHours": 0
+        }
+      },
+      "steps": [
+        {
+          "kind": "no2",
+          "text": "NO₂ latest hour 01:00 = 28.0 µg/m³ → rounded 28 → DAQI 1.",
+          "index": 1,
+          "ug": 28
+        },
+        {
+          "kind": "pm25-falling",
+          "text": "PM₂.₅ falling (9.0 µg/m³ → 8.0 µg/m³) — keep active trigger none.",
+          "index": null
+        },
+        {
+          "kind": "pm10-falling",
+          "text": "PM₁₀ falling (16.0 µg/m³ → 15.0 µg/m³) — keep active trigger none.",
+          "index": null
+        },
+        {
+          "kind": "o3-falling",
+          "text": "O₃ falling (48.0 µg/m³ → 46.0 µg/m³) — keep active trigger none.",
+          "index": null
+        }
+      ]
+    },
+    {
+      "at": "2026-08-11T12:19:33.013Z",
+      "ukDateKey": "2026-08-11",
+      "hour": 2,
+      "backfill": true,
+      "sample": {
+        "pm25": 8,
+        "pm10": 14,
+        "no2": 26,
+        "o3": 44
+      },
+      "indexes": {
+        "no2": 1,
+        "pm25": 1,
+        "pm10": 1,
+        "o3": 2
+      },
+      "todayLevel": 2,
+      "previousHour": {
+        "pm25": 8,
+        "pm10": 14,
+        "no2": 26,
+        "o3": 44,
+        "hour": 2
+      },
+      "triggers": {
+        "pm25": {
+          "index": 1,
+          "sinceHour": 2
+        },
+        "pm10": {
+          "index": null,
+          "sinceHour": null
+        },
+        "o3": {
+          "index": null,
+          "sinceHour": null,
+          "quietHours": 0
+        }
+      },
+      "steps": [
+        {
+          "kind": "no2",
+          "text": "NO₂ latest hour 02:00 = 26.0 µg/m³ → rounded 26 → DAQI 1.",
+          "index": 1,
+          "ug": 26
+        },
+        {
+          "kind": "pm25-trigger",
+          "text": "PM₂.₅ trigger: prev 8.0 µg/m³ ≥ threshold for index 1, current 8.0 µg/m³ ≥ prev → active 1.",
+          "index": 1,
+          "fired": 1,
+          "previous": 8,
+          "current": 8
+        },
+        {
+          "kind": "pm10-falling",
+          "text": "PM₁₀ falling (15.0 µg/m³ → 14.0 µg/m³) — keep active trigger none.",
+          "index": null
+        },
+        {
+          "kind": "o3-falling",
+          "text": "O₃ falling (46.0 µg/m³ → 44.0 µg/m³) — keep active trigger none.",
+          "index": null
+        }
+      ]
+    },
+    {
+      "at": "2026-08-11T12:19:33.013Z",
+      "ukDateKey": "2026-08-11",
+      "hour": 3,
+      "backfill": true,
+      "sample": {
+        "pm25": 7,
+        "pm10": 13,
+        "no2": 24,
+        "o3": 42
+      },
+      "indexes": {
+        "no2": 1,
+        "pm25": 1,
+        "pm10": 1,
+        "o3": 2
+      },
+      "todayLevel": 2,
+      "previousHour": {
+        "pm25": 7,
+        "pm10": 13,
+        "no2": 24,
+        "o3": 42,
+        "hour": 3
+      },
+      "triggers": {
+        "pm25": {
+          "index": 1,
+          "sinceHour": 2
+        },
+        "pm10": {
+          "index": null,
+          "sinceHour": null
+        },
+        "o3": {
+          "index": null,
+          "sinceHour": null,
+          "quietHours": 0
+        }
+      },
+      "steps": [
+        {
+          "kind": "no2",
+          "text": "NO₂ latest hour 03:00 = 24.0 µg/m³ → rounded 24 → DAQI 1.",
+          "index": 1,
+          "ug": 24
+        },
+        {
+          "kind": "pm25-falling",
+          "text": "PM₂.₅ falling (8.0 µg/m³ → 7.0 µg/m³) — keep active trigger 1.",
+          "index": 1
+        },
+        {
+          "kind": "pm10-falling",
+          "text": "PM₁₀ falling (14.0 µg/m³ → 13.0 µg/m³) — keep active trigger none.",
+          "index": null
+        },
+        {
+          "kind": "o3-falling",
+          "text": "O₃ falling (44.0 µg/m³ → 42.0 µg/m³) — keep active trigger none.",
+          "index": null
+        }
+      ]
+    },
+    {
+      "at": "2026-08-11T12:19:33.013Z",
+      "ukDateKey": "2026-08-11",
+      "hour": 4,
+      "backfill": true,
+      "sample": {
+        "pm25": 8,
+        "pm10": 15,
+        "no2": 30,
+        "o3": 45
+      },
+      "indexes": {
+        "no2": 1,
+        "pm25": 1,
+        "pm10": 1,
+        "o3": 2
+      },
+      "todayLevel": 2,
+      "previousHour": {
+        "pm25": 8,
+        "pm10": 15,
+        "no2": 30,
+        "o3": 45,
+        "hour": 4
+      },
+      "triggers": {
+        "pm25": {
+          "index": 1,
+          "sinceHour": 2
+        },
+        "pm10": {
+          "index": 1,
+          "sinceHour": 4
+        },
+        "o3": {
+          "index": 2,
+          "sinceHour": 4,
+          "quietHours": 0
+        }
+      },
+      "steps": [
+        {
+          "kind": "no2",
+          "text": "NO₂ latest hour 04:00 = 30.0 µg/m³ → rounded 30 → DAQI 1.",
+          "index": 1,
+          "ug": 30
+        },
+        {
+          "kind": "pm25-none",
+          "text": "PM₂.₅ 8.0 µg/m³ — no new trigger (prev 7.0 µg/m³; active 1).",
+          "index": 1
+        },
+        {
+          "kind": "pm10-trigger",
+          "text": "PM₁₀ trigger: prev 13.0 µg/m³ ≥ threshold for index 1, current 15.0 µg/m³ ≥ prev → active 1.",
+          "index": 1,
+          "fired": 1,
+          "previous": 13,
+          "current": 15
+        },
+        {
+          "kind": "o3-trigger",
+          "text": "O₃ trigger: prev 42.0 µg/m³ ≥ threshold for index 2, current 45.0 µg/m³ ≥ prev → active 2.",
+          "index": 2,
+          "fired": 2,
+          "previous": 42,
+          "current": 45
+        }
+      ]
+    },
+    {
+      "at": "2026-08-11T12:19:33.013Z",
+      "ukDateKey": "2026-08-11",
+      "hour": 5,
+      "backfill": true,
+      "sample": {
+        "pm25": 10,
+        "pm10": 18,
+        "no2": 48,
+        "o3": 50
+      },
+      "indexes": {
+        "no2": 1,
+        "pm25": 1,
+        "pm10": 1,
+        "o3": 2
+      },
+      "todayLevel": 2,
+      "previousHour": {
+        "pm25": 10,
+        "pm10": 18,
+        "no2": 48,
+        "o3": 50,
+        "hour": 5
+      },
+      "triggers": {
+        "pm25": {
+          "index": 1,
+          "sinceHour": 5
+        },
+        "pm10": {
+          "index": 1,
+          "sinceHour": 5
+        },
+        "o3": {
+          "index": 2,
+          "sinceHour": 5,
+          "quietHours": 0
+        }
+      },
+      "steps": [
+        {
+          "kind": "no2",
+          "text": "NO₂ latest hour 05:00 = 48.0 µg/m³ → rounded 48 → DAQI 1.",
+          "index": 1,
+          "ug": 48
+        },
+        {
+          "kind": "pm25-trigger",
+          "text": "PM₂.₅ trigger: prev 8.0 µg/m³ ≥ threshold for index 1, current 10.0 µg/m³ ≥ prev → active 1.",
+          "index": 1,
+          "fired": 1,
+          "previous": 8,
+          "current": 10
+        },
+        {
+          "kind": "pm10-trigger",
+          "text": "PM₁₀ trigger: prev 15.0 µg/m³ ≥ threshold for index 1, current 18.0 µg/m³ ≥ prev → active 1.",
+          "index": 1,
+          "fired": 1,
+          "previous": 15,
+          "current": 18
+        },
+        {
+          "kind": "o3-trigger",
+          "text": "O₃ trigger: prev 45.0 µg/m³ ≥ threshold for index 2, current 50.0 µg/m³ ≥ prev → active 2.",
+          "index": 2,
+          "fired": 2,
+          "previous": 45,
+          "current": 50
+        },
+        {
+          "kind": "o3-roll-keep",
+          "text": "O₃ rolling 8h DAQI 2 ≤ active 2 — keep trigger.",
+          "index": 2
+        }
+      ]
+    },
+    {
+      "at": "2026-08-11T12:19:33.013Z",
+      "ukDateKey": "2026-08-11",
+      "hour": 6,
+      "backfill": true,
+      "sample": {
+        "pm25": 12,
+        "pm10": 22,
+        "no2": 72,
+        "o3": 55
+      },
+      "indexes": {
+        "no2": 2,
+        "pm25": 1,
+        "pm10": 1,
+        "o3": 2
+      },
+      "todayLevel": 2,
+      "previousHour": {
+        "pm25": 12,
+        "pm10": 22,
+        "no2": 72,
+        "o3": 55,
+        "hour": 6
+      },
+      "triggers": {
+        "pm25": {
+          "index": 1,
+          "sinceHour": 6
+        },
+        "pm10": {
+          "index": 1,
+          "sinceHour": 6
+        },
+        "o3": {
+          "index": 2,
+          "sinceHour": 6,
+          "quietHours": 0
+        }
+      },
+      "steps": [
+        {
+          "kind": "no2",
+          "text": "NO₂ latest hour 06:00 = 72.0 µg/m³ → rounded 72 → DAQI 2.",
+          "index": 2,
+          "ug": 72
+        },
+        {
+          "kind": "pm25-trigger",
+          "text": "PM₂.₅ trigger: prev 10.0 µg/m³ ≥ threshold for index 1, current 12.0 µg/m³ ≥ prev → active 1.",
+          "index": 1,
+          "fired": 1,
+          "previous": 10,
+          "current": 12
+        },
+        {
+          "kind": "pm10-trigger",
+          "text": "PM₁₀ trigger: prev 18.0 µg/m³ ≥ threshold for index 1, current 22.0 µg/m³ ≥ prev → active 1.",
+          "index": 1,
+          "fired": 1,
+          "previous": 18,
+          "current": 22
+        },
+        {
+          "kind": "o3-trigger",
+          "text": "O₃ trigger: prev 50.0 µg/m³ ≥ threshold for index 2, current 55.0 µg/m³ ≥ prev → active 2.",
+          "index": 2,
+          "fired": 2,
+          "previous": 50,
+          "current": 55
+        },
+        {
+          "kind": "o3-roll-keep",
+          "text": "O₃ rolling 8h DAQI 2 ≤ active 2 — keep trigger.",
+          "index": 2
+        }
+      ]
+    },
+    {
+      "at": "2026-08-11T12:19:33.013Z",
+      "ukDateKey": "2026-08-11",
+      "hour": 7,
+      "backfill": true,
+      "sample": {
+        "pm25": 14,
+        "pm10": 28,
+        "no2": 98,
+        "o3": 70
+      },
+      "indexes": {
+        "no2": 2,
+        "pm25": 1,
+        "pm10": 2,
+        "o3": 2
+      },
+      "todayLevel": 2,
+      "previousHour": {
+        "pm25": 14,
+        "pm10": 28,
+        "no2": 98,
+        "o3": 70,
+        "hour": 7
+      },
+      "triggers": {
+        "pm25": {
+          "index": 1,
+          "sinceHour": 7
+        },
+        "pm10": {
+          "index": 2,
+          "sinceHour": 7
+        },
+        "o3": {
+          "index": 2,
+          "sinceHour": 7,
+          "quietHours": 0
+        }
+      },
+      "steps": [
+        {
+          "kind": "no2",
+          "text": "NO₂ latest hour 07:00 = 98.0 µg/m³ → rounded 98 → DAQI 2.",
+          "index": 2,
+          "ug": 98
+        },
+        {
+          "kind": "pm25-trigger",
+          "text": "PM₂.₅ trigger: prev 12.0 µg/m³ ≥ threshold for index 1, current 14.0 µg/m³ ≥ prev → active 1.",
+          "index": 1,
+          "fired": 1,
+          "previous": 12,
+          "current": 14
+        },
+        {
+          "kind": "pm10-trigger",
+          "text": "PM₁₀ trigger: prev 22.0 µg/m³ ≥ threshold for index 2, current 28.0 µg/m³ ≥ prev → active 2.",
+          "index": 2,
+          "fired": 2,
+          "previous": 22,
+          "current": 28
+        },
+        {
+          "kind": "o3-trigger",
+          "text": "O₃ trigger: prev 55.0 µg/m³ ≥ threshold for index 2, current 70.0 µg/m³ ≥ prev → active 2.",
+          "index": 2,
+          "fired": 2,
+          "previous": 55,
+          "current": 70
+        },
+        {
+          "kind": "o3-roll-keep",
+          "text": "O₃ rolling 8h DAQI 2 ≤ active 2 — keep trigger.",
+          "index": 2
+        }
+      ]
+    },
+    {
+      "at": "2026-08-11T12:19:33.013Z",
+      "ukDateKey": "2026-08-11",
+      "hour": 8,
+      "backfill": true,
+      "sample": {
+        "pm25": 22,
+        "pm10": 40,
+        "no2": 142,
+        "o3": 100
+      },
+      "indexes": {
+        "no2": 3,
+        "pm25": 1,
+        "pm10": 2,
+        "o3": 3
+      },
+      "todayLevel": 3,
+      "previousHour": {
+        "pm25": 22,
+        "pm10": 40,
+        "no2": 142,
+        "o3": 100,
+        "hour": 8
+      },
+      "triggers": {
+        "pm25": {
+          "index": 1,
+          "sinceHour": 8
+        },
+        "pm10": {
+          "index": 2,
+          "sinceHour": 8
+        },
+        "o3": {
+          "index": 3,
+          "sinceHour": 8,
+          "quietHours": 0
+        }
+      },
+      "steps": [
+        {
+          "kind": "no2",
+          "text": "NO₂ latest hour 08:00 = 142.0 µg/m³ → rounded 142 → DAQI 3.",
+          "index": 3,
+          "ug": 142
+        },
+        {
+          "kind": "pm25-trigger",
+          "text": "PM₂.₅ trigger: prev 14.0 µg/m³ ≥ threshold for index 1, current 22.0 µg/m³ ≥ prev → active 1.",
+          "index": 1,
+          "fired": 1,
+          "previous": 14,
+          "current": 22
+        },
+        {
+          "kind": "pm10-trigger",
+          "text": "PM₁₀ trigger: prev 28.0 µg/m³ ≥ threshold for index 2, current 40.0 µg/m³ ≥ prev → active 2.",
+          "index": 2,
+          "fired": 2,
+          "previous": 28,
+          "current": 40
+        },
+        {
+          "kind": "o3-trigger",
+          "text": "O₃ trigger: prev 70.0 µg/m³ ≥ threshold for index 3, current 100.0 µg/m³ ≥ prev → active 3.",
+          "index": 3,
+          "fired": 3,
+          "previous": 70,
+          "current": 100
+        },
+        {
+          "kind": "o3-roll-keep",
+          "text": "O₃ rolling 8h DAQI 2 ≤ active 3 — keep trigger.",
+          "index": 3
+        }
+      ]
+    },
+    {
+      "at": "2026-08-11T12:19:33.013Z",
+      "ukDateKey": "2026-08-11",
+      "hour": 9,
+      "backfill": true,
+      "sample": {
+        "pm25": 51,
+        "pm10": 70,
+        "no2": 188,
+        "o3": 108
+      },
+      "indexes": {
+        "no2": 3,
+        "pm25": 2,
+        "pm10": 2,
+        "o3": 3
+      },
+      "todayLevel": 3,
+      "previousHour": {
+        "pm25": 51,
+        "pm10": 70,
+        "no2": 188,
+        "o3": 108,
+        "hour": 9
+      },
+      "triggers": {
+        "pm25": {
+          "index": 2,
+          "sinceHour": 9
+        },
+        "pm10": {
+          "index": 2,
+          "sinceHour": 9
+        },
+        "o3": {
+          "index": 3,
+          "sinceHour": 9,
+          "quietHours": 0
+        }
+      },
+      "steps": [
+        {
+          "kind": "no2",
+          "text": "NO₂ latest hour 09:00 = 188.0 µg/m³ → rounded 188 → DAQI 3.",
+          "index": 3,
+          "ug": 188
+        },
+        {
+          "kind": "pm25-trigger",
+          "text": "PM₂.₅ trigger: prev 22.0 µg/m³ ≥ threshold for index 2, current 51.0 µg/m³ ≥ prev → active 2.",
+          "index": 2,
+          "fired": 2,
+          "previous": 22,
+          "current": 51
+        },
+        {
+          "kind": "pm10-trigger",
+          "text": "PM₁₀ trigger: prev 40.0 µg/m³ ≥ threshold for index 2, current 70.0 µg/m³ ≥ prev → active 2.",
+          "index": 2,
+          "fired": 2,
+          "previous": 40,
+          "current": 70
+        },
+        {
+          "kind": "o3-trigger",
+          "text": "O₃ trigger: prev 100.0 µg/m³ ≥ threshold for index 3, current 108.0 µg/m³ ≥ prev → active 3.",
+          "index": 3,
+          "fired": 3,
+          "previous": 100,
+          "current": 108
+        },
+        {
+          "kind": "o3-roll-keep",
+          "text": "O₃ rolling 8h DAQI 2 ≤ active 3 — keep trigger.",
+          "index": 3
+        }
+      ]
+    },
+    {
+      "at": "2026-08-11T12:19:33.013Z",
+      "ukDateKey": "2026-08-11",
+      "hour": 10,
+      "backfill": true,
+      "sample": {
+        "pm25": 54,
+        "pm10": 75,
+        "no2": 165,
+        "o3": 112
+      },
+      "indexes": {
+        "no2": 3,
+        "pm25": 4,
+        "pm10": 4,
+        "o3": 4
+      },
+      "todayLevel": 4,
+      "previousHour": {
+        "pm25": 54,
+        "pm10": 75,
+        "no2": 165,
+        "o3": 112,
+        "hour": 10
+      },
+      "triggers": {
+        "pm25": {
+          "index": 4,
+          "sinceHour": 10
+        },
+        "pm10": {
+          "index": 4,
+          "sinceHour": 10
+        },
+        "o3": {
+          "index": 4,
+          "sinceHour": 10,
+          "quietHours": 0
+        }
+      },
+      "steps": [
+        {
+          "kind": "no2",
+          "text": "NO₂ latest hour 10:00 = 165.0 µg/m³ → rounded 165 → DAQI 3.",
+          "index": 3,
+          "ug": 165
+        },
+        {
+          "kind": "pm25-trigger",
+          "text": "PM₂.₅ trigger: prev 51.0 µg/m³ ≥ threshold for index 4, current 54.0 µg/m³ ≥ prev → active 4.",
+          "index": 4,
+          "fired": 4,
+          "previous": 51,
+          "current": 54
+        },
+        {
+          "kind": "pm10-trigger",
+          "text": "PM₁₀ trigger: prev 70.0 µg/m³ ≥ threshold for index 4, current 75.0 µg/m³ ≥ prev → active 4.",
+          "index": 4,
+          "fired": 4,
+          "previous": 70,
+          "current": 75
+        },
+        {
+          "kind": "o3-trigger",
+          "text": "O₃ trigger: prev 108.0 µg/m³ ≥ threshold for index 4, current 112.0 µg/m³ ≥ prev → active 4.",
+          "index": 4,
+          "fired": 4,
+          "previous": 108,
+          "current": 112
+        },
+        {
+          "kind": "o3-roll-keep",
+          "text": "O₃ rolling 8h DAQI 3 ≤ active 4 — keep trigger.",
+          "index": 4
+        }
+      ]
+    },
+    {
+      "at": "2026-08-11T12:19:33.013Z",
+      "ukDateKey": "2026-08-11",
+      "hour": 11,
+      "backfill": true,
+      "sample": {
+        "pm25": 49,
+        "pm10": 70,
+        "no2": 118,
+        "o3": 110
+      },
+      "indexes": {
+        "no2": 2,
+        "pm25": 4,
+        "pm10": 4,
+        "o3": 4
+      },
+      "todayLevel": 4,
+      "previousHour": {
+        "pm25": 49,
+        "pm10": 70,
+        "no2": 118,
+        "o3": 110,
+        "hour": 11
+      },
+      "triggers": {
+        "pm25": {
+          "index": 4,
+          "sinceHour": 10
+        },
+        "pm10": {
+          "index": 4,
+          "sinceHour": 10
+        },
+        "o3": {
+          "index": 4,
+          "sinceHour": 10,
+          "quietHours": 0
+        }
+      },
+      "steps": [
+        {
+          "kind": "no2",
+          "text": "NO₂ latest hour 11:00 = 118.0 µg/m³ → rounded 118 → DAQI 2.",
+          "index": 2,
+          "ug": 118
+        },
+        {
+          "kind": "pm25-falling",
+          "text": "PM₂.₅ falling (54.0 µg/m³ → 49.0 µg/m³) — keep active trigger 4.",
+          "index": 4
+        },
+        {
+          "kind": "pm10-falling",
+          "text": "PM₁₀ falling (75.0 µg/m³ → 70.0 µg/m³) — keep active trigger 4.",
+          "index": 4
+        },
+        {
+          "kind": "o3-falling",
+          "text": "O₃ falling (112.0 µg/m³ → 110.0 µg/m³) — keep active trigger 4.",
+          "index": 4
+        },
+        {
+          "kind": "o3-roll-keep",
+          "text": "O₃ rolling 8h DAQI 3 ≤ active 4 — keep trigger.",
+          "index": 4
+        }
+      ]
+    },
+    {
+      "at": "2026-08-11T12:19:33.013Z",
+      "ukDateKey": "2026-08-11",
+      "hour": 12,
+      "backfill": true,
+      "sample": {
+        "pm25": 40,
+        "pm10": 55,
+        "no2": 88,
+        "o3": 95
+      },
+      "indexes": {
+        "no2": 2,
+        "pm25": 4,
+        "pm10": 4,
+        "o3": 4
+      },
+      "todayLevel": 4,
+      "previousHour": {
+        "pm25": 40,
+        "pm10": 55,
+        "no2": 88,
+        "o3": 95,
+        "hour": 12
+      },
+      "triggers": {
+        "pm25": {
+          "index": 4,
+          "sinceHour": 10
+        },
+        "pm10": {
+          "index": 4,
+          "sinceHour": 10
+        },
+        "o3": {
+          "index": 4,
+          "sinceHour": 10,
+          "quietHours": 0
+        }
+      },
+      "steps": [
+        {
+          "kind": "no2",
+          "text": "NO₂ latest hour 12:00 = 88.0 µg/m³ → rounded 88 → DAQI 2.",
+          "index": 2,
+          "ug": 88
+        },
+        {
+          "kind": "pm25-falling",
+          "text": "PM₂.₅ falling (49.0 µg/m³ → 40.0 µg/m³) — keep active trigger 4.",
+          "index": 4
+        },
+        {
+          "kind": "pm10-falling",
+          "text": "PM₁₀ falling (70.0 µg/m³ → 55.0 µg/m³) — keep active trigger 4.",
+          "index": 4
+        },
+        {
+          "kind": "o3-falling",
+          "text": "O₃ falling (110.0 µg/m³ → 95.0 µg/m³) — keep active trigger 4.",
+          "index": 4
+        },
+        {
+          "kind": "o3-roll-keep",
+          "text": "O₃ rolling 8h DAQI 3 ≤ active 4 — keep trigger.",
+          "index": 4
+        }
+      ]
+    }
+  ],
+  "forecast": {
+    "band": "Low",
+    "text": "Demo / placeholder until London Air forecast wired."
+  }
+}

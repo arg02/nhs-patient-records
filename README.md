@@ -4,9 +4,25 @@ Prototype widgets exploring how long-term WHO exposure, recent daily air quality
 
 **Docs for agents:** [AGENTS.md](AGENTS.md) · **Open work:** [ROADMAP.md](ROADMAP.md) · **NHS integration:** [nhs-data-guide.html](nhs-data-guide.html)
 
-**Live site:** [Vercel](https://nhs-patient-records.vercel.app/) (password-protected via `SITE_PASSWORD`). GitHub Pages is kept **unpublished** so the proprietary trigger table in the NHS data guide is not public.
+**Live site:** [Vercel](https://nhs-patient-records.vercel.app/) (password-protected via `SITE_PASSWORD`). **Firebase Hosting** at https://nhs-patient-records.web.app — `npm run deploy:firebase` locally, or push to `main` after adding the GitHub Actions secret (see [docs/FIREBASE_LIVE_INGEST.md](docs/FIREBASE_LIVE_INGEST.md)). GitHub Pages is kept **unpublished** so the proprietary trigger table in the NHS data guide is not public.
 
-Local preview: `python3 serve.py 8080` (or `8765`).
+Local preview: `python3 serve.py 8080` (or `npm run serve`).
+
+**Live Today calc (local cron + per-day JSON):** same pattern as aq-model-testing — crontab runs a shell wrapper that writes JSON; `serve.py` serves it.
+
+```bash
+npm run ingest:seed-live      # cold start: −3…today via /coords
+npm run ingest:live           # one-shot: latest data hour via /coord
+npm run cron:install          # crontab: :05 every hour → scripts/run_live_hourly.sh
+npm run serve                 # keep running in a Terminal tab
+# open http://127.0.0.1:8080/live.html
+```
+
+Logs: `logs/live_hourly_YYYY-MM-DD.log`. Remove: `npm run cron:remove`. Node loop alternative (no system cron): `npm run cron:local`.
+
+Store: `data/live/{YYYY-MM-DD}.json` + `index.json` (includes `forecast` from London Air **Future** entry). Keep today + −1/−2/−3; older → `data/live/_old/`. Nowcast = **GMT hour floor − 2h** (e.g. 20:39Z → `18:00Z`). Defaults: ERG @ Uren Building. Needs `.env` with `EXPOSURE_API_KEY`.
+
+**Production GCS:** hourly ingest writes to `gs://nhs-patient-records-live/live/`. Cloud Run serves `GET /data/live/*.json` for browser fetches; `live.html` uses `/data/live/` on Firebase (or `?storage=gcs` / `?liveDataBase=…`). See [docs/FIREBASE_LIVE_INGEST.md](docs/FIREBASE_LIVE_INGEST.md).
 
 ---
 
@@ -18,6 +34,7 @@ Local preview: `python3 serve.py 8080` (or `8765`).
 | **Design 3 workspace** | [concept3.html](concept3.html) | Iterations 3.0–3.5 on the DAQI-ladder design |
 | **Design 3.2 workspace** | [concept32.html](concept32.html) | Fork of 3.2 — coloured ratios, pollutant key strip, ERG credit |
 | **NHS data guide** | [nhs-data-guide.html](nhs-data-guide.html) | Four sections — Annual · Previous days · Today · Forecast — each with an end-product mockup; exposure API, DAQI rules, ERG index-point triggers |
+| **Live Today calc** | [live.html](live.html) | Design 3.2b + per-pollutant panels; `data/live/{date}.json` from hourly ingest |
 
 ---
 
@@ -108,7 +125,7 @@ All patient data is **mocked** in [`js/air-quality.js`](js/air-quality.js) via `
 
 | Data | Source / basis |
 |------|----------------|
-| **Exposure service (Long-term + Recent)** | Single `/coords` range call — `value` (annual mean at lat/lng), `data_map_start` (map base year → `annualYear`), and `nowcast_value` (hourly nowcast); see [nhs-data-guide.html](nhs-data-guide.html) |
+| **Exposure service (Long-term + Recent)** | `/coords` multi-hour (`from`/`to`); `/coord` single hour (`timestamp=…T…Z&weighted=true`). Both: `value` = annual, `nowcast_value` = hourly. See [nhs-data-guide.html](nhs-data-guide.html) |
 | **UK DAQI thresholds & implementation** | [GOV.UK DAQI concentration table](https://www.gov.uk/government/publications/health-effects-of-air-pollution/pollutant-concentrations-for-the-daily-air-quality-index-daqi); [DEFRA April 2013 implementation (PDF)](https://uk-air.defra.gov.uk/reports/cat14/1304251155_Update_on_Implementation_of_the_DAQI_April_2013_Final.pdf); Today index-point triggers = ERG extension (proprietary; band anchors = DEFRA 2013) |
 | **WHO annual guidelines** | WHO air quality guidelines (µg/m³): PM₂.₅ 5, PM₁₀ 15, NO₂ 10, O₃ 60 |
 | **Long-term bar colours** | Pollutant-specific palette — solid above WHO guideline, light fill below |
@@ -194,13 +211,27 @@ node scripts/verify-fill-logic.mjs
 
 **Vercel** (password-protected): push to `main`; set `SITE_PASSWORD` in the project. Middleware serves the password form and `/__logout` / `/__activity`.
 
-**GitHub Pages:** leave unpublished. The integration guide includes proprietary ERG index-point triggers that should stay behind the Vercel password gate.
+**Firebase Hosting + `siteGate`** (password-protected, multi-page — no SPA catch-all):
+
+```bash
+# One-time: create SITE_PASSWORD in Secret Manager (see docs/FIREBASE_LIVE_INGEST.md)
+npm run prepare:firebase
+cd functions && npm ci && cd ..
+firebase deploy --only hosting,functions --project nhs-patient-records
+# or: npm run deploy:firebase
+```
+
+**GitHub Actions (Firebase):** push to `main` runs [`.github/workflows/firebase-deploy-merge.yml`](.github/workflows/firebase-deploy-merge.yml) — same build as above (`prepare:firebase` → `functions` `npm ci` → `firebase deploy --only hosting,functions --non-interactive`). Add repo secret **`FIREBASE_SERVICE_ACCOUNT_NHS_PATIENT_RECORDS`** (GCP service account JSON). `SITE_PASSWORD` stays in GCP Secret Manager only. Cloud Run ingest is **not** part of this workflow — use `./scripts/deploy_live_ingest.sh` when ingest changes.
+
+**Production live ingest (GCP):** project **`nhs-patient-records`** (#401361224018) — Cloud Run `live-ingest` + Cloud Scheduler `:05` Europe/London → `gs://nhs-patient-records-live/live/*.json`. No backfill; days −1/−2/−3 fill as calendar days pass. Requires Blaze billing + `EXPOSURE_API_KEY` in Secret Manager. Full steps: [docs/FIREBASE_LIVE_INGEST.md](docs/FIREBASE_LIVE_INGEST.md) · `./scripts/deploy_live_ingest.sh`
+
+**GitHub Pages:** leave unpublished. The integration guide includes proprietary ERG index-point triggers that should stay behind the site password gate.
 
 ```bash
 git push origin main
 ```
 
-Local: `python3 serve.py 8080` (no password gate). Inactivity logout and `/__logout` / `/__activity` are Vercel-only; the local server and script skip them so preview is not bounced to `/__logout`.
+Local: `python3 serve.py 8080` (no password gate). Inactivity logout and `/__logout` / `/__activity` are hosted-deploy only (Vercel or Firebase); the local server and script skip them so preview is not bounced to `/__logout`.
 
 ---
 

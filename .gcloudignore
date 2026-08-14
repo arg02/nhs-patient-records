@@ -1,0 +1,30 @@
+# Deploy context for gcloud run deploy --source=.
+# Keeps image small; full repo JS is still needed for ingest imports.
+
+.git/
+.cursor/
+.vercel/
+node_modules/
+logs/
+screenshots/
+data/
+__pycache__/
+*.pyc
+.env
+.env.*
+
+# Local-only / design artefacts not needed at runtime
+concept*.html
+nhs-data-guide.html
+index.html
+live.html
+middleware.js
+serve.py
+css/
+images/
+
+# Docs and dev scripts (ingest logic stays via scripts/ + js/)
+docs/
+ROADMAP.md
+AGENTS.md
+README.md

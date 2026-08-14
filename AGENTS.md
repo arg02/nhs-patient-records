@@ -13,9 +13,10 @@ Static HTML/CSS/JS prototypes for an NHS Cerner-style air quality widget (Long-t
 
 ## Hosting
 
-- **Vercel only** (password-protected): `middleware.js`, `SITE_PASSWORD`, inactivity logout. This is the shareable site.
-- **GitHub Pages stays OFF.** The NHS data guide includes proprietary ERG index-point triggers; a public Pages site would expose them without a password. Pages has been deliberately unpublished.
-- If the user asks to “push to GitHub Pages”, **remind them Pages is off for that reason**, then push to `main` so **Vercel** deploys instead (unless they explicitly insist on re-enabling Pages).
+- **Current:** [Vercel](https://nhs-patient-records.vercel.app/) (password-protected): `middleware.js`, `SITE_PASSWORD`, inactivity logout.
+- **Firebase (production, deployed):** https://nhs-patient-records.web.app — **Firebase Hosting** + **`siteGate` Cloud Function** v2 (`europe-west2`) + **Cloud Run** (`live-ingest`) + **Cloud Scheduler** (`5 * * * *` Europe/London) → GCS `gs://nhs-patient-records-live/live/*.json`. GCP project **`nhs-patient-records`** (#401361224018). Build: `npm run prepare:firebase`; deploy: `npm run deploy:firebase` or push to `main` (GitHub Actions `.github/workflows/firebase-deploy-merge.yml` after `FIREBASE_SERVICE_ACCOUNT_NHS_PATIENT_RECORDS` secret) — see [docs/FIREBASE_LIVE_INGEST.md](docs/FIREBASE_LIVE_INGEST.md). Cloud Run ingest: `./scripts/deploy_live_ingest.sh` (separate from Hosting CI). Runs **in parallel with Vercel** until cutover.
+- **GitHub Pages stays OFF.** The NHS data guide includes proprietary ERG index-point triggers; a public Pages site would expose them without a password.
+- If the user asks to “push to GitHub Pages”, **remind them Pages is off for that reason**, then push to `main` so **Vercel** deploys (Firebase is also live at nhs-patient-records.web.app; cutover TBD) (unless they explicitly insist on re-enabling Pages).
 - Local preview: `python3 serve.py 8080` (or `8765`) — no password gate. `js/inactivity-logout.js` is a no-op on localhost / 127.0.0.1 (it must not redirect to `/__logout`); `serve.py` also no-ops `/__logout` and `/__activity`.
 
 ## After meaningful work — update docs in the same task
@@ -51,8 +52,12 @@ Also update `~/Sites/global/projects/nhs-patient-records.md` (and a `learnings/`
 | DAQI thresholds, colours, mock patient | `js/air-quality.js` |
 | Ladder / widget factories | `js/widget-render.js`, `js/stack-widget.js` |
 | Hourly Today exploration (3.2f) | `concept32.html#design-3-2f`, `todayHourlyPrototypeSeries` / `todayHourlyCardHtml`; layout: hourly row above Long-term \| Recent \| Forecast |
+| Live Today calc (3.2b + explainers) | `live.html`, `js/live-demo.js`, `js/live-storage.js`, … — local default `data/live/`; hosted/`?storage=gcs` → `/data/live/` (see `window.LIVE_DATA_BASE` in `live.html`) |
+| Production live ingest (GCP) | `cloud_run/server.mjs` — `/run`, `/health`, `/data/live/*.json`; [docs/FIREBASE_LIVE_INGEST.md](docs/FIREBASE_LIVE_INGEST.md) |
+| Local hourly cron (like aq-model-testing) | `scripts/run_live_hourly.sh` + `setup_live_hourly_cron.sh` (`npm run cron:install`); logs in `logs/`; keep `npm run serve` up separately |
 | Styles | `css/aq-widget.css`, `css/site-nav.css` |
-| Password / logout / activity | `middleware.js`, `js/inactivity-logout.js` |
+| Password / logout / activity | `middleware.js` (Vercel, cookie `nhs_aq_gate`), `functions/index.js` (`siteGate`, cookie `__session` — Hosting only forwards that name to Functions), `js/inactivity-logout.js` |
+| Firebase CI | `.github/workflows/firebase-deploy-merge.yml` — secret `FIREBASE_SERVICE_ACCOUNT_NHS_PATIENT_RECORDS` |
 | Fill / threshold tests | `scripts/verify-fill-logic.mjs` |
 
 ## Design preference

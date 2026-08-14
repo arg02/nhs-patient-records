@@ -55,7 +55,62 @@ Epidemiology and WHO/COMEAP health-risk methods express long-term mortality/morb
 | Promote a 3.2 variant to the main showcase | Open |
 | Wire prototype to live exposure API (replace mock) | Open — rules are in the data guide |
 | Prototype still simplifies some Today / pollutant-specific paths vs the guide | Open — keep guide normative; align JS when integrating |
-| Explore hourly Today panel (3.2f) — lag-sensitive short-term view | **Prototype** (Aug 2026) — mock NO₂ morning peak; 3–6h lag tint; layout experiment: hourly Today **full-width row above** Long-term \| Recent \| Forecast (not squeezed in ladders span); decide whether this supplements or replaces the single Today ladder; framing caveats from Shukla et al. (see research note above) |
+| Explore hourly Today panel (3.2f) — lag-sensitive short-term view | **Prototype** (Aug 2026) — dotted lag outline under hours; full-width row above Long-term \| Recent \| Forecast |
+| **Live Today calculation page** | **Local works** — `data/live/{YYYY-MM-DD}.json` (today+−1/−2/−3, `_old/` archive); seed once then latest data hour only (wall−2, GMT→UK). Forecast from London Air **Future** on each cron run (`index.json`). Panels show data hour + µg/m³ charts. Firebase still for production cron. |
+| Local hourly cron | **Done** — crontab `:05` → `scripts/run_live_hourly.sh` (same pattern as aq-model-testing nowcast effect). Install: `npm run cron:install`. Serve separately. |
+| Hourly cron + previous-hour / trigger storage (production) | **Deployed** — Cloud Run `live-ingest-00003-snp` + Scheduler `:05` → GCS. `GET /data/live/*.json` on same service; `live.html` uses `window.LIVE_DATA_BASE`. |
+| **Firebase Hosting (full stack)** | **Deployed** — https://nhs-patient-records.web.app · `siteGate` v2 (`europe-west2`, `SITE_PASSWORD` secret) gates `*.html` and `/data/live/**`; CSS/JS static. Deploy: `npm run prepare:firebase` + `npm run deploy:firebase`. Parallel with Vercel until cutover. |
+
+---
+
+## Firebase migration (production)
+
+**Direction (Aug 2026):** GCP project **`nhs-patient-records`** (#401361224018). Hourly ingest on **Cloud Run** (not Cloud Functions) in **`europe-west2`**; **Cloud Scheduler** `5 * * * *` **Europe/London** → `GET /run`. Output: **Cloud Storage** `gs://nhs-patient-records-live/live/*.json` (mirrors local `data/live/`). **No production seed/backfill** — days −1/−2/−3 accumulate over calendar days. **Firebase Hosting + `siteGate`** deployed at https://nhs-patient-records.web.app (parallel with Vercel until cutover).
+
+**Deploy / ops:** [docs/FIREBASE_LIVE_INGEST.md](docs/FIREBASE_LIVE_INGEST.md) · `./scripts/deploy_live_ingest.sh` · `npm run deploy:live-ingest`
+
+### Reference repos
+
+**Vault check (Aug 2026):** No project in `~/Sites/global` has all three (Hosting + Cloud Functions + Cloud Scheduler) together. Migration is a **composite** from:
+
+| Need | Project | Path | What it has |
+|------|---------|------|-------------|
+| Hosting + GitHub Actions CI | **nhs-patient-records** | `~/Sites/nhs-patient-records` | Hosting + Functions — `firebase-deploy-merge.yml` (not hosting-only) |
+| Hosting + static `public/` prep | **aq-model-testing** | `~/Sites/aq-model-testing` | Hosting (**https://aq-model-analysis.web.app**) + **Cloud Scheduler** + **Cloud Run** ingest — `prepare_firebase_public.sh`, `docs/FIREBASE_HOSTING.md`, `cloud_run_google/README.md` |
+| Password gate on Firebase | **ecoquity-tech** | `~/Volumes/Sabrent Rocket XTRM/Sites/ecoquity-tech` | Hosting (**https://ecoquity.tech**) + **Cloud Functions** (`architectureApi`, session cookie via rewrites) — **no Scheduler** |
+| Local hourly cron (dev) | **nhs-patient-records** | this repo | `scripts/run_live_hourly.sh` — see `~/Sites/global/patterns/local-crontab-json-ingest.md` |
+| Ingest logic (source of truth) | **nhs-patient-records** | this repo | `scripts/hourly-ingest.mjs`, `js/today-calc.js`, `js/live-store.js`, `js/london-air-forecast.js` |
+
+**Adapt from aq-model-testing:** Cloud Run + Scheduler in **`europe-west2`**; schedule **`5 * * * *` Europe/London** (this repo’s ingest cadence, not aq-model-testing’s `:55` UTC).
+
+**daqi-vs-caqi caveat:** SPA rewrite (`** → /index.html`) — **do not copy**; this repo is multi-page static HTML.
+
+### Target architecture
+
+```
+Cloud Scheduler (5 * * * *, Europe/London)
+  → live-ingest (Cloud Run, europe-west2) GET /run
+  → gs://nhs-patient-records-live/live/{date}.json + index.json (+ _old/)
+Firebase Hosting (static HTML/CSS/JS from public/) — siteGate auth
+  → rewrites /__auth, /__activity, /__logout, /*.html, /data/live/** → siteGate
+  → siteGate proxies /data/live/** → live-ingest (Cloud Run) when session cookie valid
+Secret Manager: EXPOSURE_API_KEY, SITE_PASSWORD
+```
+
+- **Live state:** Cloud Storage — mirrors current JSON paths; Firestore optional later.
+- **Region:** `europe-west2` (same as Exposure API).
+- **Password gate mandatory** before sharing any Firebase URL — `nhs-data-guide.html` has proprietary ERG triggers (same policy as no GitHub Pages).
+
+### Phased checklist
+
+1. **Init** — Firebase project `nhs-patient-records`, `.firebaserc`, Secret Manager `EXPOSURE_API_KEY`. **Done (scaffold).**
+2. **Ingest** — Cloud Run + GCS + Scheduler. **Deployed** — `./scripts/deploy_live_ingest.sh` / `npm run deploy:live-ingest`.
+3. **Hosting** — `scripts/prepare_firebase_public.sh` copies `*.html`, `css/`, `js/`, `images/` to `public/` (not `data/live/`). **Done (scaffold).**
+4. **Auth** — `siteGate` function ports `middleware.js` cookie logic; `inactivity-logout.js` unchanged. **Deployed** (`npm run deploy:firebase`, Aug 2026).
+5. **CI** — GitHub Actions on `main` → `.github/workflows/firebase-deploy-merge.yml` (Hosting + `siteGate`). **Done (Aug 2026)** — add `FIREBASE_SERVICE_ACCOUNT_NHS_PATIENT_RECORDS` secret to enable.
+6. **Cutover** — parallel Vercel + Firebase, then retire Vercel middleware.
+
+**Fastest cron-only path:** Phase 2 on GCP while Vercel still hosts static + auth; sync or proxy `/data/live/**` from Storage.
 
 ---
 

@@ -468,6 +468,7 @@
       <a href="index.html" class="site-nav__link">All concepts</a>
       <a href="concept3.html" class="site-nav__link">Design 3 iterations</a>
       <a href="concept32.html" class="site-nav__link">Design 3.2 iterations</a>
+      <a href="live.html" class="site-nav__link">Live Today calc</a>
       <a href="nhs-data-guide.html" class="site-nav__link site-nav__link--active" aria-current="page">NHS data integration guide</a>
       <a href="/__logout" class="site-nav__link site-nav__link--sign-out">Sign out</a>
     </div>
@@ -510,7 +511,8 @@
     <div class="shared" id="getting-data">
       <h2>Getting the data (shared)</h2>
       <p>
-        One exposure-service <strong>range</strong> request supplies both the Long-term and Recent panels.
+        One exposure-service request supplies both the Long-term and Recent panels
+        (<code>/coords</code> for a multi-hour range; <code>/coord</code> for a single hour).
         Forecast comes from a separate London Air page. Geocode the patient’s home to <code>lat</code> / <code>lng</code> (not postcode — postcode is display-only in the header).
       </p>
       <p>
@@ -523,9 +525,20 @@
         </thead>
         <tbody>
           <tr>
-            <td>Hourly range (use this)</td>
-            <td><code>https://swift-exposure-357937791793.europe-west2.run.app/exposure/london/coords</code><br>
+            <td>Multi-hour range (seed / backfill)</td>
+            <td><code>…/exposure/london/coords</code><br>
               Params: <code>key</code>, <code>lat</code>, <code>lng</code>, <code>species=no2,pm10,pm25,o3</code>, <code>from</code>, <code>to</code> (ISO UTC)</td>
+          </tr>
+          <tr>
+            <td>Single hour (ongoing hourly cron)</td>
+            <td><code>…/exposure/london/coord</code> (singular)<br>
+              Params: <code>key</code>, <code>lat</code>, <code>lng</code>,
+              <code>species=NO2,PM10,PM25,O3</code>,
+              <code>timestamp=YYYY-MM-DDTHH:00:00Z</code>, <code>weighted=true</code>
+              (no <code>from</code>/<code>to</code>).
+              Response: top-level <code>timestamp</code>, <code>data_map_start</code>;
+              per species <code>value</code> (annual) and <code>nowcast_value</code> (hourly).
+              If <code>nowcast_value</code> is absent, do not use <code>value</code> as the hour.</td>
           </tr>
         </tbody>
       </table>
@@ -896,8 +909,10 @@ o3DayIndex = max( daqiIndex(roundOnce(rolling8h[h])) for valid windows in local 
 
       <h3>Data source</h3>
       <ul>
-        <li><strong>URL:</strong> <a href="https://londonair.org.uk/data/londonair/LondonAirForecast.asp">londonair.org.uk/data/londonair/LondonAirForecast.asp</a></li>
-        <li>Use the <strong>text band only</strong> (Low / Moderate / High / V.High) — not a numeric index from that page</li>
+        <li><strong>URL:</strong> <a href="https://londonair.org.uk/data/londonair/LondonAirForecast.asp">londonair.org.uk/data/londonair/LondonAirForecast.asp</a> — returns JSON with <code>Current</code> and <code>Future</code> entries</li>
+        <li>Use <strong><code>ForecastType: "Future"</code> only</strong> — ignore <code>Current</code> (today’s outlook). Take <code>ForecastBand</code> (Low / Moderate / High / V.High), not per-pollutant bands or a numeric index</li>
+        <li><code>ForecastID</code> increments when ERG publishes a new outlook (not always by 1, but always upwards) — store it to detect refreshes</li>
+        <li>Widget date chip = UK-local <strong>tomorrow</strong>; band maps via the table below</li>
         <li>Display the ERG logo below the panel</li>
       </ul>
 

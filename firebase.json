@@ -1,0 +1,88 @@
+{
+  "functions": [
+    {
+      "source": "functions",
+      "codebase": "default",
+      "ignore": [
+        "node_modules",
+        ".git",
+        "firebase-debug.log",
+        "firebase-debug.*.log",
+        "*.local"
+      ]
+    }
+  ],
+  "hosting": {
+    "public": "public",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "cleanUrls": false,
+    "rewrites": [
+      {
+        "source": "/__auth",
+        "function": {
+          "functionId": "siteGate",
+          "region": "europe-west2"
+        }
+      },
+      {
+        "source": "/__activity",
+        "function": {
+          "functionId": "siteGate",
+          "region": "europe-west2"
+        }
+      },
+      {
+        "source": "/__logout",
+        "function": {
+          "functionId": "siteGate",
+          "region": "europe-west2"
+        }
+      },
+      {
+        "source": "/data/live/**",
+        "function": {
+          "functionId": "siteGate",
+          "region": "europe-west2"
+        }
+      },
+      {
+        "source": "**/*.html",
+        "function": {
+          "functionId": "siteGate",
+          "region": "europe-west2"
+        }
+      },
+      {
+        "source": "/",
+        "function": {
+          "functionId": "siteGate",
+          "region": "europe-west2"
+        }
+      }
+    ],
+    "headers": [
+      {
+        "source": "**/*.@(js|css|html)",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-cache"
+          }
+        ]
+      },
+      {
+        "source": "/data/live/**",
+        "headers": [
+          {
+            "key": "Cache-Control",
+            "value": "no-store"
+          }
+        ]
+      }
+    ]
+  }
+}
