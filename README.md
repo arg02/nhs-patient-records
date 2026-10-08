@@ -35,6 +35,7 @@ Store: `data/live/{YYYY-MM-DD}.json` + `index.json` (includes `forecast` from Lo
 | **Design 3.2 workspace** | [concept32.html](concept32.html) | Fork of 3.2 — coloured ratios, pollutant key strip, ERG credit |
 | **NHS data guide** | [nhs-data-guide.html](nhs-data-guide.html) | Four sections — Annual · Previous days · Today · Forecast — each with an end-product mockup; exposure API, DAQI rules, ERG index-point triggers |
 | **Live Today calc** | [live.html](live.html) | Design 3.2b + per-pollutant panels; `data/live/{date}.json` from hourly ingest |
+| **Long-term risk findings** | [rr-findings.html](rr-findings.html) | Findings for discussion: “× WHO” vs relative risk (CRFs per 10 µg/m³) for the Long-term panel. Overview (now · research · display options A/B), then ozone, PM₂.₅, PM₁₀, NO₂ with charts, mockups, verified quotes and source links. Charts and mockups rendered by `js/rr-findings.js` from the CRF constants |
 
 ---
 

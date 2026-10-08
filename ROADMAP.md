@@ -8,6 +8,10 @@ Open work for the air quality patient-record prototypes. Not a commitment schedu
 
 ### Relative risk (RR) / concentration–response functions
 
+**Findings page (Oct 2026):** [rr-findings.html](rr-findings.html). Decisions listed on the page: panel format (Option A risk scale vs Option B × WHO + risk label), ozone peak-season source and interim treatment, PM₁₀ split bar, NO₂ coefficient, absolute-risk example.
+
+**Newer evidence to weigh (found Oct 2026):** Kasdagli et al. 2024 ([doi:10.3389/ijph.2024.1607676](https://doi.org/10.3389/ijph.2024.1607676)), the update of the WHO NO₂/O₃ review, gives NO₂ all-cause **1.05 (1.03–1.07)** per 10 µg/m³ (vs 1.02 in WHO 2021) and peak-season ozone **1.01 (0.97–1.04)**, low certainty.
+
 **Status:** Open — needs follow-up design decision.
 
 Epidemiology and WHO/COMEAP health-risk methods express long-term mortality/morbidity associations as **relative risk (or CRF) per µg/m³** (typically per 10 µg/m³), not as multipliers of the WHO guideline. “× WHO” is a useful exceedance signal, but it is **not** the unit used in concentration–response evidence.

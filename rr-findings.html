@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Long-term panel: relative risk findings</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:opsz,wght@9..40,400;9..40,500;9..40,600;9..40,700&family=IBM+Plex+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/site-nav.css">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: #e4e7ec;
+      font-family: "DM Sans", sans-serif;
+      color: #2a3142;
+      padding: 48px 40px 96px;
+      min-height: 100vh;
+      line-height: 1.6;
+    }
+
+    .page { max-width: 920px; margin: 0 auto; }
+
+    .page-hd { margin-bottom: 24px; }
+    .page-hd__meta {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #6b7385;
+      margin-bottom: 6px;
+    }
+    .page-hd h1 { font-size: 28px; font-weight: 600; color: #1a2030; line-height: 1.25; }
+    .page-hd .lede { margin-top: 12px; font-size: 15px; color: #4a5568; max-width: 680px; }
+
+    a { color: #1a4a78; }
+
+    .summary {
+      background: #1a4a78;
+      color: #fff;
+      border-radius: 12px;
+      padding: 22px 26px 18px;
+      margin: 0 0 28px;
+    }
+    .summary__label {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #9fd0ff;
+      margin-bottom: 10px;
+    }
+    .summary ul { margin: 0 0 4px 18px; }
+    .summary li { color: #f1f5fa; font-size: 14px; margin-bottom: 8px; }
+    .summary strong { color: #fff; }
+
+    .toc {
+      background: #fff;
+      border: 1px solid #d0d6e0;
+      border-radius: 10px;
+      padding: 18px 22px;
+      margin: 0 0 36px;
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px 24px;
+    }
+    .toc__group-label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: #6b7385;
+      margin-bottom: 6px;
+    }
+    .toc ol { margin: 0; padding-left: 18px; }
+    .toc li { margin-bottom: 4px; font-size: 13px; }
+    .toc a { text-decoration: none; font-weight: 500; }
+    .toc a:hover { text-decoration: underline; }
+
+    .part-hd {
+      font-size: 12px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: #5a6478;
+      margin: 40px 0 14px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .part-hd::after { content: ""; flex: 1; border-top: 1px solid #c4cbd6; }
+
+    .section {
+      background: #fff;
+      border: 1px solid #d0d6e0;
+      border-radius: 12px;
+      padding: 28px 28px 32px;
+      margin: 0 0 28px;
+      scroll-margin-top: 24px;
+    }
+    .section--pollutant { border-top: 5px solid var(--accent, #1a4a78); }
+    .section__kicker {
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+      text-transform: uppercase;
+      color: var(--accent-text, #1a4a78);
+      margin-bottom: 6px;
+    }
+    .section h2 { font-size: 22px; font-weight: 600; color: #1a2030; margin: 0 0 10px; }
+    .section-intro { font-size: 15px; color: #4a5568; margin-bottom: 18px; }
+
+    h3 { font-size: 15px; font-weight: 600; color: #1a2030; margin: 28px 0 8px; }
+    h4 { font-size: 13px; font-weight: 600; color: #3d4658; margin: 18px 0 6px; }
+
+    p, li { font-size: 14px; color: #3d4658; }
+    p { margin-bottom: 12px; }
+    ul, ol { margin: 0 0 14px 20px; }
+    li { margin-bottom: 6px; }
+
+    .callout {
+      background: #f8f9fb;
+      border: 1px solid #d0d6e0;
+      border-radius: 8px;
+      padding: 14px 18px;
+      margin: 16px 0;
+      font-size: 13px;
+    }
+    .callout p, .callout li { font-size: 13px; }
+    .callout p:last-child { margin-bottom: 0; }
+    .callout--warn { background: #fff8ec; border-color: #f0d49a; }
+    .callout--key { background: #eef5fc; border-color: #b9d4ee; }
+    .callout strong { color: #1a2030; }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      margin: 12px 0 16px;
+      background: #fff;
+      border: 1px solid #d0d6e0;
+    }
+    th, td { padding: 9px 12px; text-align: left; border-bottom: 1px solid #e8ecf2; vertical-align: top; }
+    th { background: #f4f6f9; font-weight: 600; color: #1a2030; }
+    td.num, th.num { font-family: "IBM Plex Mono", monospace; font-size: 12px; text-align: right; white-space: nowrap; }
+    tr:last-child td { border-bottom: none; }
+    .swatch { display: inline-block; width: 10px; height: 10px; border-radius: 2px; margin-right: 6px; vertical-align: -1px; }
+
+    code, .mono { font-family: "IBM Plex Mono", monospace; font-size: 12px; }
+    code { background: #eef1f5; padding: 2px 6px; border-radius: 4px; }
+
+    .formula {
+      background: #f8f9fb;
+      border-left: 3px solid #1a4a78;
+      padding: 12px 16px;
+      margin: 12px 0;
+      font-family: "IBM Plex Mono", monospace;
+      font-size: 12.5px;
+      line-height: 1.8;
+    }
+
+    /* Key-number strip at the top of each pollutant */
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 10px;
+      margin: 4px 0 18px;
+    }
+    .stat {
+      background: #f6f8fb;
+      border: 1px solid #e0e5ec;
+      border-radius: 8px;
+      padding: 10px 12px;
+    }
+    .stat__k { font-size: 11px; color: #6b7385; font-weight: 600; letter-spacing: 0.02em; }
+    .stat__v { font-family: "IBM Plex Mono", monospace; font-size: 16px; font-weight: 500; color: #1a2030; margin-top: 2px; }
+    .stat__s { font-size: 11px; color: #6b7385; line-height: 1.35; margin-top: 2px; }
+
+    /* Charts */
+    figure.chart {
+      border: 1px solid #e0e5ec;
+      border-radius: 10px;
+      padding: 16px 18px 12px;
+      margin: 16px 0 20px;
+      background: #fff;
+    }
+    .chart__title { font-size: 14px; font-weight: 600; color: #1a2030; margin-bottom: 2px; }
+    .chart__desc { font-size: 12px; color: #6b7385; margin-bottom: 10px; }
+    .chart__source { font-size: 11px; color: #8a929e; margin-top: 8px; line-height: 1.45; }
+    .chart-svg { width: 100%; height: auto; display: block; overflow: visible; }
+    .chart-svg text { font-family: "DM Sans", sans-serif; }
+    .c-label { font-size: 12px; font-weight: 600; fill: #1a2030; }
+    .c-sub { font-size: 10px; fill: #6b7385; }
+    .c-tick { font-size: 10px; fill: #6b7385; font-family: "IBM Plex Mono", monospace !important; }
+    .c-axis { font-size: 11px; fill: #4a5568; }
+    .c-value { font-size: 11px; fill: #1a2030; font-family: "IBM Plex Mono", monospace !important; }
+    .c-value--strong { font-weight: 600; }
+    .c-bar-val { font-size: 9.5px; fill: #3d4658; font-family: "IBM Plex Mono", monospace !important; }
+    .c-in-bar { font-size: 11px; font-weight: 600; fill: #fff; }
+    .c-grid { stroke: #e8ecf2; stroke-width: 1; }
+    .c-ci { stroke: #1a2030; stroke-width: 1.4; }
+    .c-ref { stroke: #7a8496; stroke-width: 1.2; stroke-dasharray: 3 3; }
+    .c-ref-line { stroke: #1a2030; stroke-width: 1.4; stroke-dasharray: 5 4; }
+    .c-ref-label { font-size: 10.5px; font-weight: 600; fill: #1a2030; }
+    .c-drop { stroke: #c4cbd6; stroke-width: 1; stroke-dasharray: 2 3; }
+    .chart-legend { display: flex; flex-wrap: wrap; gap: 6px 16px; margin-top: 8px; }
+    .chart-legend__item { font-size: 11px; color: #4a5568; display: inline-flex; align-items: center; gap: 6px; }
+    .chart-legend__item i { display: inline-block; width: 14px; height: 10px; border-radius: 2px; }
+    .chart-pair { display: grid; grid-template-columns: 1fr; gap: 0; }
+
+    /* Quotes */
+    .quotes { display: grid; gap: 10px; margin: 10px 0 18px; }
+    blockquote.quote {
+      border-left: 3px solid var(--accent, #1a4a78);
+      background: #fafbfc;
+      padding: 10px 14px 10px 16px;
+      border-radius: 0 6px 6px 0;
+    }
+    blockquote.quote p { font-size: 13px; color: #2a3142; margin-bottom: 4px; font-style: italic; }
+    blockquote.quote cite { font-size: 11.5px; font-style: normal; color: #6b7385; }
+    blockquote.quote cite a { font-weight: 600; }
+
+    /* Widget mockups — Design 3.2b language */
+    .outcome {
+      background: linear-gradient(180deg, #eef2f7 0%, #e4e8ef 100%);
+      border: 1px solid #cfd6e0;
+      border-radius: 10px;
+      padding: 16px 18px 18px;
+      margin: 16px 0 20px;
+    }
+    .outcome__label {
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: 0.04em;
+      text-transform: uppercase;
+      color: #5a6478;
+      margin-bottom: 10px;
+    }
+    .outcome__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1fr); gap: 14px; align-items: start; }
+    .outcome__cell h4 { margin: 0 0 6px; font-size: 12px; }
+    .outcome__cell p { font-size: 12px; color: #5a6478; line-height: 1.45; margin: 8px 0 0; }
+
+    .mw-panel {
+      background: #fff;
+      border: 1px solid #dde2ea;
+      border-radius: 10px;
+      padding: 12px 12px 10px;
+    }
+    .mw-panel__title { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: #1a2030; }
+    .mw-panel__sub { font-size: 9.5px; color: #8a929e; margin-bottom: 8px; line-height: 1.3; min-height: 25px; }
+    .mw-cols { display: flex; align-items: flex-start; gap: 5px; }
+    .mw-cols--solo { justify-content: center; }
+    .mw-col { display: flex; flex-direction: column; align-items: center; width: 40px; flex: 0 0 40px; }
+    .mw-top { font-size: 11px; font-weight: 700; height: 16px; line-height: 16px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+    .mw-chip { height: 18px; font-size: 8px; color: #6b7385; text-align: center; line-height: 1.1; display: flex; align-items: center; white-space: nowrap; }
+    .mw-risk-chip { border: 1px solid; border-radius: 8px; padding: 1px 5px; font-size: 8.5px; font-weight: 700; color: #1a2030; background: #fff; }
+    .mw-track { position: relative; width: 22px; height: 96px; }
+    .mw-pill {
+      position: absolute; bottom: 0; left: 0; right: 0;
+      display: flex; flex-direction: column-reverse;
+      border-radius: 11px; overflow: hidden;
+    }
+    .mw-pill--flat { border-radius: 4px 4px 0 0; }
+    .mw-seg { width: 100%; flex: 0 0 auto; }
+    .mw-seg--hatch { background-image: repeating-linear-gradient(45deg, rgba(255,255,255,0.6) 0 2.5px, transparent 2.5px 6px); }
+    .mw-who { position: absolute; left: -10px; right: -10px; bottom: 49.9px; border-top: 1.5px dotted #7a8496; z-index: 2; }
+    .mw-track--risk { border-bottom: 1.5px solid #7a8496; }
+    .mw-grid { position: absolute; left: -12px; right: -12px; border-top: 1px dashed #e3e7ee; }
+    .mw-ci { position: absolute; left: 50%; width: 0; border-left: 1.4px solid #1a2030; z-index: 3; }
+    .mw-ci::before, .mw-ci::after { content: ""; position: absolute; left: -4px; width: 7px; border-top: 1.4px solid #1a2030; }
+    .mw-ci::before { top: 0; }
+    .mw-ci::after { bottom: 0; }
+    .mw-val { font-size: 11px; font-weight: 600; color: #3d4658; margin-top: 4px; line-height: 1.1; text-align: center; }
+    .mw-unit { display: block; font-size: 7.5px; font-weight: 400; color: #8a929e; }
+    .mw-name { font-size: 10px; font-weight: 700; color: #1a2030; margin-top: 2px; }
+    .mw-note { font-size: 8px; color: #6b7385; text-align: center; line-height: 1.2; min-height: 10px; margin-top: 1px; }
+    .mw-axis { position: relative; width: 28px; flex: 0 0 28px; height: 96px; margin-top: 34px; }
+    .mw-axis__who, .mw-axis__tick {
+      position: absolute; right: 2px; transform: translateY(50%);
+      font-size: 8px; font-weight: 600; color: #6b7385; text-align: right; line-height: 1.1;
+    }
+    .mw-axis--risk .mw-axis__tick { font-family: "IBM Plex Mono", monospace; font-weight: 500; }
+    .mw-divider { width: 0; align-self: stretch; border-left: 1px solid #e3e7ee; margin: 0 2px 0 6px; }
+    .mw-legend { display: flex; flex-wrap: wrap; gap: 4px 10px; margin-top: 8px; padding-top: 6px; border-top: 1px solid #eef0f4; }
+    .mw-legend span { font-size: 8.5px; color: #5a6478; display: inline-flex; align-items: center; gap: 4px; }
+    .mw-legend i { display: inline-block; width: 9px; height: 9px; border-radius: 2px; }
+
+    .mini-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0 18px; }
+    .mini-row--two { grid-template-columns: repeat(2, minmax(0, 260px)); }
+    figure.mini {
+      background: linear-gradient(180deg, #eef2f7 0%, #e4e8ef 100%);
+      border: 1px solid #cfd6e0;
+      border-radius: 10px;
+      padding: 10px 12px 12px;
+    }
+    .mini__label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; color: #5a6478; margin-bottom: 8px; }
+    .mini__body { background: #fff; border: 1px solid #dde2ea; border-radius: 8px; padding: 8px 6px; }
+    figure.mini figcaption { font-size: 11.5px; color: #4a5568; margin-top: 8px; line-height: 1.4; }
+
+    .change-table td:first-child { white-space: nowrap; font-weight: 600; }
+
+    .refs li { font-size: 13px; }
+
+    @media (max-width: 760px) {
+      body { padding: 32px 16px 64px; }
+      .section { padding: 20px 16px 24px; }
+      .toc { grid-template-columns: 1fr; }
+      .stats { grid-template-columns: 1fr 1fr; }
+      .outcome__grid, .mini-row, .mini-row--two { grid-template-columns: 1fr; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="site-nav" aria-label="Prototype navigation">
+    <div class="site-nav__inner">
+      <a href="index.html" class="site-nav__link">All concepts</a>
+      <a href="concept3.html" class="site-nav__link">Design 3 iterations</a>
+      <a href="concept32.html" class="site-nav__link">Design 3.2 iterations</a>
+      <a href="live.html" class="site-nav__link">Live Today calc</a>
+      <a href="nhs-data-guide.html" class="site-nav__link">NHS data integration guide</a>
+      <a href="rr-findings.html" class="site-nav__link site-nav__link--active" aria-current="page">Long-term risk findings</a>
+      <a href="/__logout" class="site-nav__link site-nav__link--sign-out">Sign out</a>
+    </div>
+  </nav>
+
+  <article class="page">
+    <header class="page-hd">
+      <div class="page-hd__meta">Findings · 8 October 2026 · draft for discussion</div>
+      <h1>Long-term panel: from “× WHO” to relative risk</h1>
+      <p class="lede">
+        What the Long-term panel shows today, what WHO and COMEAP recommend for comparing
+        long-term exposure across pollutants, and how each pollutant’s bar would change.
+        All patient values are the prototype mock patient unless a monitoring site is named.
+      </p>
+    </header>
+
+    <section class="summary" aria-label="Summary">
+      <div class="summary__label">In one minute</div>
+      <ul>
+        <li>The Long-term panel shows each pollutant as a <strong>multiple of its WHO guideline</strong> (3.6×, 1.9×…). A multiple is an exceedance signal, not a health scale: the guidelines sit at very different concentrations and each pollutant has a different strength of link to mortality.</li>
+        <li>WHO 2021 and COMEAP express long-term health effects as a <strong>relative risk per 10 µg/m³</strong> (the concentration–response function, CRF). Applying each pollutant’s own CRF gives <strong>% higher long-term mortality than in air at the WHO guideline</strong>, which can be compared pollutant by pollutant.</li>
+        <li>On that scale <strong>PM₂.₅ leads</strong>: the mock patient’s 3.6× becomes about +11%; NO₂’s 2.2× becomes about +3%.</li>
+        <li><strong>Ozone is the biggest problem.</strong> We divide an annual mean by a peak-season guideline, which understates it (Honor Oak Park reads 0.77× WHO; the station’s peak season is 1.42×), and its long-term evidence is the weakest of the four.</li>
+        <li><strong>PM₁₀ contains PM₂.₅</strong>, so it stays as a bar against WHO, split into fine and coarse, without its own percentage. Each percentage stands on its own; they describe overlapping air, so they are read separately rather than summed.</li>
+      </ul>
+    </section>
+
+    <nav class="toc" aria-label="Page sections">
+      <div>
+        <div class="toc__group-label">Overview</div>
+        <ol>
+          <li><a href="#now">What we do now</a></li>
+          <li><a href="#research">What the research recommends</a></li>
+          <li><a href="#display">How the display changes</a></li>
+        </ol>
+      </div>
+      <div>
+        <div class="toc__group-label">By pollutant</div>
+        <ol start="4">
+          <li><a href="#ozone">Ozone (O₃)</a></li>
+          <li><a href="#pm25">PM₂.₅</a></li>
+          <li><a href="#pm10">PM₁₀</a></li>
+          <li><a href="#no2">NO₂</a></li>
+        </ol>
+      </div>
+      <div>
+        <div class="toc__group-label">Reference</div>
+        <ol start="8">
+          <li><a href="#timescales">Long-term vs short-term</a></li>
+          <li><a href="#decisions">Decisions needed</a></li>
+          <li><a href="#sources">Sources</a></li>
+        </ol>
+      </div>
+    </nav>
+
+    <!-- ================= OVERVIEW ================= -->
+    <div class="part-hd">Overview</div>
+
+    <section class="section" id="now">
+      <div class="section__kicker">1 · Current approach</div>
+      <h2>What we do now</h2>
+      <p class="section-intro">
+        For each pollutant we take the exposure service’s annual mean at the patient’s address
+        and divide it by the WHO guideline. The bar fills to the dotted WHO line, then the excess
+        above the line is scaled so the pollutant with the largest multiple fills the top.
+      </p>
+
+      <div class="formula">ratio = annual mean ÷ WHO guideline        →  label “3.6×”
+above-line height = (ratio − 1) ÷ largest (ratio − 1) across the four pollutants</div>
+
+      <div class="outcome">
+        <div class="outcome__label">Current Long-term panel (Design 3.2b) · mock patient</div>
+        <div style="max-width:300px" data-render="panel-current"></div>
+      </div>
+
+      <h3>Why a multiple is not enough</h3>
+      <ol>
+        <li><strong>The same multiple means very different amounts of pollution.</strong> 1.3× WHO is an extra 1.5 µg/m³ of PM₂.₅ but an extra 18 µg/m³ of ozone.</li>
+        <li><strong>Each pollutant has a different steepness of risk.</strong> Per microgram, PM₂.₅ is about three times as steep as NO₂ and eight times as steep as ozone. The multiple ignores this.</li>
+        <li><strong>Ozone is compared on the wrong metric.</strong> The WHO ozone figure (60) is a peak-season value; the exposure service returns an annual mean of all hours, which runs about 1.5× lower.</li>
+        <li><strong>A row of similar bars invites adding them up.</strong> PM₂.₅, PM₁₀ and NO₂ largely describe the same traffic-related air, so a combined reading overstates the total.</li>
+      </ol>
+
+      <figure class="chart">
+        <div class="chart__title">Same multiple, different amount: extra µg/m³ at 1.3× WHO</div>
+        <div class="chart__desc">Concentration above the WHO guideline when each pollutant is at 1.3× its guideline.</div>
+        <div data-render="chart-extra-13"></div>
+        <div class="chart__source">WHO guideline levels: <a href="https://www.who.int/publications/i/item/9789240034228">WHO global air quality guidelines 2021</a>, Table 0.1. Ozone guideline is the peak-season mean of daily maximum 8-hour ozone.</div>
+      </figure>
+    </section>
+
+    <section class="section" id="research">
+      <div class="section__kicker">2 · Evidence</div>
+      <h2>What WHO and the research recommend</h2>
+      <p class="section-intro">
+        WHO and the UK Committee on the Medical Effects of Air Pollutants (COMEAP) do not use multiples of the guideline.
+        They quantify long-term effects with a <strong>concentration–response function (CRF)</strong>,
+        usually quoted as the <strong>relative risk (RR) per 10 µg/m³</strong>.
+      </p>
+
+      <h3>RR and CRF in one paragraph</h3>
+      <p>
+        The CRF is the rule linking concentration to risk across the whole range: its shape and its steepness.
+        The RR is one reading from that rule: how much higher the risk is at one concentration than at another.
+        For long-term mortality, WHO and COMEAP use a log-linear CRF, so each extra 10 µg/m³ multiplies risk by the same factor.
+        That shape is described by one number, which is why the reports quote “RR 1.08 per 10 µg/m³” for PM₂.₅.
+        (Cohort studies report hazard ratios; for this purpose they mean the same thing.)
+      </p>
+      <div class="formula">RR(Δc) = RR₁₀ ^ (Δc ÷ 10)          Δc = annual mean − WHO guideline
+% higher risk = (RR − 1) × 100
+
+Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →  about 3.6% higher</div>
+
+      <h3>The coefficients</h3>
+      <table>
+        <thead>
+          <tr><th>Pollutant</th><th>WHO guideline</th><th>Long-term CRF<br>(RR per 10 µg/m³)</th><th>Certainty</th><th>Source</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="swatch" style="background:#0387E2"></span>O₃</td>
+            <td>60 peak season</td>
+            <td class="mono">1.01 (1.00–1.02)</td>
+            <td>Moderate (WHO). COMEAP does not quantify.</td>
+            <td><a href="https://doi.org/10.1016/j.envint.2020.105998">Huangfu &amp; Atkinson 2020</a>, adopted in <a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO 2021 ch. 3</a></td>
+          </tr>
+          <tr>
+            <td><span class="swatch" style="background:#FF089A"></span>PM₂.₅</td>
+            <td>5 annual</td>
+            <td class="mono">1.08 (1.06–1.09)</td>
+            <td>High. COMEAP core recommendation.</td>
+            <td><a href="https://doi.org/10.1016/j.envint.2020.105974">Chen &amp; Hoek 2020</a>, <a href="https://www.gov.uk/government/publications/particulate-air-pollution-quantifying-effects-on-mortality">COMEAP 2022</a></td>
+          </tr>
+          <tr>
+            <td><span class="swatch" style="background:#8000FF"></span>PM₁₀</td>
+            <td>15 annual</td>
+            <td class="mono">1.04 (1.03–1.06)</td>
+            <td>High, but the mass includes PM₂.₅.</td>
+            <td><a href="https://doi.org/10.1016/j.envint.2020.105974">Chen &amp; Hoek 2020</a>, <a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO 2021 ch. 3</a></td>
+          </tr>
+          <tr>
+            <td><span class="swatch" style="background:#EBA602"></span>NO₂</td>
+            <td>10 annual</td>
+            <td class="mono">1.023 (1.008–1.037)</td>
+            <td>Moderate. Overlaps the traffic mixture.</td>
+            <td><a href="https://www.gov.uk/government/publications/nitrogen-dioxide-effects-on-mortality">COMEAP 2018</a> (unadjusted); WHO 2021 uses 1.02</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <figure class="chart">
+        <div class="chart__title">Same multiple, different risk: higher long-term mortality at 1.3× WHO</div>
+        <div class="chart__desc">Each pollutant at 1.3× its guideline, compared with air at the guideline. Read each bar on its own.</div>
+        <div data-render="chart-risk-13"></div>
+        <div class="chart__source">Computed with the CRFs in the table above, log-linear, counterfactual = WHO guideline. Ozone’s interval reaches zero; COMEAP does not quantify long-term ozone mortality.</div>
+      </figure>
+
+      <figure class="chart">
+        <div class="chart__title">Steepness: higher long-term mortality per extra 1 µg/m³</div>
+        <div class="chart__desc">The ranking a clinician would expect: PM₂.₅ far ahead, ozone last.</div>
+        <div data-render="chart-slope"></div>
+        <div class="chart__source">(RR₁₀^0.1 − 1) × 100 from the coefficients above.</div>
+      </figure>
+
+      <h3>Rules that come with the numbers</h3>
+      <ul>
+        <li><strong>Compare with the WHO guideline, not with zero.</strong> “+10.7%” means higher than in air at the guideline, which keeps the panel anchored to WHO.</li>
+        <li><strong>Show each pollutant on its own.</strong> COMEAP treats PM₂.₅ as the indicator of the outdoor mixture; NO₂ describes much of the same air and PM₁₀ contains PM₂.₅. Summing the percentages counts the same air more than once.</li>
+        <li><strong>Long-term coefficients only.</strong> Short-term (daily) coefficients belong to the Recent and Today panels; see <a href="#timescales">section 8</a>.</li>
+        <li><strong>Population risk, not personal risk.</strong> These are relative risks across a population living with this air. The absolute change depends on the patient’s baseline: +10.7% moves a 2% annual death risk (an older patient) to about 2.2%, and a healthy 30-year-old’s 0.1% to about 0.11%.</li>
+        <li><strong>Linear, no cut-off.</strong> Both WHO and COMEAP calculate log-linearly and continue below the guideline; both note the true curve may be steeper near clean air (see <a href="#pm25">PM₂.₅</a>).</li>
+      </ul>
+
+      <div class="quotes">
+        <blockquote class="quote">
+          <p>“If mortality effects estimated using this coefficient are added to estimates of mortality effects associated with other pollutants, this will likely give an overestimate of the effects of the pollution mix.”</p>
+          <cite><a href="https://assets.publishing.service.gov.uk/media/64fadfdea78c5f0014265847/COMEAP_Quantification_recommendations.pdf">COMEAP summary of quantification recommendations</a> · PM₂.₅ long-term</cite>
+        </blockquote>
+        <blockquote class="quote">
+          <p>“The results should not be added together as this would lead to an over-estimation of the effects.”</p>
+          <cite><a href="https://www.gov.uk/government/publications/nitrogen-dioxide-effects-on-mortality/associations-of-long-term-average-concentrations-of-nitrogen-dioxide-with-mortality-2018-comeap-summary">COMEAP 2018 NO₂ summary</a> · on PM₂.₅- and NO₂-based estimates</cite>
+        </blockquote>
+      </div>
+    </section>
+
+    <section class="section" id="display">
+      <div class="section__kicker">3 · Proposal</div>
+      <h2>How the display changes</h2>
+      <p class="section-intro">
+        Two ways to bring relative risk into the panel. Both fix ozone and PM₁₀ the same way; they differ in
+        whether the bar height itself becomes the risk.
+      </p>
+
+      <div class="outcome">
+        <div class="outcome__label">Mock patient · PM₂.₅ 18.2 · PM₁₀ 28.4 · NO₂ 22.1 · O₃ 74.5 (treated as peak season)</div>
+        <div class="outcome__grid">
+          <div class="outcome__cell">
+            <h4>Now · × WHO</h4>
+            <div data-render="panel-current"></div>
+            <p>Bar height = multiple of WHO. Ozone from the annual mean.</p>
+          </div>
+          <div class="outcome__cell">
+            <h4>Option A · risk scale</h4>
+            <div data-render="panel-option-a"></div>
+            <p>Bar height = % higher risk than at the WHO guideline, on one shared scale, with 95% CI whiskers. PM₁₀ sits apart as a split bar against WHO.</p>
+          </div>
+          <div class="outcome__cell">
+            <h4>Option B · × WHO + risk label</h4>
+            <div data-render="panel-option-b"></div>
+            <p>Bars stay as today; a % higher-risk label sits above each. Smallest change for users already familiar with the panel.</p>
+          </div>
+        </div>
+      </div>
+
+      <table class="change-table">
+        <thead>
+          <tr><th>Pollutant</th><th>Now</th><th>Proposed</th><th>Why</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="swatch" style="background:#0387E2"></span>O₃</td>
+            <td>Annual mean ÷ 60</td>
+            <td>Peak-season value (Apr–Sep mean of daily max 8-hour) ÷ 60; % higher risk shown hatched as moderate certainty</td>
+            <td>Guideline and CRF are both peak-season metrics; annual mean understates ozone</td>
+          </tr>
+          <tr>
+            <td><span class="swatch" style="background:#FF089A"></span>PM₂.₅</td>
+            <td>3.6×</td>
+            <td>+10.7% higher long-term risk (CI 8.0–12.0%) · lead figure</td>
+            <td>Strongest evidence; COMEAP’s indicator for the outdoor mixture</td>
+          </tr>
+          <tr>
+            <td><span class="swatch" style="background:#8000FF"></span>PM₁₀</td>
+            <td>1.9×</td>
+            <td>1.9× against WHO, split into PM₂.₅ share and coarse share, labelled “includes PM₂.₅”, no %</td>
+            <td>Its RR is largely its PM₂.₅ content; the coarse part has no agreed long-term RR</td>
+          </tr>
+          <tr>
+            <td><span class="swatch" style="background:#EBA602"></span>NO₂</td>
+            <td>2.2×</td>
+            <td>+2.8% higher long-term risk (CI 1.0–4.5%), shown on its own</td>
+            <td>Moderate evidence; overlaps traffic air already behind PM₂.₅</td>
+          </tr>
+        </tbody>
+      </table>
+    </section>
+
+    <!-- ================= BY POLLUTANT ================= -->
+    <div class="part-hd">By pollutant</div>
+
+    <section class="section section--pollutant" id="ozone" style="--accent:#0387E2;--accent-text:#0369b5">
+      <div class="section__kicker">4 · Biggest problem</div>
+      <h2>Ozone (O₃)</h2>
+      <p class="section-intro">
+        Two problems stack up for ozone: we compare the <strong>wrong metric</strong> with the guideline, and its
+        long-term evidence is the <strong>weakest</strong> of the four. The first is fixable with data; the second is a labelling choice.
+      </p>
+
+      <div class="stats">
+        <div class="stat"><div class="stat__k">WHO guideline</div><div class="stat__v">60 µg/m³</div><div class="stat__s">peak-season mean of daily max 8-hour</div></div>
+        <div class="stat"><div class="stat__k">Long-term CRF</div><div class="stat__v">1.01</div><div class="stat__s">per 10 µg/m³ (1.00–1.02)</div></div>
+        <div class="stat"><div class="stat__k">Certainty</div><div class="stat__v">Moderate</div><div class="stat__s">WHO; COMEAP does not quantify</div></div>
+        <div class="stat"><div class="stat__k">At 1.3× WHO</div><div class="stat__v">+1.8%</div><div class="stat__s">95% CI 0–3.6%</div></div>
+      </div>
+
+      <h3>Problem 1: an annual mean against a peak-season guideline</h3>
+      <p>
+        WHO’s long-term ozone guideline is the average of the daily maximum 8-hour mean over the six consecutive months with the
+        highest ozone. In the UK that is the warm season; we use a fixed April–September. The exposure service’s
+        <code>value</code> is an annual mean of all hours, which includes the low winter and night-time values,
+        so dividing it by 60 understates ozone against WHO.
+      </p>
+
+      <figure class="chart">
+        <div class="chart__title">Ozone at two London sites: annual mean vs peak-season value</div>
+        <div class="chart__desc">Same calculation for station and exposure service: 8-hour running mean (≥6 of 8 hours), daily max (≥18 valid 8-hour means), monthly mean (≥75% of days), peak season = mean of the six monthly means Apr–Sep. Exposure service via <code>/coords</code> with <code>weighted=true</code>.</div>
+        <div data-render="chart-o3-sites"></div>
+        <div class="chart__source">Stations: AURN HP1 and MY1 (2025); Honor Oak Park 2022 from Imperial / London Air (AURN has no 2022 ozone there; September fails the 75% rule, 81.3 pooled). Annual map: LAEI 2022.</div>
+      </figure>
+
+      <table>
+        <thead>
+          <tr><th>Site and year</th><th class="num">Map ÷ 60<br>(now)</th><th class="num">Exposure-service<br>peak ÷ 60</th><th class="num">Station<br>peak ÷ 60</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Honor Oak Park 2025 · background</td><td class="num">0.77×</td><td class="num">1.30×</td><td class="num">1.42×</td></tr>
+          <tr><td>Marylebone Road 2025 · roadside</td><td class="num">0.57×</td><td class="num">1.10×</td><td class="num">0.89×</td></tr>
+          <tr><td>Honor Oak Park 2022 · background</td><td class="num">0.77×</td><td class="num">1.18×</td><td class="num">≈1.35×</td></tr>
+          <tr><td>Marylebone Road 2022 · roadside</td><td class="num">0.57×</td><td class="num">0.98×</td><td class="num">0.82×</td></tr>
+        </tbody>
+      </table>
+      <ul>
+        <li>Peak season ran about <strong>1.5–1.7× the annual mean of hours</strong> at both sites in both years.</li>
+        <li>The exposure service tracks the background station closely (hourly r ≈ 0.95–0.97) but reads summer peaks 7–10 µg/m³ low there. At the roadside it reads 10–12 µg/m³ high (r ≈ 0.8), which in 2025 puts Marylebone Road over the guideline when the station is under.</li>
+        <li>Always request with <code>weighted=true</code> (bilinear interpolation). Without it the service returns the grid-cell value regardless of position in the cell.</li>
+      </ul>
+
+      <h3>Problem 2: the weakest long-term evidence</h3>
+      <p>
+        WHO’s long-term ozone CRF is built on <strong>peak-season</strong> exposure; studies using an annual-mean metric
+        found no association with all-cause mortality. That is a second reason the annual mean is the wrong input.
+        A 2024 update of the WHO review widened the peak-season interval to include no effect and rated it low certainty.
+      </p>
+
+      <figure class="chart">
+        <div class="chart__title">Long-term ozone and all-cause mortality, by exposure metric</div>
+        <div class="chart__desc">Meta-analytic relative risk per 10 µg/m³ with 95% CI. Larger marker = coefficient WHO 2021 adopted.</div>
+        <div data-render="chart-o3-forest"></div>
+        <div class="chart__source"><a href="https://doi.org/10.1016/j.envint.2020.105998">Huangfu &amp; Atkinson 2020</a>, Environ Int 144:105998. <a href="https://doi.org/10.3389/ijph.2024.1607676">Kasdagli et al. 2024</a>, Int J Public Health 69:1607676 (update of the WHO review for HRAPIE-2).</div>
+      </figure>
+
+      <div class="quotes">
+        <blockquote class="quote">
+          <p>“The peak season is defined as the six consecutive months of the year with the highest six-month running-average ozone concentration.”</p>
+          <cite><a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO AQG 2021, ch. 3</a> · ozone, peak season</cite>
+        </blockquote>
+        <blockquote class="quote">
+          <p>“RR = 1.01 (95% CI: 1.00–1.02) per 10 µg/m3 increase in peak-season average of daily maximum 8-hour mean ozone concentrations, assuming a linear relationship … The certainty of the evidence was considered moderate according to GRADE.”</p>
+          <cite><a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO AQG 2021, ch. 3</a> · ozone, long-term</cite>
+        </blockquote>
+        <blockquote class="quote">
+          <p>“Studies of O3 using annual metrics showed the associations with all-cause and respiratory mortality were 0.97 (0.93, 1.02) and 0.99 (0.89, 1.11) per 10 μg/m3 respectively. For studies using peak O3 metrics, the association with all-cause mortality was 1.01 (1.00, 1.02).”</p>
+          <cite><a href="https://doi.org/10.1016/j.envint.2020.105998">Huangfu &amp; Atkinson 2020</a> · abstract</cite>
+        </blockquote>
+        <blockquote class="quote">
+          <p>“A systematic review and quantitative assessment of the evidence from cohort studies suggested no association between long-term annual ozone concentrations and mortality … and therefore quantification is not recommended.”</p>
+          <cite><a href="https://www.gov.uk/government/publications/comeap-quantification-of-mortality-and-hospital-admissions-associated-with-ground-level-ozone">COMEAP 2015 ozone report</a> · Q9</cite>
+        </blockquote>
+      </div>
+
+      <h3>How the ozone bar changes</h3>
+      <div data-render="mini-o3"></div>
+      <ul>
+        <li><strong>Input:</strong> a peak-season value. Either from the hourly nowcast (about 26 weekly <code>/coords</code> requests per address for one April–September), or, better, a peak-season map layer from the exposure service.</li>
+        <li><strong>Label:</strong> hatched and marked “moderate certainty”, the weakest of the long-term estimates.</li>
+        <li><strong>Until a peak-season value exists:</strong> the current bar understates ozone. Options are to hide it, grey it out, or keep it with a caveat (see <a href="#decisions">decisions</a>).</li>
+      </ul>
+    </section>
+
+    <section class="section section--pollutant" id="pm25" style="--accent:#FF089A;--accent-text:#c8007a">
+      <div class="section__kicker">5 · Lead long-term signal</div>
+      <h2>PM₂.₅</h2>
+      <p class="section-intro">
+        The strongest and best-quantified long-term evidence, and COMEAP’s indicator for the outdoor air-pollution mixture.
+        On a risk scale it becomes the clear lead bar.
+      </p>
+
+      <div class="stats">
+        <div class="stat"><div class="stat__k">WHO guideline</div><div class="stat__v">5 µg/m³</div><div class="stat__s">annual mean</div></div>
+        <div class="stat"><div class="stat__k">Long-term CRF</div><div class="stat__v">1.08</div><div class="stat__s">per 10 µg/m³ (1.06–1.09)</div></div>
+        <div class="stat"><div class="stat__k">Certainty</div><div class="stat__v">High</div><div class="stat__s">WHO; COMEAP core</div></div>
+        <div class="stat"><div class="stat__k">Mock patient</div><div class="stat__v">+10.7%</div><div class="stat__s">18.2 µg/m³ · 3.6× WHO</div></div>
+      </div>
+
+      <h3>Is the curve linear?</h3>
+      <p>
+        Under the method WHO and COMEAP use, almost exactly: +5 µg/m³ above the guideline ≈ +3.9%, +10 ≈ +8.0%, +20 ≈ +16.6%.
+        Both bodies note the evidence leans <strong>supralinear</strong> (steeper per microgram near clean air), and neither has adopted a
+        non-linear curve. If the supralinear reading is right, the official method slightly understates the difference between
+        “just over the guideline” and “at the guideline”, which is where most UK addresses sit.
+      </p>
+
+      <figure class="chart">
+        <div class="chart__title">PM₂.₅ long-term CRF: higher all-cause mortality vs air at the WHO guideline</div>
+        <div class="chart__desc">Log-linear curve used by WHO and COMEAP, with its 95% CI. The dashed line is an illustrative supralinear shape, drawn to meet the official curve at 25 µg/m³.</div>
+        <div data-render="chart-pm25-curve"></div>
+        <div class="chart__source">CRF 1.08 (1.06–1.09) per 10 µg/m³: <a href="https://doi.org/10.1016/j.envint.2020.105974">Chen &amp; Hoek 2020</a>, adopted by <a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO 2021</a> and <a href="https://www.gov.uk/government/publications/particulate-air-pollution-quantifying-effects-on-mortality">COMEAP 2022</a>. Dashed curve is for illustration only and is not a published function.</div>
+      </figure>
+
+      <div class="quotes">
+        <blockquote class="quote">
+          <p>“RR of 1.08 (95% CI: 1.06–1.09) per 10 µg/m3 PM2.5, assuming a linear relationship. The authors found an indication of a supralinear relationship, suggesting a steeper risk increase at lower exposure levels.”</p>
+          <cite><a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO AQG 2021, ch. 3</a> · PM₂.₅ long-term</cite>
+        </blockquote>
+        <blockquote class="quote">
+          <p>“Meta analyses of studies conducted at the low mean PM2.5 levels (&lt;25, 20, 15, 12, 10 µg/m3) yielded RRs that were similar or higher compared to the overall RR, consistent with the finding of generally linear or supra-linear CRFs in individual studies.”</p>
+          <cite><a href="https://doi.org/10.1016/j.envint.2020.105974">Chen &amp; Hoek 2020</a> · abstract</cite>
+        </blockquote>
+        <blockquote class="quote">
+          <p>“The exposure-response function might be supra-linear (that is, with a bigger effect, per unit change in concentration, at lower exposures than higher exposures). However, it is not clear to what extent these results may be due to differences in populations and/or the statistical methods used. Therefore we do not consider the evidence sufficient, at this time, to recommend any change from the current assumption of a linear CRF.”</p>
+          <cite><a href="https://www.gov.uk/government/publications/particulate-air-pollution-quantifying-effects-on-mortality">COMEAP 2022 PM₂.₅ statement</a> · ¶37</cite>
+        </blockquote>
+        <blockquote class="quote">
+          <p>“We do not recommend the use of a cut-off value for quantification. We suggest quantification to zero PM2.5, using an assumption of continuing linearity.”</p>
+          <cite><a href="https://www.gov.uk/government/publications/particulate-air-pollution-quantifying-effects-on-mortality">COMEAP 2022 PM₂.₅ statement</a> · recommendations</cite>
+        </blockquote>
+      </div>
+
+      <h3>How the PM₂.₅ bar changes</h3>
+      <div data-render="mini-pm25"></div>
+    </section>
+
+    <section class="section section--pollutant" id="pm10" style="--accent:#8000FF;--accent-text:#6a00d4">
+      <div class="section__kicker">6 · Contains PM₂.₅</div>
+      <h2>PM₁₀</h2>
+      <p class="section-intro">
+        PM₁₀ has its own published RR because many older cohorts only measured PM₁₀, but that RR is largely its fine (PM₂.₅) content.
+        Proposed treatment: group “particles” together, keep PM₁₀ against its guideline as a split bar, and give it no percentage of its own.
+      </p>
+
+      <div class="stats">
+        <div class="stat"><div class="stat__k">WHO guideline</div><div class="stat__v">15 µg/m³</div><div class="stat__s">annual mean</div></div>
+        <div class="stat"><div class="stat__k">Long-term CRF</div><div class="stat__v">1.04</div><div class="stat__s">per 10 µg/m³ (1.03–1.06)</div></div>
+        <div class="stat"><div class="stat__k">Fine share (UK)</div><div class="stat__v">≈65%</div><div class="stat__s">mock patient 18.2 of 28.4</div></div>
+        <div class="stat"><div class="stat__k">Coarse share RR</div><div class="stat__v">None agreed</div><div class="stat__s">mainly short-term, airways</div></div>
+      </div>
+
+      <figure class="chart">
+        <div class="chart__title">Mock patient PM₁₀ split into fine and coarse share</div>
+        <div class="chart__desc">The fine share is the PM₂.₅ already carrying the long-term figure; the coarse share is what PM₁₀ adds.</div>
+        <div data-render="chart-pm10-split"></div>
+        <div class="chart__source">Prototype mock patient. Coarse share = PM₁₀ − PM₂.₅.</div>
+      </figure>
+
+      <figure class="chart">
+        <div class="chart__title">PM₁₀’s RR is explained by the PM₂.₅ it contains</div>
+        <div class="chart__desc">10 µg/m³ of UK PM₁₀ carries roughly 6–7 µg/m³ of PM₂.₅; applying the PM₂.₅ CRF to that share gives about the same RR as PM₁₀’s own.</div>
+        <div data-render="chart-pm10-forest"></div>
+        <div class="chart__source">PM₁₀ and PM₂.₅ CRFs: <a href="https://doi.org/10.1016/j.envint.2020.105974">Chen &amp; Hoek 2020</a>. A coarse-fraction RR cannot be derived by subtracting the two coefficients.</div>
+      </figure>
+
+      <div class="quotes">
+        <blockquote class="quote">
+          <p>“The systematic review by Chen &amp; Hoek (2020) on PM10 and all non-accidental mortality reported a meta-analytic effect estimate of RR = 1.04 (95% CI: 1.03–1.06) per 10 µg/m3 PM10, assuming a linear relationship.”</p>
+          <cite><a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO AQG 2021, ch. 3</a> · PM₁₀ long-term</cite>
+        </blockquote>
+        <blockquote class="quote">
+          <p>“It is likely that the recommended coefficient reflects the effect of PM2.5 and also, to some extent, of other pollutants such as other fractions of PM, NO2 and other components of the air pollution mixture.”</p>
+          <cite><a href="https://assets.publishing.service.gov.uk/media/64fadfdea78c5f0014265847/COMEAP_Quantification_recommendations.pdf">COMEAP summary of quantification recommendations</a> · PM₂.₅ long-term</cite>
+        </blockquote>
+      </div>
+
+      <h3>How the PM₁₀ bar changes</h3>
+      <div data-render="mini-pm10"></div>
+      <ul>
+        <li>Keep PM₁₀ on the panel: clinicians and regulators expect it, and the coarse share matters for respiratory patients.</li>
+        <li>The coarse share’s relevance is short-term (airways, asthma and COPD flare-ups), which the Recent and Today panels cover.</li>
+      </ul>
+    </section>
+
+    <section class="section section--pollutant" id="no2" style="--accent:#EBA602;--accent-text:#a87500">
+      <div class="section__kicker">7 · Overlaps the traffic mixture</div>
+      <h2>NO₂</h2>
+      <p class="section-intro">
+        A moderate long-term association that largely describes the same traffic air as PM₂.₅. It reads as more serious than it is under
+        “× WHO” (2.2×, above PM₁₀) because its guideline is low and its CRF is shallow. The main open question is which coefficient to use.
+      </p>
+
+      <div class="stats">
+        <div class="stat"><div class="stat__k">WHO guideline</div><div class="stat__v">10 µg/m³</div><div class="stat__s">annual mean</div></div>
+        <div class="stat"><div class="stat__k">Long-term CRF (used)</div><div class="stat__v">1.023</div><div class="stat__s">COMEAP unadjusted (1.008–1.037)</div></div>
+        <div class="stat"><div class="stat__k">Certainty</div><div class="stat__v">Moderate</div><div class="stat__s">WHO 2021</div></div>
+        <div class="stat"><div class="stat__k">Mock patient</div><div class="stat__v">+2.8%</div><div class="stat__s">22.1 µg/m³ · 2.2× WHO</div></div>
+      </div>
+
+      <h3>Which coefficient?</h3>
+      <p>
+        COMEAP’s unadjusted 1.023 describes NO₂ as a marker of the traffic mixture. COMEAP judged that only 25–55% of it is NO₂ itself,
+        giving 1.006–1.013 for policies that cut NO₂ alone. A 2024 update of the WHO review found a larger pooled RR of 1.05.
+        The choice moves the mock patient between about +0.7% and +6%.
+      </p>
+
+      <figure class="chart">
+        <div class="chart__title">Mock patient NO₂ (22.1 µg/m³): higher long-term mortality under each published coefficient</div>
+        <div class="chart__desc">Compared with air at the WHO guideline (10 µg/m³). Darker bar = coefficient used on this page.</div>
+        <div data-render="chart-no2-options"></div>
+        <div class="chart__source"><a href="https://www.gov.uk/government/publications/nitrogen-dioxide-effects-on-mortality">COMEAP 2018</a>; <a href="https://doi.org/10.1016/j.envint.2020.105998">Huangfu &amp; Atkinson 2020</a> (WHO 2021); <a href="https://doi.org/10.3389/ijph.2024.1607676">Kasdagli et al. 2024</a>.</div>
+      </figure>
+
+      <div class="quotes">
+        <blockquote class="quote">
+          <p>“RR = 1.02 (95% CI: 1.01–1.04) per 10 µg/m3 nitrogen dioxide, assuming a linear relationship. The certainty of the evidence was considered moderate according to GRADE. The authors found an indication of a supralinear relationship.”</p>
+          <cite><a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO AQG 2021, ch. 3</a> · NO₂ long-term</cite>
+        </blockquote>
+        <blockquote class="quote">
+          <p>“A majority view of the Committee was that approximately 25-55% of the unadjusted summary coefficient derived from the meta-analysis of single pollutant models (1.023 per 10 µg/m3 NO2) could be regarded as causally related to NO2. This gives a range of between 1.006 per 10 µg/m3 and 1.013 per 10 µg/m3.”</p>
+          <cite><a href="https://www.gov.uk/government/publications/nitrogen-dioxide-effects-on-mortality">COMEAP 2018 NO₂ report</a></cite>
+        </blockquote>
+      </div>
+
+      <h3>How the NO₂ bar changes</h3>
+      <div data-render="mini-no2"></div>
+      <p>
+        NO₂’s short-term effects on asthma are well established; that is what the Recent and Today panels show with DAQI.
+        The Long-term bar stays on the long-term coefficient.
+      </p>
+    </section>
+
+    <!-- ================= REFERENCE ================= -->
+    <div class="part-hd">Reference</div>
+
+    <section class="section" id="timescales">
+      <div class="section__kicker">8 · Which panel each coefficient belongs to</div>
+      <h2>Long-term vs short-term</h2>
+      <p class="section-intro">
+        The Long-term panel uses long-term (annual or peak-season) coefficients only. Short-term coefficients are much smaller per day
+        and describe a different question, so they stay with the Recent and Today panels and the DAQI scale.
+      </p>
+      <table>
+        <thead>
+          <tr><th>Pollutant</th><th>Long-term (Long-term panel)</th><th>Short-term (Recent / Today)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>O₃</td><td>1.01 per 10 µg/m³ peak season · newer evidence, moderate</td><td>1.0043 per 10 µg/m³ daily max 8-hour · well established</td></tr>
+          <tr><td>PM₂.₅</td><td>1.08 per 10 µg/m³ annual · lead signal, high</td><td>1.0065 per 10 µg/m³ daily</td></tr>
+          <tr><td>PM₁₀</td><td>1.04 per 10 µg/m³ annual · mostly its PM₂.₅</td><td>1.0041 per 10 µg/m³ daily · coarse share mainly short-term respiratory</td></tr>
+          <tr><td>NO₂</td><td>1.023 per 10 µg/m³ annual · moderate, overlaps traffic air</td><td>1.0072 per 10 µg/m³ daily · asthma effects well established</td></tr>
+        </tbody>
+      </table>
+      <p class="chart__source">Short-term all-cause mortality coefficients: <a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO AQG 2021, ch. 3</a> (Orellano et al. 2020).</p>
+    </section>
+
+    <section class="section" id="decisions">
+      <div class="section__kicker">9 · For discussion</div>
+      <h2>Decisions needed</h2>
+      <ol>
+        <li><strong>Panel format.</strong> Option A (risk scale), Option B (× WHO with a risk label), or lead with µg/m³ and keep relative risk on this page only?</li>
+        <li><strong>Ozone input.</strong> Hourly nowcast per patient (about 26 requests per address), or ask for a peak-season map layer from the exposure service?</li>
+        <li><strong>Ozone until then.</strong> Hide, grey out, or keep the current bar with a caveat?</li>
+        <li><strong>PM₁₀.</strong> Split fine/coarse bar as shown, or a note under PM₂.₅?</li>
+        <li><strong>NO₂ coefficient.</strong> COMEAP unadjusted 1.023 (traffic mixture), WHO 1.02, COMEAP NO₂-alone 1.006–1.013, or the 2024 update’s 1.05?</li>
+        <li><strong>Absolute risk.</strong> Is a clinician-facing example by age band wanted, or does that go beyond a population relative risk?</li>
+      </ol>
+      <div class="callout callout--key">
+        <p><strong>Wording for any clinical copy:</strong> “higher long-term risk across a population living with this air”, rather than “your risk”.</p>
+      </div>
+    </section>
+
+    <section class="section" id="sources">
+      <div class="section__kicker">Sources</div>
+      <h2>Documents and data</h2>
+      <ul class="refs">
+        <li>WHO (2021). <a href="https://www.who.int/publications/i/item/9789240034228">WHO global air quality guidelines: PM₂.₅ and PM₁₀, ozone, nitrogen dioxide, sulfur dioxide and carbon monoxide</a>. Chapter 3 online: <a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">Recommendations on classical air pollutants</a>. Full PDF: <a href="https://iris.who.int/handle/10665/345329">WHO IRIS</a>.</li>
+        <li>COMEAP (2022). <a href="https://www.gov.uk/government/publications/particulate-air-pollution-quantifying-effects-on-mortality">Statement on quantifying mortality associated with long-term exposure to PM₂.₅</a>. CRF 1.08 per 10 µg/m³; no cut-off; ¶37 on supralinearity.</li>
+        <li>COMEAP. <a href="https://assets.publishing.service.gov.uk/media/64fadfdea78c5f0014265847/COMEAP_Quantification_recommendations.pdf">Summary of quantification recommendations</a> (PDF).</li>
+        <li>COMEAP (2018). <a href="https://www.gov.uk/government/publications/nitrogen-dioxide-effects-on-mortality">Associations of long-term average concentrations of nitrogen dioxide with mortality</a>. Unadjusted 1.023 (1.008–1.037); 1.006–1.013 for NO₂ alone.</li>
+        <li>COMEAP (2015). <a href="https://www.gov.uk/government/publications/comeap-quantification-of-mortality-and-hospital-admissions-associated-with-ground-level-ozone">Quantification of mortality and hospital admissions associated with ground-level ozone</a>. Long-term ozone mortality not quantified.</li>
+        <li>Chen J, Hoek G (2020). <a href="https://doi.org/10.1016/j.envint.2020.105974">Long-term exposure to PM and all-cause and cause-specific mortality: a systematic review and meta-analysis</a>. Environ Int 143:105974.</li>
+        <li>Huangfu P, Atkinson R (2020). <a href="https://doi.org/10.1016/j.envint.2020.105998">Long-term exposure to NO₂ and O₃ and all-cause and respiratory mortality: a systematic review and meta-analysis</a>. Environ Int 144:105998.</li>
+        <li>Kasdagli M-I, Orellano P, Pérez Velasco R, et al. (2024). <a href="https://doi.org/10.3389/ijph.2024.1607676">Long-term exposure to nitrogen dioxide and ozone and mortality: update of the WHO Air Quality Guidelines systematic review and meta-analysis</a>. Int J Public Health 69:1607676.</li>
+        <li>Orellano P et al. (2020). Short-term exposure to PM₁₀, PM₂.₅, NO₂ and O₃ and all-cause and cause-specific mortality: systematic review and meta-analysis. Environ Int 142:105876.</li>
+        <li>Ozone peak-season comparison: AURN and Imperial / London Air station data for Honor Oak Park and Marylebone Road (2022, 2025), against the exposure service hourly nowcast (<code>weighted=true</code>).</li>
+      </ul>
+    </section>
+  </article>
+
+  <script src="js/inactivity-logout.js?v=2" defer></script>
+  <script type="module" src="js/rr-findings.js?v=3"></script>
+</body>
+</html>

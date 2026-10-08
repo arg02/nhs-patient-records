@@ -59,6 +59,7 @@ Also update `~/Sites/global/projects/nhs-patient-records.md` (and a `learnings/`
 | Password / logout / activity | `functions/index.js` (`siteGate`, cookie `__session` — Hosting only forwards that name to Functions), `js/inactivity-logout.js` |
 | Firebase CI | `.github/workflows/firebase-deploy-merge.yml` — secret `FIREBASE_SERVICE_ACCOUNT_NHS_PATIENT_RECORDS` |
 | Fill / threshold tests | `scripts/verify-fill-logic.mjs` |
+| Long-term RR / CRF findings | `rr-findings.html` + `js/rr-findings.js` (`CRF` constants drive every % on the page). Boss-facing: cite public sources only, no repo or `docs/` paths |
 
 ## Design preference
 
