@@ -427,6 +427,8 @@ function chartNo2Options() {
 const TRACK = 96;
 const WHO_PX = TRACK * 0.52;
 const EXCESS_PX = TRACK - WHO_PX;
+/** Positions are emitted as % of the track so CSS can set the track height per context. */
+const pc = (px) => `${((px / TRACK) * 100).toFixed(2)}%`;
 const RISK_MAX = 20;
 
 const excessRatio = (sp, v) => (v > WHO_ANNUAL[sp] ? (v - WHO_ANNUAL[sp]) / WHO_ANNUAL[sp] : 0);
@@ -444,9 +446,9 @@ function pill(segments) {
   const total = segments.reduce((a, s) => a + s.h, 0);
   const segs = segments
     .filter((s) => s.h > 0.2)
-    .map((s) => `<div class="mw-seg" style="height:${s.h.toFixed(1)}px;background-color:${s.color}"></div>`)
+    .map((s) => `<div class="mw-seg" style="height:${((s.h / total) * 100).toFixed(2)}%;background-color:${s.color}"></div>`)
     .join('');
-  return `<div class="mw-pill" style="height:${total.toFixed(1)}px">${segs}</div>`;
+  return `<div class="mw-pill" style="height:${pc(total)}">${segs}</div>`;
 }
 
 function whoTrack(segments) {
@@ -466,11 +468,11 @@ function riskTrack(sp, v) {
   const r = risk(sp, v);
   const below = Math.min(v / WHO_ANNUAL[sp], 1) * RISK_WHO_PX;
   const ci = v > WHO_ANNUAL[sp]
-    ? `<div class="mw-ci" style="bottom:${riskPx(r.lo).toFixed(1)}px;height:${(riskPx(r.hi) - riskPx(r.lo)).toFixed(1)}px"></div>`
+    ? `<div class="mw-ci" style="bottom:${pc(riskPx(r.lo))};height:${pc(riskPx(r.hi) - riskPx(r.lo))}"></div>`
     : '';
   return `<div class="mw-track">
-    ${[10, 20].map((p) => `<div class="mw-grid" style="bottom:${riskPx(p).toFixed(1)}px"></div>`).join('')}
-    <div class="mw-who" style="bottom:${RISK_WHO_PX}px"></div>
+    ${[10, 20].map((p) => `<div class="mw-grid" style="bottom:${pc(riskPx(p))}"></div>`).join('')}
+    <div class="mw-who" style="bottom:${pc(RISK_WHO_PX)}"></div>
     ${pill([{ h: below, color: LIGHT(sp) }, { h: riskPx(r.mid) - RISK_WHO_PX, color: COLOR(sp) }])}
     ${ci}
   </div>`;
@@ -491,13 +493,13 @@ const ugm = (v) => `${Math.round(v)}<span class="mw-unit">µg/m³</span>`;
 const ratio = (sp, v, dp = 1) => `${fmt(v / WHO_ANNUAL[sp], dp)}×`;
 
 function whoAxis() {
-  return `<div class="mw-axis"><span class="mw-axis__who" style="bottom:${WHO_PX}px">WHO<br>guideline</span></div>`;
+  return `<div class="mw-axis"><span class="mw-axis__who" style="bottom:${pc(WHO_PX)}">WHO<br>guideline</span></div>`;
 }
 
 function riskAxis() {
   return `<div class="mw-axis mw-axis--risk">
-    <span class="mw-axis__who" style="bottom:${RISK_WHO_PX}px">WHO<br>guideline</span>
-    ${[10, 20].map((p) => `<span class="mw-axis__tick" style="bottom:${riskPx(p).toFixed(1)}px">+${p}%</span>`).join('')}
+    <span class="mw-axis__who" style="bottom:${pc(RISK_WHO_PX)}">WHO<br>guideline</span>
+    ${[10, 20].map((p) => `<span class="mw-axis__tick" style="bottom:${pc(riskPx(p))}">+${p}%</span>`).join('')}
   </div>`;
 }
 
