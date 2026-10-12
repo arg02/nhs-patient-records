@@ -190,7 +190,6 @@ function chartSlope() {
       sub: `RR ${fmt(CRF[sp].rr, 2)} per 10 µg/m³${sp === 'o3' ? ' · respiratory deaths' : ''}`,
       value: v,
       color: COLOR(sp),
-      hatch: sp === 'o3',
       text: `${fmt(v, 2)}% per µg/m³`,
     };
   });
@@ -411,17 +410,17 @@ function whoHeights(sp, v, maxExcess = MOCK_MAX_EXCESS) {
   };
 }
 
-function pill(segments, { hatch = false, flat = false } = {}) {
+function pill(segments) {
   const total = segments.reduce((a, s) => a + s.h, 0);
   const segs = segments
     .filter((s) => s.h > 0.2)
-    .map((s) => `<div class="mw-seg${hatch ? ' mw-seg--hatch' : ''}" style="height:${s.h.toFixed(1)}px;background-color:${s.color}"></div>`)
+    .map((s) => `<div class="mw-seg" style="height:${s.h.toFixed(1)}px;background-color:${s.color}"></div>`)
     .join('');
-  return `<div class="mw-pill${flat ? ' mw-pill--flat' : ''}" style="height:${total.toFixed(1)}px">${segs}</div>`;
+  return `<div class="mw-pill" style="height:${total.toFixed(1)}px">${segs}</div>`;
 }
 
-function whoTrack(segments, opts) {
-  return `<div class="mw-track"><div class="mw-who"></div>${pill(segments, opts)}</div>`;
+function whoTrack(segments) {
+  return `<div class="mw-track"><div class="mw-who"></div>${pill(segments)}</div>`;
 }
 
 function whoSegments(sp, v) {
@@ -429,20 +428,21 @@ function whoSegments(sp, v) {
   return [{ h: below, color: LIGHT(sp) }, { h: above, color: COLOR(sp) }];
 }
 
-function splitSegments(v10, v25) {
-  const { below, above } = whoHeights('pm10', v10);
-  const total = below + above;
-  const fineH = total * (v25 / v10);
-  return [{ h: fineH, color: FINE_SHARE_COLOR }, { h: total - fineH, color: COLOR('pm10') }];
-}
+/** Risk scale: below the WHO line = concentration as a share of the guideline; above it = % higher risk. */
+const RISK_WHO_PX = TRACK * 0.4;
+const riskPx = (p) => RISK_WHO_PX + (Math.min(p, RISK_MAX) / RISK_MAX) * (TRACK - RISK_WHO_PX);
 
-function riskTrack(sp, r, { hatch = false } = {}) {
-  const hgt = (p) => (Math.min(p, RISK_MAX) / RISK_MAX) * TRACK;
-  return `<div class="mw-track mw-track--risk">
-    <div class="mw-grid" style="bottom:${hgt(10)}px"></div>
-    <div class="mw-grid" style="bottom:${hgt(20)}px"></div>
-    ${pill([{ h: hgt(r.mid), color: COLOR(sp) }], { hatch, flat: true })}
-    <div class="mw-ci" style="bottom:${hgt(r.lo).toFixed(1)}px;height:${(hgt(r.hi) - hgt(r.lo)).toFixed(1)}px"></div>
+function riskTrack(sp, v) {
+  const r = risk(sp, v);
+  const below = Math.min(v / WHO_ANNUAL[sp], 1) * RISK_WHO_PX;
+  const ci = v > WHO_ANNUAL[sp]
+    ? `<div class="mw-ci" style="bottom:${riskPx(r.lo).toFixed(1)}px;height:${(riskPx(r.hi) - riskPx(r.lo)).toFixed(1)}px"></div>`
+    : '';
+  return `<div class="mw-track">
+    ${[10, 20].map((p) => `<div class="mw-grid" style="bottom:${riskPx(p).toFixed(1)}px"></div>`).join('')}
+    <div class="mw-who" style="bottom:${RISK_WHO_PX}px"></div>
+    ${pill([{ h: below, color: LIGHT(sp) }, { h: riskPx(r.mid) - RISK_WHO_PX, color: COLOR(sp) }])}
+    ${ci}
   </div>`;
 }
 
@@ -465,26 +465,37 @@ function whoAxis() {
 }
 
 function riskAxis() {
-  const at = (p) => (p / RISK_MAX) * TRACK;
   return `<div class="mw-axis mw-axis--risk">
-    ${[0, 10, 20].map((p) => `<span class="mw-axis__tick" style="bottom:${at(p)}px">${p ? `+${p}%` : 'WHO'}</span>`).join('')}
+    <span class="mw-axis__who" style="bottom:${RISK_WHO_PX}px">WHO<br>guideline</span>
+    ${[10, 20].map((p) => `<span class="mw-axis__tick" style="bottom:${riskPx(p).toFixed(1)}px">+${p}%</span>`).join('')}
   </div>`;
 }
 
-function panel({ title, sub, body, legend = '' }) {
+function riskColumn(sp, v, note = '') {
+  const above = v > WHO_ANNUAL[sp];
+  return column({
+    top: above ? pct(risk(sp, v).mid) : 'Below WHO',
+    topColor: above ? COLOR(sp) : '#6b7385',
+    track: riskTrack(sp, v),
+    value: ugm(v),
+    name: LABEL[sp],
+    note,
+  });
+}
+
+function panel({ title, sub, body, foot = '' }) {
   return `<div class="mw-panel">
     <div class="mw-panel__title">${title}</div>
     <div class="mw-panel__sub">${sub}</div>
     ${body}
-    ${legend}
+    ${foot}
   </div>`;
 }
 
-function miniLegend(items) {
-  return `<div class="mw-legend">${items.map((it) => `<span><i style="background:${it.color}${it.hatch ? ';background-image:repeating-linear-gradient(45deg,rgba(255,255,255,.65) 0 2px,transparent 2px 5px)' : ''}"></i>${it.name}</span>`).join('')}</div>`;
-}
+const RISK_FOOT = '<div class="mw-foot">PM₂.₅ and NO₂ = all-cause mortality. O₃ = respiratory deaths only.</div>';
 
 const WIDGET_ORDER = ['pm25', 'pm10', 'no2', 'o3'];
+const RISK_ORDER = ['pm25', 'no2', 'o3'];
 
 function panelCurrent() {
   const cols = WIDGET_ORDER.map((sp) => column({
@@ -502,69 +513,16 @@ function panelCurrent() {
   });
 }
 
-function panelOptionA() {
-  const riskCols = ['pm25', 'no2', 'o3'].map((sp) => {
-    const r = risk(sp, MOCK[sp]);
-    return column({
-      top: pct(r.mid),
-      topColor: COLOR(sp),
-      chip: sp === 'o3' ? 'respiratory · B+' : '',
-      track: riskTrack(sp, r, { hatch: sp === 'o3' }),
-      value: ugm(MOCK[sp]),
-      name: LABEL[sp],
-      note: sp === 'o3' ? `peak season · ${ratio(sp, MOCK[sp])} WHO` : `${ratio(sp, MOCK[sp])} WHO`,
-    });
-  }).join('');
-  const pm10Col = column({
-    top: ratio('pm10', MOCK.pm10),
-    topColor: COLOR('pm10'),
-    chip: 'includes PM₂.₅',
-    track: whoTrack(splitSegments(MOCK.pm10, MOCK.pm25)),
-    value: ugm(MOCK.pm10),
-    name: LABEL.pm10,
-    note: 'vs WHO, no %',
-  });
-  return panel({
-    title: 'Long-term',
-    sub: 'Higher long-term risk than at the WHO guideline · each on its own',
-    body: `<div class="mw-cols">${riskAxis()}${riskCols}<div class="mw-divider"></div>${whoAxis()}${pm10Col}</div>`,
-    legend: miniLegend([
-      { color: FINE_SHARE_COLOR, name: 'PM₂.₅ share' },
-      { color: COLOR('pm10'), name: 'Coarse share' },
-      { color: COLOR('o3'), hatch: true, name: 'Respiratory deaths, weaker evidence' },
-    ]),
-  });
-}
+/** Peak-season ozone at Marylebone Road 2025 (MY1, roadside station): an example below WHO's 60 */
+const MY1_2025_O3_PEAK = 53.5;
 
-function panelOptionB() {
-  const cols = WIDGET_ORDER.map((sp) => {
-    const v = MOCK[sp];
-    if (sp === 'pm10') {
-      return column({
-        top: ratio(sp, v), topColor: COLOR(sp), chip: 'incl. PM₂.₅',
-        track: whoTrack(splitSegments(MOCK.pm10, MOCK.pm25)),
-        value: ugm(v), name: LABEL[sp],
-      });
-    }
-    const r = risk(sp, v);
-    return column({
-      top: ratio(sp, v),
-      topColor: COLOR(sp),
-      chip: `<span class="mw-risk-chip" style="border-color:${COLOR(sp)}">${pct(r.mid)}</span>`,
-      track: whoTrack(whoSegments(sp, v), { hatch: sp === 'o3' }),
-      value: ugm(v),
-      name: LABEL[sp],
-      note: sp === 'o3' ? 'peak season' : '',
-    });
-  }).join('');
+function panelRisk(values = MOCK) {
+  const cols = RISK_ORDER.map((sp) => riskColumn(sp, values[sp], sp === 'o3' ? 'peak season' : '')).join('');
   return panel({
     title: 'Long-term',
-    sub: 'Annual mean · 2022 · × WHO with higher-risk label',
-    body: `<div class="mw-cols">${whoAxis()}${cols}</div>`,
-    legend: miniLegend([
-      { color: FINE_SHARE_COLOR, name: 'PM₂.₅ share of PM₁₀' },
-      { color: COLOR('o3'), hatch: true, name: 'Respiratory deaths, weaker evidence' },
-    ]),
+    sub: 'Annual mean · 2022 · % higher risk than at the WHO guideline',
+    body: `<div class="mw-cols">${riskAxis()}${cols}</div>`,
+    foot: RISK_FOOT,
   });
 }
 
@@ -582,53 +540,28 @@ function soloCols(...cols) {
 
 function miniOzone() {
   const sp = 'o3';
-  const ozMax = Math.max(excessRatio(sp, HP1_2025.exposurePeak), excessRatio(sp, HP1_2025.stationPeak));
-  const track = (v, opts) => {
-    const who = WHO_ANNUAL[sp];
-    const below = v >= who ? WHO_PX : (v / who) * WHO_PX;
-    const above = (excessRatio(sp, v) / ozMax) * EXCESS_PX;
-    return whoTrack([{ h: below, color: LIGHT(sp) }, { h: above, color: COLOR(sp) }], opts);
-  };
   const r = risk(sp, HP1_2025.exposurePeak);
   const rs = risk(sp, HP1_2025.stationPeak);
   const now = mini('Now',
-    soloCols(whoAxis(), column({ top: ratio(sp, HP1_2025.map, 2), topColor: COLOR(sp), track: track(HP1_2025.map), value: ugm(HP1_2025.map), name: LABEL[sp], note: 'annual map ÷ 60' })),
+    soloCols(whoAxis(), column({ top: ratio(sp, HP1_2025.map, 2), topColor: COLOR(sp), track: whoTrack(whoSegments(sp, HP1_2025.map)), value: ugm(HP1_2025.map), name: LABEL[sp], note: 'annual map ÷ 60' })),
     'Annual map value against a peak-season guideline. Reads as under WHO.');
-  const option = mini('Proposed',
-    soloCols(whoAxis(),
-      column({ top: ratio(sp, HP1_2025.exposurePeak, 2), topColor: COLOR(sp), chip: `<span class="mw-risk-chip" style="border-color:${COLOR(sp)}">${pct(r.mid)}</span>`, track: track(HP1_2025.exposurePeak, { hatch: true }), value: ugm(HP1_2025.exposurePeak), name: LABEL[sp], note: 'peak season, exposure service' })),
-    `Peak-season value (Apr–Sep) against WHO’s 60. ${pct(r.mid)} higher respiratory mortality (95% CI ${fmt(r.lo)}–${fmt(r.hi)}%), HRAPIE-2 RR, hatched.`);
+  const proposed = mini('Proposed',
+    soloCols(riskAxis(), riskColumn(sp, HP1_2025.exposurePeak, 'peak season, exposure service')),
+    `Peak-season value (Apr–Sep) against WHO’s 60. ${pct(r.mid)} higher respiratory mortality (95% CI ${fmt(r.lo)}–${fmt(r.hi)}%), HRAPIE-2 RR.`);
   const ref = mini('Reference',
-    soloCols(whoAxis(),
-      column({ top: ratio(sp, HP1_2025.stationPeak, 2), topColor: COLOR(sp), chip: `<span class="mw-risk-chip" style="border-color:${COLOR(sp)}">${pct(rs.mid)}</span>`, track: track(HP1_2025.stationPeak, { hatch: true }), value: ugm(HP1_2025.stationPeak), name: LABEL[sp], note: 'peak season, station' })),
+    soloCols(riskAxis(), riskColumn(sp, HP1_2025.stationPeak, 'peak season, station')),
     `Station peak season at the same site, for comparison: ${pct(rs.mid)} respiratory.`);
-  return `<div class="mini-row">${now}${option}${ref}</div>`;
+  return `<div class="mini-row">${now}${proposed}${ref}</div>`;
 }
 
-function miniRiskPair(sp, { noteNow = '', noteNew = '', captionNow, captionNew, hatch = false }) {
+function miniRiskPair(sp, { captionNow, captionNew }) {
   const v = MOCK[sp];
-  const r = risk(sp, v);
   const now = mini('Now',
-    soloCols(whoAxis(), column({ top: ratio(sp, v), topColor: COLOR(sp), track: whoTrack(whoSegments(sp, v)), value: ugm(v), name: LABEL[sp], note: noteNow })),
+    soloCols(whoAxis(), column({ top: ratio(sp, v), topColor: COLOR(sp), track: whoTrack(whoSegments(sp, v)), value: ugm(v), name: LABEL[sp] })),
     captionNow);
-  const a = mini('Option A · risk scale',
-    soloCols(riskAxis(), column({ top: pct(r.mid), topColor: COLOR(sp), track: riskTrack(sp, r, { hatch }), value: ugm(v), name: LABEL[sp], note: noteNew || `${ratio(sp, v)} WHO` })),
+  const next = mini('Relative risk scale',
+    soloCols(riskAxis(), riskColumn(sp, v)),
     captionNew);
-  const b = mini('Option B · × WHO + risk',
-    soloCols(whoAxis(), column({ top: ratio(sp, v), topColor: COLOR(sp), chip: `<span class="mw-risk-chip" style="border-color:${COLOR(sp)}">${pct(r.mid)}</span>`, track: whoTrack(whoSegments(sp, v), { hatch }), value: ugm(v), name: LABEL[sp] })),
-    'Bar unchanged; percentage added as a label.');
-  return `<div class="mini-row">${now}${a}${b}</div>`;
-}
-
-function miniPm10() {
-  const v = MOCK.pm10;
-  const now = mini('Now',
-    soloCols(whoAxis(), column({ top: ratio('pm10', v), topColor: COLOR('pm10'), track: whoTrack(whoSegments('pm10', v)), value: ugm(v), name: LABEL.pm10 })),
-    'Reads as a separate risk alongside PM₂.₅.');
-  const next = mini('Proposed · both options',
-    soloCols(whoAxis(), column({ top: ratio('pm10', v), topColor: COLOR('pm10'), chip: 'includes PM₂.₅', track: whoTrack(splitSegments(v, MOCK.pm25)), value: ugm(v), name: LABEL.pm10, note: 'no %' })) +
-      miniLegend([{ color: FINE_SHARE_COLOR, name: 'PM₂.₅ share' }, { color: COLOR('pm10'), name: 'Coarse' }]),
-    'Same height against WHO; the lower part is the PM₂.₅ already counted. No percentage.');
   return `<div class="mini-row mini-row--two">${now}${next}</div>`;
 }
 
@@ -644,14 +577,13 @@ const RENDERERS = {
   'chart-pm10-forest': chartPm10Forest,
   'chart-no2-options': chartNo2Options,
   'panel-current': panelCurrent,
-  'panel-option-a': panelOptionA,
-  'panel-option-b': panelOptionB,
+  'panel-risk': () => panelRisk(),
+  'panel-risk-below': () => panelRisk({ ...MOCK, o3: MY1_2025_O3_PEAK }),
   'mini-o3': miniOzone,
   'mini-pm25': () => miniRiskPair('pm25', {
     captionNow: '3.6× looks like the biggest bar, but the size of the ratio does not carry the risk.',
     captionNew: `${pct(risk('pm25', MOCK.pm25).mid)} (95% CI ${fmt(risk('pm25', MOCK.pm25).lo)}–${fmt(risk('pm25', MOCK.pm25).hi)}%). Lead long-term figure.`,
   }),
-  'mini-pm10': miniPm10,
   'mini-no2': () => miniRiskPair('no2', {
     captionNow: '2.2× sits above PM₁₀ and reads as worse than it is per µg/m³.',
     captionNew: `${pct(risk('no2', MOCK.no2).mid)} (95% CI ${fmt(risk('no2', MOCK.no2).lo)}–${fmt(risk('no2', MOCK.no2).hi)}%). Overlaps the traffic mixture behind PM₂.₅; read on its own.`,
