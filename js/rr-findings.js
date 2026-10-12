@@ -37,7 +37,7 @@ const O3_SITES = [
 ];
 
 /** Honor Oak Park 2025 (HP1, urban background) — ozone µg/m³ */
-const HP1_2025 = { map: 46.3, exposurePeak: 77.8, stationPeak: 85.0 };
+const HP1_2025 = { map: 46.3, exposurePeak: 77.8 };
 
 const pctAt = (rr10, deltaC) => (Math.pow(rr10, Math.max(0, deltaC) / 10) - 1) * 100;
 
@@ -571,17 +571,13 @@ function soloCols(...cols) {
 function miniOzone() {
   const sp = 'o3';
   const r = risk(sp, HP1_2025.exposurePeak);
-  const rs = risk(sp, HP1_2025.stationPeak);
   const now = mini('Now',
     soloCols(whoAxis(), column({ top: ratio(sp, HP1_2025.map, 2), topColor: COLOR(sp), track: whoTrack(whoSegments(sp, HP1_2025.map)), value: ugm(HP1_2025.map), name: LABEL[sp], note: 'exposure-service annual average' })),
     'Exposure-service annual average against a peak-season guideline. Reads as under WHO.');
-  const proposed = mini('Proposed',
+  const proposed = mini('Relative risk scale',
     soloCols(riskAxis(), riskColumn(sp, HP1_2025.exposurePeak, 'peak season, exposure service')),
     `Peak-season value (Apr–Sep) against WHO’s 60. ${pct(r.mid)} higher respiratory mortality (95% CI ${fmt(r.lo)}–${fmt(r.hi)}%), HRAPIE-2 RR.`);
-  const ref = mini('Reference',
-    soloCols(riskAxis(), riskColumn(sp, HP1_2025.stationPeak, 'peak season, station')),
-    `Station peak season at the same site, for comparison: ${pct(rs.mid)} respiratory.`);
-  return `<div class="mini-row">${now}${proposed}${ref}</div>`;
+  return `<div class="mini-row mini-row--two">${now}${proposed}</div>`;
 }
 
 function miniRiskPair(sp, { captionNow, captionNew }) {
