@@ -10,12 +10,16 @@ const COLOR = (sp) => POLLUTANT_WHO_STYLES[sp].above;
 const LIGHT = (sp) => POLLUTANT_WHO_STYLES[sp].below;
 const FINE_SHARE_COLOR = '#FF8CCB';
 
-/** Long-term all-cause mortality, RR per 10 µg/m³ (95% CI) */
+/**
+ * Long-term mortality, RR per 10 µg/m³ (95% CI) — WHO Europe HRAPIE-2 (2025).
+ * PM₂.₅, PM₁₀, NO₂: natural mortality (List A). O₃: respiratory mortality only (List B+),
+ * derived on the annual mean of daily max 8-hour; applied here to the peak-season value.
+ */
 export const CRF = {
-  pm25: { rr: 1.08, lo: 1.06, hi: 1.09, source: 'WHO 2021 / COMEAP 2022 (Chen & Hoek 2020)' },
-  pm10: { rr: 1.04, lo: 1.03, hi: 1.06, source: 'WHO 2021 (Chen & Hoek 2020)' },
-  no2: { rr: 1.023, lo: 1.008, hi: 1.037, source: 'COMEAP 2018, unadjusted' },
-  o3: { rr: 1.01, lo: 1.0, hi: 1.02, source: 'WHO 2021 (Huangfu & Atkinson 2020), peak season' },
+  pm25: { rr: 1.10, lo: 1.06, hi: 1.13, source: 'HRAPIE-2 Table 2 (Orellano et al. 2024)' },
+  pm10: { rr: 1.08, lo: 1.05, hi: 1.11, source: 'HRAPIE-2 Table 4 (Orellano et al. 2024)' },
+  no2: { rr: 1.05, lo: 1.03, hi: 1.07, source: 'HRAPIE-2 Table 5 (Kasdagli et al. 2024)' },
+  o3: { rr: 1.05, lo: 1.02, hi: 1.08, source: 'HRAPIE-2 Table 7 (Kasdagli et al. 2024), respiratory' },
 };
 
 /** mockPatientExposure() annual values; ozone treated as a peak-season value */
@@ -178,28 +182,13 @@ function legendHtml(items) {
 /* Charts                                                              */
 /* ------------------------------------------------------------------ */
 
-function chartExtraAt13() {
-  const rows = PAGE_ORDER.map((sp) => ({
-    label: LABEL[sp],
-    sub: `guideline ${WHO_ANNUAL[sp]}${sp === 'o3' ? ' (peak season)' : ' (annual)'} → 1.3× = ${fmt(WHO_ANNUAL[sp] * 1.3, 1).replace('.0', '')}`,
-    value: WHO_ANNUAL[sp] * 0.3,
-    color: COLOR(sp),
-    text: `+${fmt(WHO_ANNUAL[sp] * 0.3)} µg/m³`,
-  }));
-  return hBarChart({
-    title: 'Extra concentration above the WHO guideline at 1.3× WHO',
-    rows, max: 20, ticks: [0, 5, 10, 15, 20],
-    axisLabel: 'Extra µg/m³ above the WHO guideline',
-  });
-}
-
 function chartRiskAt13() {
   const rows = PAGE_ORDER.map((sp) => {
     const d = WHO_ANNUAL[sp] * 0.3;
     const c = CRF[sp];
     return {
       label: LABEL[sp],
-      sub: `RR ${c.rr} per 10 µg/m³${sp === 'o3' ? ' · moderate certainty' : sp === 'pm10' ? ' · includes PM₂.₅' : sp === 'no2' ? ' · overlaps traffic mix' : ' · high certainty'}`,
+      sub: `RR ${fmt(c.rr, 2)} per 10 µg/m³${sp === 'o3' ? ' · respiratory deaths, List B+' : sp === 'pm10' ? ' · includes PM₂.₅' : sp === 'no2' ? ' · overlaps traffic mix' : ' · List A'}`,
       value: pctAt(c.rr, d),
       lo: pctAt(c.lo, d),
       hi: pctAt(c.hi, d),
@@ -210,11 +199,11 @@ function chartRiskAt13() {
   });
   return hBarChart({
     title: 'Higher long-term mortality risk at 1.3× WHO',
-    rows, max: 4, ticks: [0, 1, 2, 3, 4], tickFmt: (v) => `${v}%`,
-    axisLabel: 'Higher long-term all-cause mortality vs air at the WHO guideline (%)',
+    rows, max: 16, ticks: [0, 4, 8, 12, 16], tickFmt: (v) => `${v}%`,
+    axisLabel: 'Higher long-term mortality vs air at the WHO guideline (%)',
   }) + legendHtml([
-    { color: '#6b7385', name: 'Solid: lead estimate' },
-    { color: '#6b7385', hatch: true, name: 'Hatched: weaker or overlapping estimate' },
+    { color: '#6b7385', name: 'Solid: natural (all-cause) deaths' },
+    { color: '#6b7385', hatch: true, name: 'Hatched: overlapping (PM₁₀) or respiratory-only (O₃)' },
     { color: '#1a2030', name: 'Whisker: 95% confidence interval' },
   ]);
 }
@@ -222,12 +211,19 @@ function chartRiskAt13() {
 function chartSlope() {
   const rows = PAGE_ORDER.map((sp) => {
     const v = pctAt(CRF[sp].rr, 1);
-    return { label: LABEL[sp], sub: `RR ${CRF[sp].rr} per 10 µg/m³`, value: v, color: COLOR(sp), text: `${fmt(v, 2)}% per µg/m³` };
+    return {
+      label: LABEL[sp],
+      sub: `RR ${fmt(CRF[sp].rr, 2)} per 10 µg/m³${sp === 'o3' ? ' · respiratory deaths' : ''}`,
+      value: v,
+      color: COLOR(sp),
+      hatch: sp === 'o3',
+      text: `${fmt(v, 2)}% per µg/m³`,
+    };
   });
   return hBarChart({
-    title: 'Steepness of each CRF: higher risk per 1 µg/m³',
-    rows, max: 0.8, ticks: [0, 0.2, 0.4, 0.6, 0.8], tickFmt: (v) => `${v}%`,
-    axisLabel: 'Higher long-term all-cause mortality per extra 1 µg/m³ (%)',
+    title: 'Concentration–response: higher risk per 1 µg/m³',
+    rows, max: 1.0, ticks: [0, 0.25, 0.5, 0.75, 1.0], tickFmt: (v) => `${v}%`,
+    axisLabel: 'Higher long-term mortality per extra 1 µg/m³ (%)',
   });
 }
 
@@ -235,17 +231,18 @@ function chartOzoneSites() {
   const series = [
     { name: 'Annual map value (what we use now)', color: '#a8b0bd' },
     { name: 'Station annual mean of all hours', color: '#b9dcf5' },
+    { name: 'Station annual mean of daily max 8-hour (HRAPIE-2 metric)', color: '#6fb6ea' },
     { name: 'Exposure-service peak season (Apr–Sep)', color: '#0387E2' },
-    { name: 'Station peak season (Apr–Sep, reference)', color: '#0b3f73' },
+    { name: 'Station peak season (Apr–Sep, WHO metric)', color: '#0b3f73' },
   ];
   const groups = [
-    { label: 'Honor Oak Park', sub: '2025 · background', values: [46.3, 56.6, 77.8, 85.0] },
-    { label: 'Marylebone Road', sub: '2025 · roadside', values: [34.4, 34.3, 65.9, 53.5] },
-    { label: 'Honor Oak Park', sub: '2022 · background', values: [46.3, 51.6, 70.7, 81.3] },
-    { label: 'Marylebone Road', sub: '2022 · roadside', values: [34.4, 28.5, 58.8, 49.3] },
+    { label: 'Honor Oak Park', sub: '2025 · background', values: [46.3, 56.6, 74.0, 77.8, 85.0] },
+    { label: 'Marylebone Road', sub: '2025 · roadside', values: [34.4, 34.3, 46.4, 65.9, 53.5] },
+    { label: 'Honor Oak Park', sub: '2022 · background', values: [46.3, 51.6, 68.3, 70.7, 81.3] },
+    { label: 'Marylebone Road', sub: '2022 · roadside', values: [34.4, 28.5, 40.3, 58.8, 49.3] },
   ];
   return groupedBars({
-    title: 'Ozone: annual mean vs peak-season metric at two London sites',
+    title: 'Ozone: three metrics at two London sites',
     groups, series, max: 100, ticks: [0, 20, 40, 60, 80, 100],
     ref: { value: 60, label: ['WHO 60', 'peak season'] },
     yLabel: 'Ozone, µg/m³',
@@ -254,16 +251,37 @@ function chartOzoneSites() {
 
 function chartOzoneForest() {
   const c = COLOR('o3');
+  const grey = '#a8b0bd';
   return forestPlot({
-    title: 'Long-term ozone and all-cause mortality by exposure metric',
-    min: 0.9, max: 1.1, ticks: [0.9, 0.95, 1.0, 1.05, 1.1],
+    title: 'Long-term ozone and mortality: what WHO 2021 and HRAPIE-2 assessed',
+    min: 0.94, max: 1.1, ticks: [0.95, 1.0, 1.05, 1.1],
     rows: [
-      { label: 'Huangfu & Atkinson 2020', sub: 'annual-mean ozone metric', rr: 0.97, lo: 0.93, hi: 1.02, color: '#a8b0bd' },
-      { label: 'Huangfu & Atkinson 2020', sub: 'peak-season metric · adopted by WHO 2021', rr: 1.01, lo: 1.0, hi: 1.02, color: c, emphasis: true },
-      { label: 'Kasdagli et al. 2024 update', sub: 'annual-mean ozone metric', rr: 1.01, lo: 0.96, hi: 1.06, color: '#a8b0bd' },
-      { label: 'Kasdagli et al. 2024 update', sub: 'peak/warm-season metric', rr: 1.01, lo: 0.97, hi: 1.04, color: c },
+      { label: 'WHO 2021 · all-cause', sub: 'peak season · Huangfu & Atkinson 2020', rr: 1.01, lo: 1.0, hi: 1.02, color: grey },
+      { label: 'HRAPIE-2 · all-cause', sub: 'annual · List B−, not proposed', rr: 1.01, lo: 0.96, hi: 1.06, color: grey },
+      { label: 'HRAPIE-2 · all-cause', sub: 'peak/warm season · List B−, not proposed', rr: 1.01, lo: 0.97, hi: 1.04, color: grey },
+      { label: 'HRAPIE-2 · respiratory', sub: 'peak/warm season · List B−, not proposed', rr: 1.01, lo: 0.98, hi: 1.03, color: grey },
+      { label: 'HRAPIE-2 · respiratory, US only', sub: 'peak/warm season · noted, not proposed', rr: 1.03, lo: 1.01, hi: 1.04, color: '#6fb6ea' },
+      { label: 'HRAPIE-2 · respiratory', sub: 'annual daily max 8-hour · List B+, proposed', rr: 1.05, lo: 1.02, hi: 1.08, color: c, emphasis: true },
     ],
   });
+}
+
+function chartOzoneCohorts() {
+  const c = COLOR('o3');
+  const light = '#6fb6ea';
+  return forestPlot({
+    title: 'Respiratory mortality in the two largest cohorts behind 1.05: annual vs warm season',
+    min: 0.98, max: 1.1, ticks: [1.0, 1.05, 1.1],
+    rows: [
+      { label: 'Turner 2016 · ACS CPS-II', sub: 'annual daily max 8-hour · 36% of 1.05', rr: 1.068, lo: 1.049, hi: 1.086, color: c },
+      { label: 'Turner 2016 · ACS CPS-II', sub: 'warm season (Apr–Sep)', rr: 1.049, lo: 1.034, hi: 1.058, color: light },
+      { label: 'Lim 2019 · NIH-AARP', sub: 'annual daily max 8-hour · 34% of 1.05', rr: 1.020, lo: 1.0, hi: 1.044, color: c },
+      { label: 'Lim 2019 · NIH-AARP', sub: 'warm season (Apr–Sep)', rr: 1.020, lo: 1.010, hi: 1.030, color: light },
+    ],
+  }) + legendHtml([
+    { color: c, name: 'Annual metric (in HRAPIE-2’s 1.05)' },
+    { color: light, name: 'Warm-season metric, same cohort' },
+  ]);
 }
 
 function chartPm25Curve() {
@@ -275,7 +293,7 @@ function chartPm25Curve() {
   const plotW = W - padL - padR;
   const xMin = 5;
   const xMax = 25;
-  const yMax = 20;
+  const yMax = 30;
   const x = (c) => padL + ((c - xMin) / (xMax - xMin)) * plotW;
   const y = (p) => padT + plotH - (p / yMax) * plotH;
   const who = WHO_ANNUAL.pm25;
@@ -292,7 +310,7 @@ function chartPm25Curve() {
   const band = `${pts.map((c, i) => `${i ? 'L' : 'M'}${x(c).toFixed(1)},${y(pctAt(hi, c - who)).toFixed(1)}`).join(' ')} ${pts.slice().reverse().map((c) => `L${x(c).toFixed(1)},${y(pctAt(lo, c - who)).toFixed(1)}`).join(' ')} Z`;
 
   let s = svgOpen(h, 'PM2.5 long-term concentration–response function');
-  [0, 5, 10, 15, 20].forEach((p) => {
+  [0, 10, 20, 30].forEach((p) => {
     s += `<line x1="${padL}" y1="${y(p)}" x2="${W - padR}" y2="${y(p)}" class="c-grid"/>`;
     s += `<text x="${padL - 8}" y="${y(p) + 4}" text-anchor="end" class="c-tick">${p}%</text>`;
   });
@@ -320,8 +338,8 @@ function chartPm25Curve() {
   s += '</svg>';
 
   return s + legendHtml([
-    { color: COLOR('pm25'), name: 'Log-linear CRF, RR 1.08 per 10 µg/m³ (WHO / COMEAP)' },
-    { color: LIGHT('pm25'), name: '95% CI (1.06–1.09)' },
+    { color: COLOR('pm25'), name: `Log-linear CRF, RR ${fmt(rr, 2)} per 10 µg/m³ (HRAPIE-2)` },
+    { color: LIGHT('pm25'), name: `95% CI (${fmt(lo, 2)}–${fmt(hi, 2)})` },
     { color: '#8a929e', dashed: true, name: 'Illustrative supralinear shape (not a published function)' },
   ]);
 }
@@ -360,12 +378,14 @@ function chartPm10Split() {
 
 function chartPm10Forest() {
   const implied = (r) => Math.pow(r, 0.65);
+  const { rr, lo, hi } = CRF.pm25;
   return forestPlot({
     title: 'PM10 RR compared with the PM2.5 it contains',
-    min: 1.0, max: 1.08, ticks: [1.0, 1.02, 1.04, 1.06, 1.08],
+    min: 1.0, max: 1.12, ticks: [1.0, 1.04, 1.08, 1.12],
     rows: [
-      { label: 'PM₁₀, published', sub: 'Chen & Hoek 2020 · WHO 2021', rr: 1.04, lo: 1.03, hi: 1.06, color: COLOR('pm10'), emphasis: true },
-      { label: 'PM₂.₅ inside 10 µg/m³ of UK PM₁₀', sub: '≈6.5 µg/m³ × PM₂.₅ CRF (1.08^0.65)', rr: +implied(1.08).toFixed(3), lo: implied(1.06), hi: implied(1.09), color: FINE_SHARE_COLOR },
+      { label: 'PM₁₀, HRAPIE-2', sub: 'Orellano et al. 2024 · List A', rr: CRF.pm10.rr, lo: CRF.pm10.lo, hi: CRF.pm10.hi, color: COLOR('pm10'), emphasis: true },
+      { label: 'PM₁₀, WHO 2021', sub: 'Chen & Hoek 2020', rr: 1.04, lo: 1.03, hi: 1.06, color: '#c9a6f5' },
+      { label: 'PM₂.₅ inside 10 µg/m³ of UK PM₁₀', sub: `≈6.5 µg/m³ × PM₂.₅ CRF (${fmt(rr, 2)}^0.65)`, rr: +implied(rr).toFixed(3), lo: implied(lo), hi: implied(hi), color: FINE_SHARE_COLOR },
     ],
   });
 }
@@ -377,8 +397,9 @@ function chartNo2Options() {
     { label: 'COMEAP 2018, NO₂ alone (low)', sub: '25% of unadjusted · 1.006', rr: 1.006 },
     { label: 'COMEAP 2018, NO₂ alone (high)', sub: '55% of unadjusted · 1.013', rr: 1.013 },
     { label: 'WHO 2021 (Huangfu & Atkinson)', sub: '1.02 (1.01–1.04)', rr: 1.02, lo: 1.01, hi: 1.04 },
-    { label: 'COMEAP 2018, unadjusted', sub: '1.023 (1.008–1.037) · used here', rr: 1.023, lo: 1.008, hi: 1.037, strong: true },
-    { label: 'Kasdagli et al. 2024 update', sub: '1.05 (1.03–1.07)', rr: 1.05, lo: 1.03, hi: 1.07 },
+    { label: 'COMEAP 2018, unadjusted', sub: '1.023 (1.008–1.037)', rr: 1.023, lo: 1.008, hi: 1.037 },
+    { label: 'HRAPIE-2, adjusted for PM₂.₅', sub: '1.0374 · Chen et al. 2024 method', rr: 1.0374 },
+    { label: 'HRAPIE-2 (Kasdagli et al. 2024)', sub: '1.05 (1.03–1.07) · used here', rr: 1.05, lo: 1.03, hi: 1.07, strong: true },
   ];
   const rows = opts.map((o) => ({
     label: o.label,
@@ -392,7 +413,7 @@ function chartNo2Options() {
   return hBarChart({
     title: 'Mock patient NO2 22.1 µg/m³: higher risk under each published coefficient',
     rows, max: 10, ticks: [0, 2, 4, 6, 8, 10], tickFmt: (v) => `${v}%`, labelW: 230,
-    axisLabel: 'Higher long-term all-cause mortality vs air at the WHO guideline (%)',
+    axisLabel: 'Higher long-term natural mortality vs air at the WHO guideline (%)',
   });
 }
 
@@ -403,7 +424,7 @@ function chartNo2Options() {
 const TRACK = 96;
 const WHO_PX = TRACK * 0.52;
 const EXCESS_PX = TRACK - WHO_PX;
-const RISK_MAX = 12;
+const RISK_MAX = 20;
 
 const excessRatio = (sp, v) => (v > WHO_ANNUAL[sp] ? (v - WHO_ANNUAL[sp]) / WHO_ANNUAL[sp] : 0);
 const MOCK_MAX_EXCESS = Math.max(...Object.keys(MOCK).map((sp) => excessRatio(sp, MOCK[sp])));
@@ -444,8 +465,8 @@ function splitSegments(v10, v25) {
 function riskTrack(sp, r, { hatch = false } = {}) {
   const hgt = (p) => (Math.min(p, RISK_MAX) / RISK_MAX) * TRACK;
   return `<div class="mw-track mw-track--risk">
-    <div class="mw-grid" style="bottom:${hgt(5)}px"></div>
     <div class="mw-grid" style="bottom:${hgt(10)}px"></div>
+    <div class="mw-grid" style="bottom:${hgt(20)}px"></div>
     ${pill([{ h: hgt(r.mid), color: COLOR(sp) }], { hatch, flat: true })}
     <div class="mw-ci" style="bottom:${hgt(r.lo).toFixed(1)}px;height:${(hgt(r.hi) - hgt(r.lo)).toFixed(1)}px"></div>
   </div>`;
@@ -472,12 +493,12 @@ function whoAxis() {
 function riskAxis() {
   const at = (p) => (p / RISK_MAX) * TRACK;
   return `<div class="mw-axis mw-axis--risk">
-    ${[0, 5, 10].map((p) => `<span class="mw-axis__tick" style="bottom:${at(p)}px">${p ? `+${p}%` : 'WHO'}</span>`).join('')}
+    ${[0, 10, 20].map((p) => `<span class="mw-axis__tick" style="bottom:${at(p)}px">${p ? `+${p}%` : 'WHO'}</span>`).join('')}
   </div>`;
 }
 
-function panel({ title, sub, body, legend = '' }) {
-  return `<div class="mw-panel">
+function panel({ title, sub, body, legend = '', wide = false }) {
+  return `<div class="mw-panel${wide ? ' mw-panel--wide' : ''}">
     <div class="mw-panel__title">${title}</div>
     <div class="mw-panel__sub">${sub}</div>
     ${body}
@@ -491,7 +512,7 @@ function miniLegend(items) {
 
 const WIDGET_ORDER = ['pm25', 'pm10', 'no2', 'o3'];
 
-function panelCurrent() {
+function panelCurrent({ wide = false } = {}) {
   const cols = WIDGET_ORDER.map((sp) => column({
     top: ratio(sp, MOCK[sp]),
     topColor: COLOR(sp),
@@ -504,6 +525,7 @@ function panelCurrent() {
     title: 'Long-term',
     sub: 'Annual mean · 2022 · × WHO guideline',
     body: `<div class="mw-cols">${whoAxis()}${cols}</div>`,
+    wide,
   });
 }
 
@@ -513,7 +535,7 @@ function panelOptionA() {
     return column({
       top: pct(r.mid),
       topColor: COLOR(sp),
-      chip: sp === 'o3' ? 'moderate certainty' : '',
+      chip: sp === 'o3' ? 'respiratory · B+' : '',
       track: riskTrack(sp, r, { hatch: sp === 'o3' }),
       value: ugm(MOCK[sp]),
       name: LABEL[sp],
@@ -536,7 +558,7 @@ function panelOptionA() {
     legend: miniLegend([
       { color: FINE_SHARE_COLOR, name: 'PM₂.₅ share' },
       { color: COLOR('pm10'), name: 'Coarse share' },
-      { color: COLOR('o3'), hatch: true, name: 'Weaker evidence' },
+      { color: COLOR('o3'), hatch: true, name: 'Respiratory deaths, weaker evidence' },
     ]),
   });
 }
@@ -568,7 +590,7 @@ function panelOptionB() {
     body: `<div class="mw-cols">${whoAxis()}${cols}</div>`,
     legend: miniLegend([
       { color: FINE_SHARE_COLOR, name: 'PM₂.₅ share of PM₁₀' },
-      { color: COLOR('o3'), hatch: true, name: 'Weaker evidence' },
+      { color: COLOR('o3'), hatch: true, name: 'Respiratory deaths, weaker evidence' },
     ]),
   });
 }
@@ -602,11 +624,11 @@ function miniOzone() {
   const option = mini('Proposed',
     soloCols(whoAxis(),
       column({ top: ratio(sp, HP1_2025.exposurePeak, 2), topColor: COLOR(sp), chip: `<span class="mw-risk-chip" style="border-color:${COLOR(sp)}">${pct(r.mid)}</span>`, track: track(HP1_2025.exposurePeak, { hatch: true }), value: ugm(HP1_2025.exposurePeak), name: LABEL[sp], note: 'peak season, exposure service' })),
-    `Peak-season value (Apr–Sep). ${pct(r.mid)} (95% CI 0–${fmt(r.hi)}%), moderate certainty, hatched.`);
+    `Peak-season value (Apr–Sep) against WHO’s 60. ${pct(r.mid)} higher respiratory mortality (95% CI ${fmt(r.lo)}–${fmt(r.hi)}%), HRAPIE-2 RR, hatched.`);
   const ref = mini('Reference',
     soloCols(whoAxis(),
       column({ top: ratio(sp, HP1_2025.stationPeak, 2), topColor: COLOR(sp), chip: `<span class="mw-risk-chip" style="border-color:${COLOR(sp)}">${pct(rs.mid)}</span>`, track: track(HP1_2025.stationPeak, { hatch: true }), value: ugm(HP1_2025.stationPeak), name: LABEL[sp], note: 'peak season, station' })),
-    'Station peak season at the same site, for comparison.');
+    `Station peak season at the same site, for comparison: ${pct(rs.mid)} respiratory.`);
   return `<div class="mini-row">${now}${option}${ref}</div>`;
 }
 
@@ -640,16 +662,17 @@ function miniPm10() {
 /* ------------------------------------------------------------------ */
 
 const RENDERERS = {
-  'chart-extra-13': chartExtraAt13,
   'chart-risk-13': chartRiskAt13,
   'chart-slope': chartSlope,
   'chart-o3-sites': chartOzoneSites,
   'chart-o3-forest': chartOzoneForest,
+  'chart-o3-cohorts': chartOzoneCohorts,
   'chart-pm25-curve': chartPm25Curve,
   'chart-pm10-split': chartPm10Split,
   'chart-pm10-forest': chartPm10Forest,
   'chart-no2-options': chartNo2Options,
-  'panel-current': panelCurrent,
+  'panel-current': () => panelCurrent(),
+  'panel-current-wide': () => panelCurrent({ wide: true }),
   'panel-option-a': panelOptionA,
   'panel-option-b': panelOptionB,
   'mini-o3': miniOzone,
@@ -660,7 +683,7 @@ const RENDERERS = {
   'mini-pm10': miniPm10,
   'mini-no2': () => miniRiskPair('no2', {
     captionNow: '2.2× sits above PM₁₀ and reads as worse than it is per µg/m³.',
-    captionNew: `${pct(risk('no2', MOCK.no2).mid)} (95% CI ${fmt(risk('no2', MOCK.no2).lo)}–${fmt(risk('no2', MOCK.no2).hi)}%). Overlaps the traffic mixture behind PM₂.₅.`,
+    captionNew: `${pct(risk('no2', MOCK.no2).mid)} (95% CI ${fmt(risk('no2', MOCK.no2).lo)}–${fmt(risk('no2', MOCK.no2).hi)}%). Overlaps the traffic mixture behind PM₂.₅; read on its own.`,
   }),
 };
 
@@ -668,3 +691,18 @@ document.querySelectorAll('[data-render]').forEach((el) => {
   const fn = RENDERERS[el.dataset.render];
   if (fn) el.innerHTML = fn();
 });
+
+function numberFigures() {
+  const count = { fig: 0, table: 0 };
+  document.querySelectorAll('figure.chart, .outcome, table').forEach((el) => {
+    const kind = el.tagName === 'TABLE' ? 'table' : 'fig';
+    const title = kind === 'table' ? el.querySelector(':scope > caption') : el.querySelector(':scope > .chart__title, :scope > .outcome__label');
+    if (!title) return;
+    const n = ++count[kind];
+    el.id = `${kind}-${n}`;
+    title.insertAdjacentHTML('afterbegin', `<a class="fig-num" href="#${el.id}">${kind === 'table' ? 'Table' : 'Figure'} ${n}</a>`);
+  });
+  if (location.hash) document.getElementById(location.hash.slice(1))?.scrollIntoView();
+}
+
+numberFigures();

@@ -53,6 +53,8 @@
     }
     .summary ul { margin: 0 0 4px 18px; }
     .summary li { color: #f1f5fa; font-size: 14px; margin-bottom: 8px; }
+    .summary li ul { margin: 4px 0 0 18px; }
+    .summary li li { margin-bottom: 2px; }
     .summary strong { color: #fff; }
 
     .toc {
@@ -158,6 +160,7 @@
       font-family: "IBM Plex Mono", monospace;
       font-size: 12.5px;
       line-height: 1.8;
+      white-space: pre-wrap;
     }
 
     /* Key-number strip at the top of each pollutant */
@@ -220,6 +223,32 @@
     blockquote.quote p { font-size: 13px; color: #2a3142; margin-bottom: 4px; font-style: italic; }
     blockquote.quote cite { font-size: 11.5px; font-style: normal; color: #6b7385; }
     blockquote.quote cite a { font-weight: 600; }
+    .src-quote {
+      display: block; font-style: italic; font-size: 12px; line-height: 1.45; color: #2a3142;
+      border-left: 2px solid #d5dbe5; padding-left: 8px; margin-bottom: 5px;
+    }
+    .src-links, .src-note { display: block; font-size: 11.5px; }
+    .src-note { color: #6b7385; margin-top: 3px; }
+    .coef-table td.mono { white-space: nowrap; }
+    .coef-table .prev { display: block; font-size: 11px; color: #6b7385; margin-top: 4px; }
+    table caption {
+      caption-side: top; text-align: left; font-size: 14px; font-weight: 600; color: #1a2030;
+      padding: 0 0 8px;
+    }
+    .fig-num { font-weight: 700; color: #1a4a78; text-decoration: none; margin-right: 8px; }
+    .fig-num:hover { text-decoration: underline; }
+    [id^="fig-"], [id^="table-"] { scroll-margin-top: 24px; }
+    :target { outline: 2px solid #9fd0ff; outline-offset: 4px; border-radius: 6px; }
+    .report { display: grid; grid-template-columns: minmax(0, 1fr) 120px; gap: 24px; align-items: start; margin-bottom: 8px; }
+    .report__cover { display: block; line-height: 0; }
+    .report__cover img {
+      width: 120px; height: auto; border: 1px solid #d0d6e0; border-radius: 3px;
+      box-shadow: 0 2px 8px rgba(26, 32, 48, 0.15); transition: box-shadow 0.15s;
+    }
+    .report__cover:hover img { box-shadow: 0 4px 14px rgba(26, 32, 48, 0.28); }
+    .decided { list-style: none; padding-left: 0; }
+    .decided li { padding-left: 22px; position: relative; }
+    .decided li::before { content: "✓"; position: absolute; left: 2px; color: #1a7f4b; font-weight: 700; }
 
     /* Widget mockups — Design 3.2b language */
     .outcome {
@@ -237,6 +266,8 @@
       color: #5a6478;
       margin-bottom: 10px;
     }
+    .outcome__label:has(+ .outcome__desc) { margin-bottom: 2px; }
+    .outcome__desc { font-size: 12px; color: #6b7385; margin-bottom: 10px; }
     .outcome__grid { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1.15fr) minmax(0, 1fr); gap: 14px; align-items: start; }
     .outcome__cell h4 { margin: 0 0 6px; font-size: 12px; }
     .outcome__cell p { font-size: 12px; color: #5a6478; line-height: 1.45; margin: 8px 0 0; }
@@ -251,6 +282,13 @@
     .mw-panel__sub { font-size: 9.5px; color: #8a929e; margin-bottom: 8px; line-height: 1.3; min-height: 25px; }
     .mw-cols { display: flex; align-items: flex-start; gap: 5px; }
     .mw-cols--solo { justify-content: center; }
+    .mw-panel--wide .mw-cols { position: relative; }
+    .mw-panel--wide .mw-col { flex: 1 1 0; width: auto; }
+    .mw-panel--wide .mw-who { display: none; }
+    .mw-panel--wide .mw-cols::before {
+      content: ""; position: absolute; left: 28px; right: 0; top: calc(34px + 96px - 49.9px);
+      border-top: 1.5px dotted #7a8496; z-index: 2;
+    }
     .mw-col { display: flex; flex-direction: column; align-items: center; width: 40px; flex: 0 0 40px; }
     .mw-top { font-size: 11px; font-weight: 700; height: 16px; line-height: 16px; white-space: nowrap; font-variant-numeric: tabular-nums; }
     .mw-chip { height: 18px; font-size: 8px; color: #6b7385; text-align: center; line-height: 1.1; display: flex; align-items: center; white-space: nowrap; }
@@ -288,6 +326,7 @@
 
     .mini-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin: 14px 0 18px; }
     .mini-row--two { grid-template-columns: repeat(2, minmax(0, 260px)); }
+    figure.chart .mini-row { margin: 8px 0 4px; }
     figure.mini {
       background: linear-gradient(180deg, #eef2f7 0%, #e4e8ef 100%);
       border: 1px solid #cfd6e0;
@@ -308,6 +347,7 @@
       .toc { grid-template-columns: 1fr; }
       .stats { grid-template-columns: 1fr 1fr; }
       .outcome__grid, .mini-row, .mini-row--two { grid-template-columns: 1fr; }
+      .report { grid-template-columns: 1fr; }
     }
   </style>
 </head>
@@ -326,11 +366,11 @@
 
   <article class="page">
     <header class="page-hd">
-      <div class="page-hd__meta">Findings · 8 October 2026 · draft for discussion</div>
+      <div class="page-hd__meta">Findings · updated 9 October 2026 · draft for discussion</div>
       <h1>Long-term panel: from “× WHO” to relative risk</h1>
       <p class="lede">
-        What the Long-term panel shows today, what WHO and COMEAP recommend for comparing
-        long-term exposure across pollutants, and how each pollutant’s bar would change.
+        What the Long-term panel shows today, what WHO (including WHO Europe’s 2025 HRAPIE-2 update) and COMEAP recommend
+        for comparing long-term exposure across pollutants, and how each pollutant’s bar would change.
         All patient values are the prototype mock patient unless a monitoring site is named.
       </p>
     </header>
@@ -339,10 +379,18 @@
       <div class="summary__label">In one minute</div>
       <ul>
         <li>The Long-term panel shows each pollutant as a <strong>multiple of its WHO guideline</strong> (3.6×, 1.9×…). A multiple is an exceedance signal, not a health scale: the guidelines sit at very different concentrations and each pollutant has a different strength of link to mortality.</li>
-        <li>WHO 2021 and COMEAP express long-term health effects as a <strong>relative risk per 10 µg/m³</strong> (the concentration–response function, CRF). Applying each pollutant’s own CRF gives <strong>% higher long-term mortality than in air at the WHO guideline</strong>, which can be compared pollutant by pollutant.</li>
-        <li>On that scale <strong>PM₂.₅ leads</strong>: the mock patient’s 3.6× becomes about +11%; NO₂’s 2.2× becomes about +3%.</li>
-        <li><strong>Ozone is the biggest problem.</strong> We divide an annual mean by a peak-season guideline, which understates it (Honor Oak Park reads 0.77× WHO; the station’s peak season is 1.42×), and its long-term evidence is the weakest of the four.</li>
-        <li><strong>PM₁₀ contains PM₂.₅</strong>, so it stays as a bar against WHO, split into fine and coarse, without its own percentage. Each percentage stands on its own; they describe overlapping air, so they are read separately rather than summed.</li>
+        <li>WHO expresses long-term health effects as a <strong>relative risk per 10 µg/m³</strong> (the concentration–response function, CRF). Applying each pollutant’s own CRF gives <strong>% higher long-term mortality than in air at the WHO guideline</strong>, which can be compared pollutant by pollutant.</li>
+        <li>We use the RRs from <strong>WHO Europe’s HRAPIE-2 (2025)</strong>, built on updates of the reviews behind WHO 2021:
+          <ul>
+            <li><strong>PM₂.₅</strong> – <strong>1.10</strong></li>
+            <li><strong>PM₁₀</strong> – <strong>1.08</strong></li>
+            <li><strong>NO₂</strong> – <strong>1.05</strong></li>
+            <li><strong>Ozone</strong> – <strong>1.05</strong> (respiratory deaths only)</li>
+          </ul>
+        </li>
+        <li>On that scale <strong>PM₂.₅ leads</strong>: the mock patient’s 3.6× becomes about +13%; NO₂’s 2.2× becomes about +6%.</li>
+        <li><strong>Ozone is the biggest problem.</strong> We divide an annual mean by a peak-season guideline, which understates it (Honor Oak Park reads 0.77× WHO; the station’s peak season is 1.42×). <strong>Decision:</strong> calculate peak season, compare with WHO’s 60, and apply HRAPIE-2’s 1.05 with a caveat: that RR is for respiratory deaths, was derived on a different annual metric, and is weaker evidence.</li>
+        <li><strong>PM₁₀ contains PM₂.₅</strong>, so it stays as a bar against WHO, split into fine and coarse, without its own percentage. Each percentage stands on its own; HRAPIE-2 gives an adjusted method if a combined PM₂.₅ + NO₂ figure is wanted.</li>
       </ul>
     </section>
 
@@ -391,23 +439,15 @@ above-line height = (ratio − 1) ÷ largest (ratio − 1) across the four pollu
 
       <div class="outcome">
         <div class="outcome__label">Current Long-term panel (Design 3.2b) · mock patient</div>
-        <div style="max-width:300px" data-render="panel-current"></div>
+        <div data-render="panel-current-wide"></div>
       </div>
 
       <h3>Why a multiple is not enough</h3>
       <ol>
-        <li><strong>The same multiple means very different amounts of pollution.</strong> 1.3× WHO is an extra 1.5 µg/m³ of PM₂.₅ but an extra 18 µg/m³ of ozone.</li>
-        <li><strong>Each pollutant has a different steepness of risk.</strong> Per microgram, PM₂.₅ is about three times as steep as NO₂ and eight times as steep as ozone. The multiple ignores this.</li>
-        <li><strong>Ozone is compared on the wrong metric.</strong> The WHO ozone figure (60) is a peak-season value; the exposure service returns an annual mean of all hours, which runs about 1.5× lower.</li>
-        <li><strong>A row of similar bars invites adding them up.</strong> PM₂.₅, PM₁₀ and NO₂ largely describe the same traffic-related air, so a combined reading overstates the total.</li>
+        <li><strong>The same multiple means very different amounts of pollution.</strong> For PM₂.₅, 1.3× WHO is only 1.5 µg/m³ above the guideline. For O₃, 1.3× is 18 µg/m³ above the guideline.</li>
+        <li><strong>Each pollutant has a different concentration–response function.</strong> Per microgram, PM₂.₅ is about twice as dangerous as ozone or NO₂. The multiple does not reflect this.</li>
+        <li><strong>Ozone is currently compared on the wrong metric.</strong> The WHO guideline ozone figure (60 µg/m³) is a peak-season value; the exposure service (LAEI) returns an annual average, which is about 1.5× lower than a peak-season calculation.</li>
       </ol>
-
-      <figure class="chart">
-        <div class="chart__title">Same multiple, different amount: extra µg/m³ at 1.3× WHO</div>
-        <div class="chart__desc">Concentration above the WHO guideline when each pollutant is at 1.3× its guideline.</div>
-        <div data-render="chart-extra-13"></div>
-        <div class="chart__source">WHO guideline levels: <a href="https://www.who.int/publications/i/item/9789240034228">WHO global air quality guidelines 2021</a>, Table 0.1. Ozone guideline is the peak-season mean of daily maximum 8-hour ozone.</div>
-      </figure>
     </section>
 
     <section class="section" id="research">
@@ -421,78 +461,181 @@ above-line height = (ratio − 1) ÷ largest (ratio − 1) across the four pollu
 
       <h3>RR and CRF in one paragraph</h3>
       <p>
-        The CRF is the rule linking concentration to risk across the whole range: its shape and its steepness.
+        The CRF is the rule linking concentration to risk across the whole range: its shape and how fast risk rises.
         The RR is one reading from that rule: how much higher the risk is at one concentration than at another.
-        For long-term mortality, WHO and COMEAP use a log-linear CRF, so each extra 10 µg/m³ multiplies risk by the same factor.
-        That shape is described by one number, which is why the reports quote “RR 1.08 per 10 µg/m³” for PM₂.₅.
+        For long-term mortality, WHO, HRAPIE-2 and COMEAP use a log-linear CRF, so each extra 10 µg/m³ multiplies risk by the same factor.
+        That shape is described by one number, which is why the reports quote “RR 1.10 per 10 µg/m³” for PM₂.₅.
         (Cohort studies report hazard ratios; for this purpose they mean the same thing.)
       </p>
       <div class="formula">RR(Δc) = RR₁₀ ^ (Δc ÷ 10)          Δc = annual mean − WHO guideline
 % higher risk = (RR − 1) × 100
 
-Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →  about 3.6% higher</div>
+Worked example · PM₂.₅ 9.6 µg/m³, HRAPIE-2 RR 1.10:  Δc = 4.6  →  1.10^0.46 = 1.045  →  about 4.5% higher</div>
 
-      <h3>The coefficients</h3>
-      <table>
+      <h3>WHO global air quality guidelines (2021)</h3>
+      <div class="report">
+        <div class="report__text">
+          <p>
+            The WHO global air quality guidelines (2021) set the guideline levels the panel compares against. Chapter 3 also quotes a
+            long-term RR for each pollutant from systematic reviews completed in 2020: Chen &amp; Hoek for particles, and Huangfu &amp; Atkinson
+            for NO₂ and ozone. COMEAP’s UK recommendation for PM₂.₅ (2022) uses the same 1.08.
+          </p>
+        </div>
+        <a class="report__cover" href="https://www.who.int/publications/i/item/9789240034228" title="WHO global air quality guidelines (2021)">
+          <img src="images/rr/who-aqg-2021-cover.jpg" alt="Cover of the WHO global air quality guidelines (2021)" width="120" height="180">
+        </a>
+      </div>
+
+      <table class="coef-table">
+        <caption>WHO 2021 RRs</caption>
         <thead>
-          <tr><th>Pollutant</th><th>WHO guideline</th><th>Long-term CRF<br>(RR per 10 µg/m³)</th><th>Certainty</th><th>Source</th></tr>
+          <tr><th>Pollutant</th><th>WHO guideline</th><th>Long-term RR per 10 µg/m³</th><th>Outcome · metric</th><th>Source</th></tr>
         </thead>
         <tbody>
           <tr>
             <td><span class="swatch" style="background:#0387E2"></span>O₃</td>
             <td>60 peak season</td>
             <td class="mono">1.01 (1.00–1.02)</td>
-            <td>Moderate (WHO). COMEAP does not quantify.</td>
-            <td><a href="https://doi.org/10.1016/j.envint.2020.105998">Huangfu &amp; Atkinson 2020</a>, adopted in <a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO 2021 ch. 3</a></td>
+            <td>All non-accidental deaths. Peak-season mean of daily max 8-hour.</td>
+            <td>
+              <q class="src-quote">The systematic review by Huangfu &amp; Atkinson (2020) on ozone and all non-accidental mortality reported a meta-analytic effect estimate of RR = 1.01 (95% CI: 1.00–1.02) per 10 µg/m3 increase in peak-season average of daily maximum 8-hour mean ozone concentrations, assuming a linear relationship.</q>
+              <span class="src-links"><a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO AQG 2021, ch. 3</a> · <a href="https://doi.org/10.1016/j.envint.2020.105998">Huangfu &amp; Atkinson 2020</a></span>
+            </td>
           </tr>
           <tr>
             <td><span class="swatch" style="background:#FF089A"></span>PM₂.₅</td>
             <td>5 annual</td>
             <td class="mono">1.08 (1.06–1.09)</td>
-            <td>High. COMEAP core recommendation.</td>
-            <td><a href="https://doi.org/10.1016/j.envint.2020.105974">Chen &amp; Hoek 2020</a>, <a href="https://www.gov.uk/government/publications/particulate-air-pollution-quantifying-effects-on-mortality">COMEAP 2022</a></td>
+            <td>All non-accidental deaths. Annual mean.</td>
+            <td>
+              <q class="src-quote">The systematic review on PM2.5 and all non-accidental mortality (Chen &amp; Hoek, 2020) reported a meta-analytic effect estimate of RR of 1.08 (95% CI: 1.06–1.09) per 10 µg/m3 PM2.5, assuming a linear relationship.</q>
+              <span class="src-links"><a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO AQG 2021, ch. 3</a> · <a href="https://doi.org/10.1016/j.envint.2020.105974">Chen &amp; Hoek 2020</a> · <a href="https://www.gov.uk/government/publications/particulate-air-pollution-quantifying-effects-on-mortality">COMEAP 2022</a> (also 1.08)</span>
+            </td>
           </tr>
           <tr>
             <td><span class="swatch" style="background:#8000FF"></span>PM₁₀</td>
             <td>15 annual</td>
             <td class="mono">1.04 (1.03–1.06)</td>
-            <td>High, but the mass includes PM₂.₅.</td>
-            <td><a href="https://doi.org/10.1016/j.envint.2020.105974">Chen &amp; Hoek 2020</a>, <a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO 2021 ch. 3</a></td>
+            <td>All non-accidental deaths. Annual mean.</td>
+            <td>
+              <q class="src-quote">The systematic review by Chen &amp; Hoek (2020) on PM10 and all non-accidental mortality reported a meta-analytic effect estimate of RR = 1.04 (95% CI: 1.03–1.06) per 10 µg/m3 PM10, assuming a linear relationship.</q>
+              <span class="src-links"><a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO AQG 2021, ch. 3</a> · <a href="https://doi.org/10.1016/j.envint.2020.105974">Chen &amp; Hoek 2020</a></span>
+            </td>
           </tr>
           <tr>
             <td><span class="swatch" style="background:#EBA602"></span>NO₂</td>
             <td>10 annual</td>
-            <td class="mono">1.023 (1.008–1.037)</td>
-            <td>Moderate. Overlaps the traffic mixture.</td>
-            <td><a href="https://www.gov.uk/government/publications/nitrogen-dioxide-effects-on-mortality">COMEAP 2018</a> (unadjusted); WHO 2021 uses 1.02</td>
+            <td class="mono">1.02 (1.01–1.04)<span class="prev">COMEAP 2018: 1.023</span></td>
+            <td>All non-accidental deaths. Annual mean. Moderate certainty (GRADE).</td>
+            <td>
+              <q class="src-quote">The systematic review by Huangfu &amp; Atkinson (2020) on nitrogen dioxide and all non-accidental mortality reported a meta-analytic effect estimate of RR = 1.02 (95% CI: 1.01–1.04) per 10 µg/m3 nitrogen dioxide, assuming a linear relationship. The certainty of the evidence was considered moderate according to GRADE.</q>
+              <span class="src-links"><a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO AQG 2021, ch. 3</a> · <a href="https://doi.org/10.1016/j.envint.2020.105998">Huangfu &amp; Atkinson 2020</a> · <a href="https://www.gov.uk/government/publications/nitrogen-dioxide-effects-on-mortality">COMEAP 2018</a> (unadjusted 1.023)</span>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3>The HRAPIE-2 update (2025)</h3>
+      <div class="report">
+        <div class="report__text">
+          <p>
+            In November 2025 the WHO Regional Office for Europe published <strong>HRAPIE-2</strong>, its guidance on which CRFs to use for
+            health risk assessment. It commissioned updates of the same reviews “following identical procedures”, graded each
+            pollutant–outcome pair (List A: reliable; List B+: usable with more uncertainty; List B−: not advised), and kept the WHO 2021
+            guideline levels as the point of comparison. Its RRs are higher than WHO 2021’s for PM₂.₅, PM₁₀ and NO₂; for ozone it changes the
+            outcome to respiratory deaths. HRAPIE-2 does not say it replaces the WHO 2021 CRFs, but it is WHO’s most recent advice on which
+            RRs to apply, so this page uses its figures.
+          </p>
+          <div class="quotes">
+            <blockquote class="quote">
+              <p>“For long-term exposures, the evaluation was based on results from commissioned systematic reviews that updated those informing the WHO global air quality guidelines (WHO, 2021), following identical procedures and including further harmonization and updates where necessary.”</p>
+              <cite><a href="https://www.who.int/europe/publications/i/item/9789289062633">WHO Europe, HRAPIE-2 (2025)</a> · §1.2</cite>
+            </blockquote>
+          </div>
+        </div>
+        <a class="report__cover" href="https://www.who.int/europe/publications/i/item/9789289062633" title="HRAPIE-2 (WHO Europe, 2025)">
+          <img src="images/rr/hrapie-2-2025-cover.jpg" alt="Cover of Health risks of air pollution in Europe: HRAPIE-2 project (WHO Europe, 2025)" width="120" height="170">
+        </a>
+      </div>
+
+      <table class="coef-table">
+        <caption>HRAPIE-2 RRs (used on this page)</caption>
+        <thead>
+          <tr><th>Pollutant</th><th>WHO guideline</th><th>Long-term RR per 10 µg/m³</th><th>Outcome · evidence</th><th>Source</th></tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><span class="swatch" style="background:#0387E2"></span>O₃</td>
+            <td>60 peak season</td>
+            <td class="mono">1.05 (1.02–1.08)</td>
+            <td><strong>Respiratory deaths only.</strong> List B+. Derived on the annual mean of daily max 8-hour; applies across 60–95 µg/m³. Applied here to the peak-season value (see <a href="#ozone">ozone</a>).</td>
+            <td>
+              <q class="src-quote">The only association between long-term O3 exposure and mortality proposed for the use in HRAs is between the annual mean O3 and respiratory mortality … Table 7. Proposed RR (95% CI) for a mortality outcome from long-term O3 exposure (annual mean of daily maximum 8-hour means) … Respiratory (non-malignant) · B+ · 1.05 (1.02–1.08) · 60–95</q>
+              <span class="src-links"><a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2 (2025), §2.3.1, Table 7</a> · <a href="https://doi.org/10.3389/ijph.2024.1607676">Kasdagli et al. 2024</a></span>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="swatch" style="background:#FF089A"></span>PM₂.₅</td>
+            <td>5 annual</td>
+            <td class="mono">1.10 (1.06–1.13)</td>
+            <td>Natural (all-cause) deaths. List A. Applies across 5–70 µg/m³.</td>
+            <td>
+              <q class="src-quote">Table 2. Proposed RRs (95% CIs) for mortality outcomes from long-term exposure (annual mean) to PM2.5 … Natural · A00–R99 · A · 1.10 (1.06–1.13) · 5–70</q>
+              <span class="src-links"><a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2 (2025), §2.1.1, Table 2</a> · <a href="https://doi.org/10.3389/ijph.2024.1607683">Orellano et al. 2024</a></span>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="swatch" style="background:#8000FF"></span>PM₁₀</td>
+            <td>15 annual</td>
+            <td class="mono">1.08 (1.05–1.11)</td>
+            <td>Natural deaths. List A, but for use only when PM₂.₅ is unavailable. No percentage on the panel.</td>
+            <td>
+              <q class="src-quote">Table 4. Proposed RRs (95% CIs) for mortality outcomes from long-term exposure (annual mean) to PM10 … Natural · A00–R99 · A · 1.08 (1.05–1.11) · 15–110 … Note: these proposals are to be used only when PM2.5 data are unavailable.</q>
+              <span class="src-links"><a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2 (2025), §2.1.3, Table 4</a> · <a href="https://doi.org/10.3389/ijph.2024.1607683">Orellano et al. 2024</a></span>
+            </td>
+          </tr>
+          <tr>
+            <td><span class="swatch" style="background:#EBA602"></span>NO₂</td>
+            <td>10 annual</td>
+            <td class="mono">1.05 (1.03–1.07)</td>
+            <td>Natural deaths. List A. Applies across 10–130 µg/m³. Overlaps the traffic mixture behind PM₂.₅.</td>
+            <td>
+              <q class="src-quote">Table 5. Proposed RRs (95% CIs) for mortality outcomes from long-term exposure (annual mean) to NO2 to inform an HRA … Natural · A00–R99 · A · 1.05 (1.03–1.07) · 10–130</q>
+              <span class="src-links"><a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2 (2025), §2.2.1, Table 5</a> · <a href="https://doi.org/10.3389/ijph.2024.1607676">Kasdagli et al. 2024</a></span>
+            </td>
           </tr>
         </tbody>
       </table>
 
       <figure class="chart">
         <div class="chart__title">Same multiple, different risk: higher long-term mortality at 1.3× WHO</div>
-        <div class="chart__desc">Each pollutant at 1.3× its guideline, compared with air at the guideline. Read each bar on its own.</div>
+        <div class="chart__desc">Each pollutant at 1.3× its guideline, compared with air at the guideline. Read each bar on its own. Ozone’s bar is respiratory deaths only, so it is not on the same footing as the others.</div>
         <div data-render="chart-risk-13"></div>
-        <div class="chart__source">Computed with the CRFs in the table above, log-linear, counterfactual = WHO guideline. Ozone’s interval reaches zero; COMEAP does not quantify long-term ozone mortality.</div>
+        <div class="chart__source">Computed with the HRAPIE-2 RRs table above, log-linear, counterfactual = WHO guideline. Ozone looks large at 1.3× because its guideline is high (1.3× = +18 µg/m³) and its RR is for respiratory deaths; COMEAP does not quantify long-term ozone mortality.</div>
       </figure>
 
       <figure class="chart">
-        <div class="chart__title">Steepness: higher long-term mortality per extra 1 µg/m³</div>
-        <div class="chart__desc">The ranking a clinician would expect: PM₂.₅ far ahead, ozone last.</div>
+        <div class="chart__title">Concentration–response: higher long-term mortality per extra 1 µg/m³</div>
+        <div class="chart__desc">Per microgram, PM₂.₅ carries about twice the risk of NO₂ or ozone. Ozone’s figure describes respiratory deaths only.</div>
         <div data-render="chart-slope"></div>
-        <div class="chart__source">(RR₁₀^0.1 − 1) × 100 from the coefficients above.</div>
+        <div class="chart__source">(RR₁₀^0.1 − 1) × 100 from the HRAPIE-2 RRs table above.</div>
       </figure>
 
       <h3>Rules that come with the numbers</h3>
       <ul>
-        <li><strong>Compare with the WHO guideline, not with zero.</strong> “+10.7%” means higher than in air at the guideline, which keeps the panel anchored to WHO.</li>
-        <li><strong>Show each pollutant on its own.</strong> COMEAP treats PM₂.₅ as the indicator of the outdoor mixture; NO₂ describes much of the same air and PM₁₀ contains PM₂.₅. Summing the percentages counts the same air more than once.</li>
+        <li><strong>Compare with the WHO guideline, not with zero.</strong> “+13.4%” means higher than in air at the guideline, which keeps the panel anchored to WHO. HRAPIE-2 proposes exactly this: count from the long-term WHO guideline level, because evidence below it is less certain (this “does not indicate that there are no health effects below” the guideline).</li>
+        <li><strong>Show each pollutant on its own.</strong> The RRs come from single-pollutant models, and PM₂.₅, NO₂ and PM₁₀ describe overlapping air. HRAPIE-2 “agrees with the general practice of not adding pollutant-specific attributed estimated cases”, and never assesses PM₂.₅ and PM₁₀ together.</li>
+        <li><strong>If a combined figure is wanted, use HRAPIE-2’s adjusted method.</strong> For natural deaths only, PM₂.₅ and NO₂ can be combined after shrinking each RR for their overlap (Chen et al. 2024): PM₂.₅ 1.0304 per 5 µg/m³, NO₂ 1.0374 per 10 µg/m³, then multiplied. Mock patient: +13.4% and +6.1% separately, but <strong>+13.1% combined</strong>, barely above PM₂.₅ alone. Ozone may be added to either only as a sensitivity analysis.</li>
         <li><strong>Long-term coefficients only.</strong> Short-term (daily) coefficients belong to the Recent and Today panels; see <a href="#timescales">section 8</a>.</li>
-        <li><strong>Population risk, not personal risk.</strong> These are relative risks across a population living with this air. The absolute change depends on the patient’s baseline: +10.7% moves a 2% annual death risk (an older patient) to about 2.2%, and a healthy 30-year-old’s 0.1% to about 0.11%.</li>
-        <li><strong>Linear, no cut-off.</strong> Both WHO and COMEAP calculate log-linearly and continue below the guideline; both note the true curve may be steeper near clean air (see <a href="#pm25">PM₂.₅</a>).</li>
+        <li><strong>Population risk, not personal risk.</strong> These are relative risks across a population living with this air. The absolute change depends on the patient’s baseline: +13.4% moves a 2% annual death risk (an older patient) to about 2.3%, and a healthy 30-year-old’s 0.1% to about 0.11%.</li>
+        <li><strong>Linear within the evidence range.</strong> HRAPIE-2 found “insufficient evidence for a departure from linearity within the applicable exposure ranges” (for example PM₂.₅ 5–70 µg/m³). WHO 2021, COMEAP and the 2024 reviews all note the curve may be steeper near clean air (see <a href="#pm25">PM₂.₅</a>).</li>
       </ul>
 
       <div class="quotes">
+        <blockquote class="quote">
+          <p>“The revised RRs can then be applied to estimate the PAFs for each pollutant in the mixture, and then these PAFs may be summed to estimate the combined effect of PM2.5 and NO2 on natural mortality. The PAF estimate accounts for overlap and avoids the risk of double counting.”</p>
+          <cite><a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2 (2025)</a> · §1.3.4.1 and Annex 1 · method from <a href="https://doi.org/10.1016/j.envres.2024.120215">Chen et al. 2024</a></cite>
+        </blockquote>
         <blockquote class="quote">
           <p>“If mortality effects estimated using this coefficient are added to estimates of mortality effects associated with other pollutants, this will likely give an overestimate of the effects of the pollution mix.”</p>
           <cite><a href="https://assets.publishing.service.gov.uk/media/64fadfdea78c5f0014265847/COMEAP_Quantification_recommendations.pdf">COMEAP summary of quantification recommendations</a> · PM₂.₅ long-term</cite>
@@ -513,7 +656,8 @@ Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →
       </p>
 
       <div class="outcome">
-        <div class="outcome__label">Mock patient · PM₂.₅ 18.2 · PM₁₀ 28.4 · NO₂ 22.1 · O₃ 74.5 (treated as peak season)</div>
+        <div class="outcome__label">Long-term panel: now, Option A and Option B</div>
+        <div class="outcome__desc">Mock patient · PM₂.₅ 18.2 · PM₁₀ 28.4 · NO₂ 22.1 · O₃ 74.5 (treated as peak season) · HRAPIE-2 RRs</div>
         <div class="outcome__grid">
           <div class="outcome__cell">
             <h4>Now · × WHO</h4>
@@ -523,7 +667,7 @@ Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →
           <div class="outcome__cell">
             <h4>Option A · risk scale</h4>
             <div data-render="panel-option-a"></div>
-            <p>Bar height = % higher risk than at the WHO guideline, on one shared scale, with 95% CI whiskers. PM₁₀ sits apart as a split bar against WHO.</p>
+            <p>Bar height = % higher risk than at the WHO guideline, on one shared scale, with 95% CI whiskers. Ozone is hatched because it is respiratory deaths only. PM₁₀ sits apart as a split bar against WHO.</p>
           </div>
           <div class="outcome__cell">
             <h4>Option B · × WHO + risk label</h4>
@@ -534,6 +678,7 @@ Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →
       </div>
 
       <table class="change-table">
+        <caption>How each pollutant’s bar changes</caption>
         <thead>
           <tr><th>Pollutant</th><th>Now</th><th>Proposed</th><th>Why</th></tr>
         </thead>
@@ -541,26 +686,26 @@ Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →
           <tr>
             <td><span class="swatch" style="background:#0387E2"></span>O₃</td>
             <td>Annual mean ÷ 60</td>
-            <td>Peak-season value (Apr–Sep mean of daily max 8-hour) ÷ 60; % higher risk shown hatched as moderate certainty</td>
-            <td>Guideline and CRF are both peak-season metrics; annual mean understates ozone</td>
+            <td>Peak-season value (Apr–Sep mean of daily max 8-hour) ÷ 60; +7.3% higher <em>respiratory</em> mortality (CI 2.9–11.8%), hatched, with a caveat</td>
+            <td>WHO’s guideline is a peak-season metric; annual mean understates ozone. HRAPIE-2’s only long-term ozone RR is for respiratory deaths</td>
           </tr>
           <tr>
             <td><span class="swatch" style="background:#FF089A"></span>PM₂.₅</td>
             <td>3.6×</td>
-            <td>+10.7% higher long-term risk (CI 8.0–12.0%) · lead figure</td>
-            <td>Strongest evidence; COMEAP’s indicator for the outdoor mixture</td>
+            <td>+13.4% higher long-term risk (CI 8.0–17.5%) · lead figure</td>
+            <td>Strongest evidence (List A); COMEAP’s indicator for the outdoor mixture</td>
           </tr>
           <tr>
             <td><span class="swatch" style="background:#8000FF"></span>PM₁₀</td>
             <td>1.9×</td>
             <td>1.9× against WHO, split into PM₂.₅ share and coarse share, labelled “includes PM₂.₅”, no %</td>
-            <td>Its RR is largely its PM₂.₅ content; the coarse part has no agreed long-term RR</td>
+            <td>HRAPIE-2 uses PM₁₀ only when PM₂.₅ is unavailable; the coarse part has no agreed long-term RR</td>
           </tr>
           <tr>
             <td><span class="swatch" style="background:#EBA602"></span>NO₂</td>
             <td>2.2×</td>
-            <td>+2.8% higher long-term risk (CI 1.0–4.5%), shown on its own</td>
-            <td>Moderate evidence; overlaps traffic air already behind PM₂.₅</td>
+            <td>+6.1% higher long-term risk (CI 3.6–8.5%), shown on its own</td>
+            <td>List A; overlaps traffic air already behind PM₂.₅</td>
           </tr>
         </tbody>
       </table>
@@ -573,15 +718,16 @@ Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →
       <div class="section__kicker">4 · Biggest problem</div>
       <h2>Ozone (O₃)</h2>
       <p class="section-intro">
-        Two problems stack up for ozone: we compare the <strong>wrong metric</strong> with the guideline, and its
-        long-term evidence is the <strong>weakest</strong> of the four. The first is fixable with data; the second is a labelling choice.
+        Three things to settle for ozone: which <strong>metric</strong> to compare with the WHO guideline, which <strong>RR</strong> to apply,
+        and how to <strong>caveat</strong> it. WHO 2021 and HRAPIE-2 each use a different ozone metric, so they do not line up neatly.
+        The decision is at the end of this section.
       </p>
 
       <div class="stats">
         <div class="stat"><div class="stat__k">WHO guideline</div><div class="stat__v">60 µg/m³</div><div class="stat__s">peak-season mean of daily max 8-hour</div></div>
-        <div class="stat"><div class="stat__k">Long-term CRF</div><div class="stat__v">1.01</div><div class="stat__s">per 10 µg/m³ (1.00–1.02)</div></div>
-        <div class="stat"><div class="stat__k">Certainty</div><div class="stat__v">Moderate</div><div class="stat__s">WHO; COMEAP does not quantify</div></div>
-        <div class="stat"><div class="stat__k">At 1.3× WHO</div><div class="stat__v">+1.8%</div><div class="stat__s">95% CI 0–3.6%</div></div>
+        <div class="stat"><div class="stat__k">Long-term RR used</div><div class="stat__v">1.05</div><div class="stat__s">respiratory deaths, per 10 µg/m³ (1.02–1.08)</div></div>
+        <div class="stat"><div class="stat__k">Evidence</div><div class="stat__v">List B+</div><div class="stat__s">HRAPIE-2; COMEAP does not quantify</div></div>
+        <div class="stat"><div class="stat__k">Mock patient</div><div class="stat__v">+7.3%</div><div class="stat__s">respiratory · 74.5 peak season · 1.24× WHO</div></div>
       </div>
 
       <h3>Problem 1: an annual mean against a peak-season guideline</h3>
@@ -593,67 +739,130 @@ Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →
       </p>
 
       <figure class="chart">
-        <div class="chart__title">Ozone at two London sites: annual mean vs peak-season value</div>
-        <div class="chart__desc">Same calculation for station and exposure service: 8-hour running mean (≥6 of 8 hours), daily max (≥18 valid 8-hour means), monthly mean (≥75% of days), peak season = mean of the six monthly means Apr–Sep. Exposure service via <code>/coords</code> with <code>weighted=true</code>.</div>
+        <div class="chart__title">Ozone at two London sites: three metrics</div>
+        <div class="chart__desc">Same calculation for station and exposure service: 8-hour running mean (≥6 of 8 hours), daily max (≥18 valid 8-hour means), monthly mean (≥75% of days), peak season = mean of the six monthly means Apr–Sep. HRAPIE-2’s metric = mean of all valid daily max 8-hour values in the year (station only). Exposure service via <code>/coords</code> with <code>weighted=true</code>.</div>
         <div data-render="chart-o3-sites"></div>
         <div class="chart__source">Stations: AURN HP1 and MY1 (2025); Honor Oak Park 2022 from Imperial / London Air (AURN has no 2022 ozone there; September fails the 75% rule, 81.3 pooled). Annual map: LAEI 2022.</div>
       </figure>
 
       <table>
+        <caption>Ozone against WHO’s 60 at two London sites, by metric</caption>
         <thead>
-          <tr><th>Site and year</th><th class="num">Map ÷ 60<br>(now)</th><th class="num">Exposure-service<br>peak ÷ 60</th><th class="num">Station<br>peak ÷ 60</th></tr>
+          <tr><th>Site and year</th><th class="num">Map ÷ 60<br>(now)</th><th class="num">Station annual<br>daily max 8-hour ÷ 60</th><th class="num">Exposure-service<br>peak ÷ 60</th><th class="num">Station<br>peak ÷ 60</th></tr>
         </thead>
         <tbody>
-          <tr><td>Honor Oak Park 2025 · background</td><td class="num">0.77×</td><td class="num">1.30×</td><td class="num">1.42×</td></tr>
-          <tr><td>Marylebone Road 2025 · roadside</td><td class="num">0.57×</td><td class="num">1.10×</td><td class="num">0.89×</td></tr>
-          <tr><td>Honor Oak Park 2022 · background</td><td class="num">0.77×</td><td class="num">1.18×</td><td class="num">≈1.35×</td></tr>
-          <tr><td>Marylebone Road 2022 · roadside</td><td class="num">0.57×</td><td class="num">0.98×</td><td class="num">0.82×</td></tr>
+          <tr><td>Honor Oak Park 2025 · background</td><td class="num">0.77×</td><td class="num">1.23×</td><td class="num">1.30×</td><td class="num">1.42×</td></tr>
+          <tr><td>Marylebone Road 2025 · roadside</td><td class="num">0.57×</td><td class="num">0.77×</td><td class="num">1.10×</td><td class="num">0.89×</td></tr>
+          <tr><td>Honor Oak Park 2022 · background</td><td class="num">0.77×</td><td class="num">1.14×</td><td class="num">1.18×</td><td class="num">≈1.35×</td></tr>
+          <tr><td>Marylebone Road 2022 · roadside</td><td class="num">0.57×</td><td class="num">0.67×</td><td class="num">0.98×</td><td class="num">0.82×</td></tr>
         </tbody>
       </table>
       <ul>
         <li>Peak season ran about <strong>1.5–1.7× the annual mean of hours</strong> at both sites in both years.</li>
+        <li>HRAPIE-2’s metric, the annual mean of daily max 8-hour, sits in between: about 1.3–1.4× the annual mean of hours and <strong>15–20% below peak season</strong>.</li>
         <li>The exposure service tracks the background station closely (hourly r ≈ 0.95–0.97) but reads summer peaks 7–10 µg/m³ low there. At the roadside it reads 10–12 µg/m³ high (r ≈ 0.8), which in 2025 puts Marylebone Road over the guideline when the station is under.</li>
         <li>Always request with <code>weighted=true</code> (bilinear interpolation). Without it the service returns the grid-cell value regardless of position in the cell.</li>
       </ul>
 
-      <h3>Problem 2: the weakest long-term evidence</h3>
+      <h3>Problem 2: what the evidence now says</h3>
       <p>
-        WHO’s long-term ozone CRF is built on <strong>peak-season</strong> exposure; studies using an annual-mean metric
-        found no association with all-cause mortality. That is a second reason the annual mean is the wrong input.
-        A 2024 update of the WHO review widened the peak-season interval to include no effect and rated it low certainty.
+        WHO 2021 adopted a peak-season RR of 1.01 for all-cause deaths (moderate certainty). The 2024 update of that review
+        (Kasdagli et al.) found no statistically significant long-term link between ozone and all-cause deaths on either metric, and rated
+        the peak-season result low certainty. HRAPIE-2 therefore proposes <strong>no long-term ozone RR for all-cause deaths, and none on a
+        peak-season metric</strong>. The one pair it proposes is <strong>annual ozone and respiratory deaths: 1.05 (1.02–1.08), List B+</strong>,
+        from six cohorts, mostly in the United States. The peak-season results were pulled towards no effect mainly by a Canadian cohort and the
+        European ELAPSE study; the United States studies alone gave 1.03 (1.01–1.04) for peak season and respiratory deaths, which HRAPIE-2 noted but did not propose.
       </p>
 
       <figure class="chart">
-        <div class="chart__title">Long-term ozone and all-cause mortality, by exposure metric</div>
-        <div class="chart__desc">Meta-analytic relative risk per 10 µg/m³ with 95% CI. Larger marker = coefficient WHO 2021 adopted.</div>
+        <div class="chart__title">Long-term ozone and mortality: what WHO 2021 and HRAPIE-2 assessed</div>
+        <div class="chart__desc">Meta-analytic relative risk per 10 µg/m³ with 95% CI. Larger marker = the only long-term ozone RR HRAPIE-2 proposes.</div>
         <div data-render="chart-o3-forest"></div>
-        <div class="chart__source"><a href="https://doi.org/10.1016/j.envint.2020.105998">Huangfu &amp; Atkinson 2020</a>, Environ Int 144:105998. <a href="https://doi.org/10.3389/ijph.2024.1607676">Kasdagli et al. 2024</a>, Int J Public Health 69:1607676 (update of the WHO review for HRAPIE-2).</div>
+        <div class="chart__source"><a href="https://doi.org/10.1016/j.envint.2020.105998">Huangfu &amp; Atkinson 2020</a> (WHO 2021). <a href="https://doi.org/10.3389/ijph.2024.1607676">Kasdagli et al. 2024</a>, Table 2, as graded in <a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2</a> §2.3.1 and Annex 2, Table A2.4.</div>
+      </figure>
+
+      <h3>WHO’s peak season vs HRAPIE-2’s annual metric</h3>
+      <p>
+        HRAPIE-2 asks for the <strong>annual mean of daily maximum 8-hour means</strong> “since this was the most-used metric in the original studies”.
+        It also counts from “the relevant long-term AQG level”, and its ozone range starts at 60. But 60 is WHO’s <strong>peak-season</strong>
+        guideline. HRAPIE-2 therefore measures an annual metric against a peak-season number, and does not comment on it.
+        Because the annual metric runs 15–20% below peak season, the choice changes the answer:
+      </p>
+      <table>
+        <caption>Honor Oak Park 2025: how the ozone metric changes the result</caption>
+        <thead>
+          <tr><th>Honor Oak Park 2025</th><th class="num">µg/m³</th><th class="num">× WHO 60</th><th class="num">Higher respiratory mortality<br>(RR 1.05)</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>Station annual mean of daily max 8-hour (HRAPIE-2’s metric)</td><td class="num">74.0</td><td class="num">1.23×</td><td class="num">+7.1%</td></tr>
+          <tr><td>Exposure-service peak season (what the panel would use)</td><td class="num">77.8</td><td class="num">1.30×</td><td class="num">+9.1%</td></tr>
+          <tr><td>Station peak season (WHO’s metric, reference)</td><td class="num">85.0</td><td class="num">1.42×</td><td class="num">+13.0%</td></tr>
+        </tbody>
+      </table>
+      <p>
+        What the six studies behind 1.05 measured: the two largest, Turner 2016 and Lim 2019 (70% of the weight), used the annual mean of daily
+        max 8-hour, as did a small Korean cohort; the other three used year-round monthly, 24-hour or hourly averages. Both large cohorts also reported a <strong>warm-season</strong>
+        result for respiratory deaths, and the slope per 10 µg/m³ was similar. That supports carrying the RR over to a peak-season value;
+        what changes is how far above 60 a patient sits.
+      </p>
+
+      <figure class="chart">
+        <div class="chart__title">Same cohorts, two metrics: respiratory deaths per 10 µg/m³</div>
+        <div class="chart__desc">The two cohorts that carry 70% of HRAPIE-2’s 1.05, each reported on an annual and a warm-season (April–September) metric.</div>
+        <div data-render="chart-o3-cohorts"></div>
+        <div class="chart__source">All four values: Kasdagli et al. 2024 Data Sheet 1, reported per 10 ppb and converted here with the UK / EC factor for ozone, 1 ppb = 1.9957 µg/m³ at 20 °C (<a href="https://uk-air.defra.gov.uk/reports/cat06/0502160851_Conversion_Factors_Between_ppb_and.pdf">Defra conversion factors</a>). Kasdagli and HRAPIE-2 use the WHO factor, 1.96 at 25 °C; the difference changes these RRs by under 0.002. <a href="https://doi.org/10.1164/rccm.201508-1633OC">Turner et al. 2016</a>; <a href="https://doi.org/10.1164/rccm.201806-1161OC">Lim et al. 2019</a>.</div>
       </figure>
 
       <div class="quotes">
+        <blockquote class="quote">
+          <p>“For an HRA long-term exposure to O3, the group suggests using the annual mean of the daily maximum 8-hour means, since this was the most-used metric in the original studies that informed the RR.”</p>
+          <cite><a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2 (2025)</a> · §1.3.2.2, choice of O₃ metric</cite>
+        </blockquote>
+        <blockquote class="quote">
+          <p>“The only association between long-term O3 exposure and mortality proposed for the use in HRAs is between the annual mean O3 and respiratory mortality … The RR for this association (assigned to List B+) was the only one among those assessed for O3 (annual or warm/peak season and with more than two contributing studies) that reached statistical significance following the meta-analyses.”</p>
+          <cite><a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2 (2025)</a> · §2.3.1</cite>
+        </blockquote>
+        <blockquote class="quote">
+          <p>“All assessed associations between long-term exposure to warm/peak season O3 and mortality outcomes (natural, respiratory, COPD and ALRI) were assigned to List B-.”</p>
+          <cite><a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2 (2025)</a> · §2.3.1</cite>
+        </blockquote>
+        <blockquote class="quote">
+          <p>“While a study reported an association between annual O3 and respiratory mortality in the WHO European Region, the RR was &lt; 1 … Hence, any assessment for the Region would largely rely on the results from other WHO regions.”</p>
+          <cite><a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2 (2025)</a> · §2.3.1</cite>
+        </blockquote>
         <blockquote class="quote">
           <p>“The peak season is defined as the six consecutive months of the year with the highest six-month running-average ozone concentration.”</p>
           <cite><a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO AQG 2021, ch. 3</a> · ozone, peak season</cite>
         </blockquote>
         <blockquote class="quote">
-          <p>“RR = 1.01 (95% CI: 1.00–1.02) per 10 µg/m3 increase in peak-season average of daily maximum 8-hour mean ozone concentrations, assuming a linear relationship … The certainty of the evidence was considered moderate according to GRADE.”</p>
-          <cite><a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO AQG 2021, ch. 3</a> · ozone, long-term</cite>
-        </blockquote>
-        <blockquote class="quote">
-          <p>“Studies of O3 using annual metrics showed the associations with all-cause and respiratory mortality were 0.97 (0.93, 1.02) and 0.99 (0.89, 1.11) per 10 μg/m3 respectively. For studies using peak O3 metrics, the association with all-cause mortality was 1.01 (1.00, 1.02).”</p>
-          <cite><a href="https://doi.org/10.1016/j.envint.2020.105998">Huangfu &amp; Atkinson 2020</a> · abstract</cite>
+          <p>“The situation is more complicated for O3, where the evidence for short-term exposure is stronger than for long-term exposure and different health outcomes are proposed in each case.”</p>
+          <cite><a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2 (2025)</a> · §1.3.4.1</cite>
         </blockquote>
         <blockquote class="quote">
           <p>“A systematic review and quantitative assessment of the evidence from cohort studies suggested no association between long-term annual ozone concentrations and mortality … and therefore quantification is not recommended.”</p>
-          <cite><a href="https://www.gov.uk/government/publications/comeap-quantification-of-mortality-and-hospital-admissions-associated-with-ground-level-ozone">COMEAP 2015 ozone report</a> · Q9</cite>
+          <cite><a href="https://www.gov.uk/government/publications/comeap-quantification-of-mortality-and-hospital-admissions-associated-with-ground-level-ozone">COMEAP 2015 ozone report</a> · Q9 (UK view, before the 2024 review)</cite>
         </blockquote>
       </div>
 
+      <div class="callout callout--key">
+        <p><strong>Decision (9 October 2026).</strong></p>
+        <ul class="decided">
+          <li><strong>Metric:</strong> calculate the peak-season value (April–September mean of daily max 8-hour) and compare it with WHO’s 60, so the bar matches WHO’s own definition of the guideline.</li>
+          <li><strong>RR:</strong> apply HRAPIE-2’s 1.05 (1.02–1.08) to the excess above 60, labelled as higher <em>respiratory</em> mortality.</li>
+          <li><strong>Caveat, shown with the figure:</strong> respiratory deaths only, so it is read beside PM₂.₅ and NO₂ rather than ranked against them; the RR was derived on the annual mean of daily max 8-hour, so a peak-season input gives a higher figure than HRAPIE-2’s own metric would (Honor Oak Park 2025: +9.1% vs +7.1%); List B+, mostly United States evidence.</li>
+        </ul>
+        <p>Suggested wording: <em>“Higher long-term risk of respiratory death, using WHO Europe’s 2025 estimate, which is less certain than for the other pollutants. Based on April–September ozone, the period WHO’s guideline uses.”</em></p>
+      </div>
+
       <h3>How the ozone bar changes</h3>
-      <div data-render="mini-o3"></div>
+      <figure class="chart">
+        <div class="chart__title">Ozone bar at Honor Oak Park 2025: now, proposed and reference</div>
+        <div data-render="mini-o3"></div>
+      </figure>
       <ul>
         <li><strong>Input:</strong> a peak-season value. Either from the hourly nowcast (about 26 weekly <code>/coords</code> requests per address for one April–September), or, better, a peak-season map layer from the exposure service.</li>
-        <li><strong>Label:</strong> hatched and marked “moderate certainty”, the weakest of the long-term estimates.</li>
+        <li><strong>Label:</strong> “× WHO” on the bar, “+x% respiratory” as the risk figure, hatched, with the caveat above.</li>
+        <li><strong>Ozone’s main health message stays short-term.</strong> Short-term ozone and deaths is List A in HRAPIE-2 (1.0018 per 10 µg/m³, daily max 8-hour); that belongs to the Recent and Today panels.</li>
         <li><strong>Until a peak-season value exists:</strong> the current bar understates ozone. Options are to hide it, grey it out, or keep it with a caveat (see <a href="#decisions">decisions</a>).</li>
       </ul>
     </section>
@@ -668,27 +877,36 @@ Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →
 
       <div class="stats">
         <div class="stat"><div class="stat__k">WHO guideline</div><div class="stat__v">5 µg/m³</div><div class="stat__s">annual mean</div></div>
-        <div class="stat"><div class="stat__k">Long-term CRF</div><div class="stat__v">1.08</div><div class="stat__s">per 10 µg/m³ (1.06–1.09)</div></div>
-        <div class="stat"><div class="stat__k">Certainty</div><div class="stat__v">High</div><div class="stat__s">WHO; COMEAP core</div></div>
-        <div class="stat"><div class="stat__k">Mock patient</div><div class="stat__v">+10.7%</div><div class="stat__s">18.2 µg/m³ · 3.6× WHO</div></div>
+        <div class="stat"><div class="stat__k">Long-term RR</div><div class="stat__v">1.10</div><div class="stat__s">per 10 µg/m³ (1.06–1.13) · HRAPIE-2</div></div>
+        <div class="stat"><div class="stat__k">Evidence</div><div class="stat__v">List A</div><div class="stat__s">HRAPIE-2; WHO 2021 and COMEAP used 1.08</div></div>
+        <div class="stat"><div class="stat__k">Mock patient</div><div class="stat__v">+13.4%</div><div class="stat__s">18.2 µg/m³ · 3.6× WHO</div></div>
       </div>
 
       <h3>Is the curve linear?</h3>
       <p>
-        Under the method WHO and COMEAP use, almost exactly: +5 µg/m³ above the guideline ≈ +3.9%, +10 ≈ +8.0%, +20 ≈ +16.6%.
-        Both bodies note the evidence leans <strong>supralinear</strong> (steeper per microgram near clean air), and neither has adopted a
-        non-linear curve. If the supralinear reading is right, the official method slightly understates the difference between
+        Under the log-linear method, almost exactly: +5 µg/m³ above the guideline ≈ +4.9%, +10 ≈ +10.0%, +20 ≈ +21.0%.
+        HRAPIE-2 found no evidence of a departure from linearity within 5–70 µg/m³. WHO 2021, COMEAP and the 2024 review all note the
+        evidence leans <strong>supralinear</strong> (steeper per microgram near clean air), and none has adopted a non-linear curve.
+        If the supralinear reading is right, the log-linear method slightly understates the difference between
         “just over the guideline” and “at the guideline”, which is where most UK addresses sit.
+      </p>
+      <p>
+        HRAPIE-2’s 1.10 comes from the 2024 update of the review behind WHO 2021’s 1.08 (Orellano et al. 2024), with studies published since 2018 added.
+        COMEAP (2022) recommends 1.08 for UK quantification.
       </p>
 
       <figure class="chart">
-        <div class="chart__title">PM₂.₅ long-term CRF: higher all-cause mortality vs air at the WHO guideline</div>
-        <div class="chart__desc">Log-linear curve used by WHO and COMEAP, with its 95% CI. The dashed line is an illustrative supralinear shape, drawn to meet the official curve at 25 µg/m³.</div>
+        <div class="chart__title">PM₂.₅ long-term CRF: higher natural mortality vs air at the WHO guideline</div>
+        <div class="chart__desc">Log-linear curve with HRAPIE-2’s RR and its 95% CI. The dashed line is an illustrative supralinear shape, drawn to meet the log-linear curve at 25 µg/m³.</div>
         <div data-render="chart-pm25-curve"></div>
-        <div class="chart__source">CRF 1.08 (1.06–1.09) per 10 µg/m³: <a href="https://doi.org/10.1016/j.envint.2020.105974">Chen &amp; Hoek 2020</a>, adopted by <a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO 2021</a> and <a href="https://www.gov.uk/government/publications/particulate-air-pollution-quantifying-effects-on-mortality">COMEAP 2022</a>. Dashed curve is for illustration only and is not a published function.</div>
+        <div class="chart__source">RR 1.10 (1.06–1.13) per 10 µg/m³: <a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2</a> Table 2, from <a href="https://doi.org/10.3389/ijph.2024.1607683">Orellano et al. 2024</a>. Previously 1.08 (1.06–1.09): <a href="https://doi.org/10.1016/j.envint.2020.105974">Chen &amp; Hoek 2020</a>, adopted by <a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO 2021</a> and <a href="https://www.gov.uk/government/publications/particulate-air-pollution-quantifying-effects-on-mortality">COMEAP 2022</a>. Dashed curve is for illustration only and is not a published function.</div>
       </figure>
 
       <div class="quotes">
+        <blockquote class="quote">
+          <p>“The systematic reviews of long-term exposure to air pollutants and mortality outcomes concluded that there is insufficient evidence for a departure from linearity within the applicable exposure ranges.”</p>
+          <cite><a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2 (2025)</a> · §1.3.7 shape of the CRF</cite>
+        </blockquote>
         <blockquote class="quote">
           <p>“RR of 1.08 (95% CI: 1.06–1.09) per 10 µg/m3 PM2.5, assuming a linear relationship. The authors found an indication of a supralinear relationship, suggesting a steeper risk increase at lower exposure levels.”</p>
           <cite><a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO AQG 2021, ch. 3</a> · PM₂.₅ long-term</cite>
@@ -708,20 +926,24 @@ Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →
       </div>
 
       <h3>How the PM₂.₅ bar changes</h3>
-      <div data-render="mini-pm25"></div>
+      <figure class="chart">
+        <div class="chart__title">PM₂.₅ bar for the mock patient: now, Option A and Option B</div>
+        <div data-render="mini-pm25"></div>
+      </figure>
     </section>
 
     <section class="section section--pollutant" id="pm10" style="--accent:#8000FF;--accent-text:#6a00d4">
       <div class="section__kicker">6 · Contains PM₂.₅</div>
       <h2>PM₁₀</h2>
       <p class="section-intro">
-        PM₁₀ has its own published RR because many older cohorts only measured PM₁₀, but that RR is largely its fine (PM₂.₅) content.
+        PM₁₀ has its own published RR because many older cohorts only measured PM₁₀, but most of that RR is its fine (PM₂.₅) content.
+        HRAPIE-2 is explicit: use PM₂.₅ whenever it is available, and do not assess both in the same assessment.
         Proposed treatment: group “particles” together, keep PM₁₀ against its guideline as a split bar, and give it no percentage of its own.
       </p>
 
       <div class="stats">
         <div class="stat"><div class="stat__k">WHO guideline</div><div class="stat__v">15 µg/m³</div><div class="stat__s">annual mean</div></div>
-        <div class="stat"><div class="stat__k">Long-term CRF</div><div class="stat__v">1.04</div><div class="stat__s">per 10 µg/m³ (1.03–1.06)</div></div>
+        <div class="stat"><div class="stat__k">Long-term RR</div><div class="stat__v">1.08</div><div class="stat__s">per 10 µg/m³ (1.05–1.11) · HRAPIE-2, only if no PM₂.₅</div></div>
         <div class="stat"><div class="stat__k">Fine share (UK)</div><div class="stat__v">≈65%</div><div class="stat__s">mock patient 18.2 of 28.4</div></div>
         <div class="stat"><div class="stat__k">Coarse share RR</div><div class="stat__v">None agreed</div><div class="stat__s">mainly short-term, airways</div></div>
       </div>
@@ -734,13 +956,17 @@ Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →
       </figure>
 
       <figure class="chart">
-        <div class="chart__title">PM₁₀’s RR is explained by the PM₂.₅ it contains</div>
-        <div class="chart__desc">10 µg/m³ of UK PM₁₀ carries roughly 6–7 µg/m³ of PM₂.₅; applying the PM₂.₅ CRF to that share gives about the same RR as PM₁₀’s own.</div>
+        <div class="chart__title">PM₁₀’s RR and the PM₂.₅ it contains</div>
+        <div class="chart__desc">10 µg/m³ of UK PM₁₀ carries roughly 6–7 µg/m³ of PM₂.₅; applying the PM₂.₅ RR to that share accounts for most of PM₁₀’s own RR. The intervals overlap; any extra from the coarse share has only “suggestive” causal evidence, which is why HRAPIE-2 prefers PM₂.₅.</div>
         <div data-render="chart-pm10-forest"></div>
-        <div class="chart__source">PM₁₀ and PM₂.₅ CRFs: <a href="https://doi.org/10.1016/j.envint.2020.105974">Chen &amp; Hoek 2020</a>. A coarse-fraction RR cannot be derived by subtracting the two coefficients.</div>
+        <div class="chart__source">PM₁₀ and PM₂.₅ RRs: <a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2</a> Tables 2 and 4 (<a href="https://doi.org/10.3389/ijph.2024.1607683">Orellano et al. 2024</a>); WHO 2021 from <a href="https://doi.org/10.1016/j.envint.2020.105974">Chen &amp; Hoek 2020</a>. A coarse-fraction RR cannot be derived by subtracting the two coefficients.</div>
       </figure>
 
       <div class="quotes">
+        <blockquote class="quote">
+          <p>“While the document development group agreed to provide guidance for mortality outcomes resulting from long-term exposure to both PM2.5 and PM10, it proposed not to assess the effects of both particle fractions (PM2.5 and PM10) in a single HRA, and to use the proposed association for PM10 only [when] PM2.5 concentration data are unavailable. This is based on the United States Environmental Protection Agency (US EPA) (certain or likely) causality assessment for PM2.5 … which was stronger than the suggestive causality for the coarse fraction of PM10, that is PM10–2.5.”</p>
+          <cite><a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2 (2025)</a> · §1.3.2.1</cite>
+        </blockquote>
         <blockquote class="quote">
           <p>“The systematic review by Chen &amp; Hoek (2020) on PM10 and all non-accidental mortality reported a meta-analytic effect estimate of RR = 1.04 (95% CI: 1.03–1.06) per 10 µg/m3 PM10, assuming a linear relationship.”</p>
           <cite><a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO AQG 2021, ch. 3</a> · PM₁₀ long-term</cite>
@@ -752,7 +978,10 @@ Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →
       </div>
 
       <h3>How the PM₁₀ bar changes</h3>
-      <div data-render="mini-pm10"></div>
+      <figure class="chart">
+        <div class="chart__title">PM₁₀ bar for the mock patient: now and proposed</div>
+        <div data-render="mini-pm10"></div>
+      </figure>
       <ul>
         <li>Keep PM₁₀ on the panel: clinicians and regulators expect it, and the coarse share matters for respiratory patients.</li>
         <li>The coarse share’s relevance is short-term (airways, asthma and COPD flare-ups), which the Recent and Today panels cover.</li>
@@ -763,29 +992,31 @@ Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →
       <div class="section__kicker">7 · Overlaps the traffic mixture</div>
       <h2>NO₂</h2>
       <p class="section-intro">
-        A moderate long-term association that largely describes the same traffic air as PM₂.₅. It reads as more serious than it is under
-        “× WHO” (2.2×, above PM₁₀) because its guideline is low and its CRF is shallow. The main open question is which coefficient to use.
+        A long-term association that largely describes the same traffic air as PM₂.₅. It reads as more serious than it is under
+        “× WHO” (2.2×, above PM₁₀) because its guideline is low. HRAPIE-2 settles the coefficient question at 1.05 (List A),
+        and gives an adjusted figure for when NO₂ is combined with PM₂.₅.
       </p>
 
       <div class="stats">
         <div class="stat"><div class="stat__k">WHO guideline</div><div class="stat__v">10 µg/m³</div><div class="stat__s">annual mean</div></div>
-        <div class="stat"><div class="stat__k">Long-term CRF (used)</div><div class="stat__v">1.023</div><div class="stat__s">COMEAP unadjusted (1.008–1.037)</div></div>
-        <div class="stat"><div class="stat__k">Certainty</div><div class="stat__v">Moderate</div><div class="stat__s">WHO 2021</div></div>
-        <div class="stat"><div class="stat__k">Mock patient</div><div class="stat__v">+2.8%</div><div class="stat__s">22.1 µg/m³ · 2.2× WHO</div></div>
+        <div class="stat"><div class="stat__k">Long-term RR</div><div class="stat__v">1.05</div><div class="stat__s">per 10 µg/m³ (1.03–1.07) · HRAPIE-2</div></div>
+        <div class="stat"><div class="stat__k">Evidence</div><div class="stat__v">List A</div><div class="stat__s">HRAPIE-2; WHO 2021 used 1.02</div></div>
+        <div class="stat"><div class="stat__k">Mock patient</div><div class="stat__v">+6.1%</div><div class="stat__s">22.1 µg/m³ · 2.2× WHO</div></div>
       </div>
 
       <h3>Which coefficient?</h3>
       <p>
-        COMEAP’s unadjusted 1.023 describes NO₂ as a marker of the traffic mixture. COMEAP judged that only 25–55% of it is NO₂ itself,
-        giving 1.006–1.013 for policies that cut NO₂ alone. A 2024 update of the WHO review found a larger pooled RR of 1.05.
-        The choice moves the mock patient between about +0.7% and +6%.
+        HRAPIE-2’s 1.05 comes from the 2024 update of the WHO review (Kasdagli et al.), which added studies published since 2018 to the review behind WHO 2021’s 1.02.
+        COMEAP’s unadjusted 1.023 (2018) describes NO₂ as a marker of the traffic mixture; COMEAP judged that only 25–55% of it is NO₂ itself,
+        giving 1.006–1.013 for policies that cut NO₂ alone. HRAPIE-2 handles the same overlap differently: shown on its own, NO₂ uses 1.05;
+        combined with PM₂.₅, it drops to 1.0374. The choice moves the mock patient between about +0.7% and +6%.
       </p>
 
       <figure class="chart">
         <div class="chart__title">Mock patient NO₂ (22.1 µg/m³): higher long-term mortality under each published coefficient</div>
         <div class="chart__desc">Compared with air at the WHO guideline (10 µg/m³). Darker bar = coefficient used on this page.</div>
         <div data-render="chart-no2-options"></div>
-        <div class="chart__source"><a href="https://www.gov.uk/government/publications/nitrogen-dioxide-effects-on-mortality">COMEAP 2018</a>; <a href="https://doi.org/10.1016/j.envint.2020.105998">Huangfu &amp; Atkinson 2020</a> (WHO 2021); <a href="https://doi.org/10.3389/ijph.2024.1607676">Kasdagli et al. 2024</a>.</div>
+        <div class="chart__source"><a href="https://www.gov.uk/government/publications/nitrogen-dioxide-effects-on-mortality">COMEAP 2018</a>; <a href="https://doi.org/10.1016/j.envint.2020.105998">Huangfu &amp; Atkinson 2020</a> (WHO 2021); <a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2</a> Table 5 and Annex 1 (<a href="https://doi.org/10.3389/ijph.2024.1607676">Kasdagli et al. 2024</a>; <a href="https://doi.org/10.1016/j.envres.2024.120215">Chen et al. 2024</a>).</div>
       </figure>
 
       <div class="quotes">
@@ -800,7 +1031,10 @@ Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →
       </div>
 
       <h3>How the NO₂ bar changes</h3>
-      <div data-render="mini-no2"></div>
+      <figure class="chart">
+        <div class="chart__title">NO₂ bar for the mock patient: now, Option A and Option B</div>
+        <div data-render="mini-no2"></div>
+      </figure>
       <p>
         NO₂’s short-term effects on asthma are well established; that is what the Recent and Today panels show with DAQI.
         The Long-term bar stays on the long-term coefficient.
@@ -818,28 +1052,36 @@ Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →
         and describe a different question, so they stay with the Recent and Today panels and the DAQI scale.
       </p>
       <table>
+        <caption>Long-term and short-term HRAPIE-2 RRs, by panel</caption>
         <thead>
           <tr><th>Pollutant</th><th>Long-term (Long-term panel)</th><th>Short-term (Recent / Today)</th></tr>
         </thead>
         <tbody>
-          <tr><td>O₃</td><td>1.01 per 10 µg/m³ peak season · newer evidence, moderate</td><td>1.0043 per 10 µg/m³ daily max 8-hour · well established</td></tr>
-          <tr><td>PM₂.₅</td><td>1.08 per 10 µg/m³ annual · lead signal, high</td><td>1.0065 per 10 µg/m³ daily</td></tr>
-          <tr><td>PM₁₀</td><td>1.04 per 10 µg/m³ annual · mostly its PM₂.₅</td><td>1.0041 per 10 µg/m³ daily · coarse share mainly short-term respiratory</td></tr>
-          <tr><td>NO₂</td><td>1.023 per 10 µg/m³ annual · moderate, overlaps traffic air</td><td>1.0072 per 10 µg/m³ daily · asthma effects well established</td></tr>
+          <tr><td>O₃</td><td>1.05 per 10 µg/m³ · respiratory deaths, List B+ · applied to peak season</td><td>1.0018 per 10 µg/m³ daily max 8-hour · natural deaths, List A · stronger evidence than long-term</td></tr>
+          <tr><td>PM₂.₅</td><td>1.10 per 10 µg/m³ annual · lead signal, List A</td><td>1.0068 per 10 µg/m³ 24-hour · List A</td></tr>
+          <tr><td>PM₁₀</td><td>1.08 per 10 µg/m³ annual · only if no PM₂.₅</td><td>No mortality RR proposed · coarse share mainly short-term respiratory</td></tr>
+          <tr><td>NO₂</td><td>1.05 per 10 µg/m³ annual · List A, overlaps traffic air</td><td>1.0046 per 10 µg/m³ 24-hour · List A · asthma effects well established</td></tr>
         </tbody>
       </table>
-      <p class="chart__source">Short-term all-cause mortality coefficients: <a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">WHO AQG 2021, ch. 3</a> (Orellano et al. 2020).</p>
+      <p class="chart__source">All figures natural (all-cause) mortality unless stated, from <a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2</a> Tables 2–8; short-term values from the Multi-Country Multi-City network analyses. HRAPIE-2 also gives short-term hospital-admission RRs (taken from COMEAP 2022).</p>
     </section>
 
     <section class="section" id="decisions">
       <div class="section__kicker">9 · For discussion</div>
       <h2>Decisions needed</h2>
+      <h3>Decided</h3>
+      <ul class="decided">
+        <li><strong>RRs:</strong> WHO Europe HRAPIE-2 (2025) for all four pollutants, with WHO 2021 shown for reference.</li>
+        <li><strong>Ozone:</strong> peak-season value against WHO’s 60; HRAPIE-2’s 1.05 applied to it as higher respiratory mortality, with the caveat set out in <a href="#ozone">section 4</a>.</li>
+      </ul>
+      <h3>Still open</h3>
       <ol>
         <li><strong>Panel format.</strong> Option A (risk scale), Option B (× WHO with a risk label), or lead with µg/m³ and keep relative risk on this page only?</li>
         <li><strong>Ozone input.</strong> Hourly nowcast per patient (about 26 requests per address), or ask for a peak-season map layer from the exposure service?</li>
         <li><strong>Ozone until then.</strong> Hide, grey out, or keep the current bar with a caveat?</li>
         <li><strong>PM₁₀.</strong> Split fine/coarse bar as shown, or a note under PM₂.₅?</li>
-        <li><strong>NO₂ coefficient.</strong> COMEAP unadjusted 1.023 (traffic mixture), WHO 1.02, COMEAP NO₂-alone 1.006–1.013, or the 2024 update’s 1.05?</li>
+        <li><strong>Combined figure.</strong> Show only separate percentages, or add HRAPIE-2’s adjusted PM₂.₅ + NO₂ figure (+13.1% for the mock patient)?</li>
+        <li><strong>UK alignment.</strong> COMEAP still recommends 1.08 for PM₂.₅ and has not quantified long-term ozone. Note the difference on the panel, or only on this page?</li>
         <li><strong>Absolute risk.</strong> Is a clinician-facing example by age band wanted, or does that go beyond a population relative risk?</li>
       </ol>
       <div class="callout callout--key">
@@ -851,6 +1093,7 @@ Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →
       <div class="section__kicker">Sources</div>
       <h2>Documents and data</h2>
       <ul class="refs">
+        <li>WHO Regional Office for Europe (2025). <a href="https://www.who.int/europe/publications/i/item/9789289062633">Health risks of air pollution in Europe: HRAPIE-2 project. Updated guidance on concentration–response functions for health risk assessment of air pollution in the WHO European Region</a>. ISBN 9789289062633. RRs used on this page: Tables 2, 4, 5 and 7; combining pollutants: §1.3.4 and Annex 1.</li>
         <li>WHO (2021). <a href="https://www.who.int/publications/i/item/9789240034228">WHO global air quality guidelines: PM₂.₅ and PM₁₀, ozone, nitrogen dioxide, sulfur dioxide and carbon monoxide</a>. Chapter 3 online: <a href="https://www.ncbi.nlm.nih.gov/books/NBK574591/">Recommendations on classical air pollutants</a>. Full PDF: <a href="https://iris.who.int/handle/10665/345329">WHO IRIS</a>.</li>
         <li>COMEAP (2022). <a href="https://www.gov.uk/government/publications/particulate-air-pollution-quantifying-effects-on-mortality">Statement on quantifying mortality associated with long-term exposure to PM₂.₅</a>. CRF 1.08 per 10 µg/m³; no cut-off; ¶37 on supralinearity.</li>
         <li>COMEAP. <a href="https://assets.publishing.service.gov.uk/media/64fadfdea78c5f0014265847/COMEAP_Quantification_recommendations.pdf">Summary of quantification recommendations</a> (PDF).</li>
@@ -858,7 +1101,11 @@ Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →
         <li>COMEAP (2015). <a href="https://www.gov.uk/government/publications/comeap-quantification-of-mortality-and-hospital-admissions-associated-with-ground-level-ozone">Quantification of mortality and hospital admissions associated with ground-level ozone</a>. Long-term ozone mortality not quantified.</li>
         <li>Chen J, Hoek G (2020). <a href="https://doi.org/10.1016/j.envint.2020.105974">Long-term exposure to PM and all-cause and cause-specific mortality: a systematic review and meta-analysis</a>. Environ Int 143:105974.</li>
         <li>Huangfu P, Atkinson R (2020). <a href="https://doi.org/10.1016/j.envint.2020.105998">Long-term exposure to NO₂ and O₃ and all-cause and respiratory mortality: a systematic review and meta-analysis</a>. Environ Int 144:105998.</li>
-        <li>Kasdagli M-I, Orellano P, Pérez Velasco R, et al. (2024). <a href="https://doi.org/10.3389/ijph.2024.1607676">Long-term exposure to nitrogen dioxide and ozone and mortality: update of the WHO Air Quality Guidelines systematic review and meta-analysis</a>. Int J Public Health 69:1607676.</li>
+        <li>Kasdagli M-I, Orellano P, Pérez Velasco R, et al. (2024). <a href="https://doi.org/10.3389/ijph.2024.1607676">Long-term exposure to nitrogen dioxide and ozone and mortality: update of the WHO Air Quality Guidelines systematic review and meta-analysis</a>. Int J Public Health 69:1607676. Free full text and data sheets: <a href="https://pmc.ncbi.nlm.nih.gov/articles/PMC11527649/">PMC11527649</a>.</li>
+        <li>Orellano P, Kasdagli M-I, Pérez Velasco R, Samoli E (2024). <a href="https://doi.org/10.3389/ijph.2024.1607683">Long-term exposure to particulate matter and mortality: an update of the WHO Global Air Quality Guidelines systematic review and meta-analysis</a>. Int J Public Health 69:1607683.</li>
+        <li>Chen X, Gehring U, Dyer GMC, et al. (2024). <a href="https://doi.org/10.1016/j.envres.2024.120215">Single- and two-pollutant concentration–response functions for PM2.5 and NO2 for quantifying mortality burden in health impact assessments</a>. Environ Res 263:120215.</li>
+        <li>Turner MC, Jerrett M, Pope CA, et al. (2016). <a href="https://doi.org/10.1164/rccm.201508-1633OC">Long-term ozone exposure and mortality in a large prospective study</a>. Am J Respir Crit Care Med 193:1134–42.</li>
+        <li>Lim CC, Hayes RB, Ahn J, et al. (2019). <a href="https://doi.org/10.1164/rccm.201806-1161OC">Long-term exposure to ozone and cause-specific mortality risk in the United States</a>. Am J Respir Crit Care Med 200:1022–31.</li>
         <li>Orellano P et al. (2020). Short-term exposure to PM₁₀, PM₂.₅, NO₂ and O₃ and all-cause and cause-specific mortality: systematic review and meta-analysis. Environ Int 142:105876.</li>
         <li>Ozone peak-season comparison: AURN and Imperial / London Air station data for Honor Oak Park and Marylebone Road (2022, 2025), against the exposure service hourly nowcast (<code>weighted=true</code>).</li>
       </ul>
@@ -866,6 +1113,6 @@ Worked example · PM₂.₅ 9.6 µg/m³:  Δc = 4.6  →  1.08^0.46 = 1.036  →
   </article>
 
   <script src="js/inactivity-logout.js?v=2" defer></script>
-  <script type="module" src="js/rr-findings.js?v=3"></script>
+  <script type="module" src="js/rr-findings.js?v=7"></script>
 </body>
 </html>
