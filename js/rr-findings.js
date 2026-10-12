@@ -182,32 +182,6 @@ function legendHtml(items) {
 /* Charts                                                              */
 /* ------------------------------------------------------------------ */
 
-function chartRiskAt13() {
-  const rows = PAGE_ORDER.map((sp) => {
-    const d = WHO_ANNUAL[sp] * 0.3;
-    const c = CRF[sp];
-    return {
-      label: LABEL[sp],
-      sub: `RR ${fmt(c.rr, 2)} per 10 µg/m³${sp === 'o3' ? ' · respiratory deaths, List B+' : sp === 'pm10' ? ' · includes PM₂.₅' : sp === 'no2' ? ' · overlaps traffic mix' : ' · List A'}`,
-      value: pctAt(c.rr, d),
-      lo: pctAt(c.lo, d),
-      hi: pctAt(c.hi, d),
-      color: COLOR(sp),
-      hatch: sp === 'o3' || sp === 'pm10',
-      text: pct(pctAt(c.rr, d)),
-    };
-  });
-  return hBarChart({
-    title: 'Higher long-term mortality risk at 1.3× WHO',
-    rows, max: 16, ticks: [0, 4, 8, 12, 16], tickFmt: (v) => `${v}%`,
-    axisLabel: 'Higher long-term mortality vs air at the WHO guideline (%)',
-  }) + legendHtml([
-    { color: '#6b7385', name: 'Solid: natural (all-cause) deaths' },
-    { color: '#6b7385', hatch: true, name: 'Hatched: overlapping (PM₁₀) or respiratory-only (O₃)' },
-    { color: '#1a2030', name: 'Whisker: 95% confidence interval' },
-  ]);
-}
-
 function chartSlope() {
   const rows = PAGE_ORDER.map((sp) => {
     const v = pctAt(CRF[sp].rr, 1);
@@ -662,7 +636,6 @@ function miniPm10() {
 /* ------------------------------------------------------------------ */
 
 const RENDERERS = {
-  'chart-risk-13': chartRiskAt13,
   'chart-slope': chartSlope,
   'chart-o3-sites': chartOzoneSites,
   'chart-o3-forest': chartOzoneForest,
