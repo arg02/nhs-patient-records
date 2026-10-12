@@ -621,13 +621,13 @@ Worked example · PM₂.₅ 9.6 µg/m³, HRAPIE-2 RR 1.10:  Δc = 4.6  →  1.10
         <li><strong>Show each pollutant on its own.</strong> The RRs come from single-pollutant models, and PM₂.₅, NO₂ and PM₁₀ describe overlapping air. HRAPIE-2 “agrees with the general practice of not adding pollutant-specific attributed estimated cases”, and never assesses PM₂.₅ and PM₁₀ together.</li>
         <li><strong>If a combined figure is wanted, use HRAPIE-2’s adjusted method.</strong> For natural deaths only, PM₂.₅ and NO₂ can be combined after shrinking each RR for their overlap (Chen et al. 2024): PM₂.₅ 1.0304 per 5 µg/m³, NO₂ 1.0374 per 10 µg/m³, then multiplied. Mock patient: +13.4% and +6.1% separately, but <strong>+13.1% combined</strong>, barely above PM₂.₅ alone. Ozone may be added to either only as a sensitivity analysis.</li>
         <li><strong>Long-term coefficients only.</strong> Short-term (daily) coefficients belong to the Recent and Today panels; see <a href="#timescales">section 8</a>.</li>
-        <li><strong>Population risk, not personal risk.</strong> These are relative risks across a population living with this air. The absolute change depends on the patient’s baseline: +13.4% moves a 2% annual death risk (an older patient) to about 2.3%, and a healthy 30-year-old’s 0.1% to about 0.11%.</li>
+        <li><strong>Population risk, not personal risk.</strong> These are relative risks across a population living with this air. The absolute change depends on the baseline risk at the patient’s age and sex; see <a href="#absolute">relative and absolute risk</a> below.</li>
         <li><strong>Linear within the evidence range.</strong> HRAPIE-2 found “insufficient evidence for a departure from linearity within the applicable exposure ranges” (for example PM₂.₅ 5–70 µg/m³). WHO 2021, COMEAP and the 2024 reviews all note the curve may be steeper near clean air (see <a href="#pm25">PM₂.₅</a>).</li>
       </ul>
 
       <div class="quotes">
         <blockquote class="quote">
-          <p>“The revised RRs can then be applied to estimate the PAFs for each pollutant in the mixture, and then these PAFs may be summed to estimate the combined effect of PM2.5 and NO2 on natural mortality. The PAF estimate accounts for overlap and avoids the risk of double counting.”</p>
+          <p>“The revised RRs can then be applied to estimate the PAFs [population attributable fractions: the share of deaths in a population that can be attributed to the pollutant] for each pollutant in the mixture, and then these PAFs may be summed to estimate the combined effect of PM2.5 and NO2 on natural mortality. The PAF estimate accounts for overlap and avoids the risk of double counting.”</p>
           <cite><a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2 (2025)</a> · §1.3.4.1 and Annex 1 · method from <a href="https://doi.org/10.1016/j.envres.2024.120215">Chen et al. 2024</a></cite>
         </blockquote>
         <blockquote class="quote">
@@ -637,6 +637,44 @@ Worked example · PM₂.₅ 9.6 µg/m³, HRAPIE-2 RR 1.10:  Δc = 4.6  →  1.10
         <blockquote class="quote">
           <p>“The results should not be added together as this would lead to an over-estimation of the effects.”</p>
           <cite><a href="https://www.gov.uk/government/publications/nitrogen-dioxide-effects-on-mortality/associations-of-long-term-average-concentrations-of-nitrogen-dioxide-with-mortality-2018-comeap-summary">COMEAP 2018 NO₂ summary</a> · on PM₂.₅- and NO₂-based estimates</cite>
+        </blockquote>
+      </div>
+
+      <h3 id="absolute">Relative and absolute risk</h3>
+      <p>
+        A relative risk multiplies whatever risk a person already has, so the same percentage means very different absolute numbers at
+        different ages. HRAPIE-2 applies its RRs in exactly this way: the number of deaths attributed to a pollutant “will be determined by
+        the background mortality” of the population being assessed. The table applies the mock patient’s PM₂.₅ figure
+        (+13.4%, 95% CI 8.0–17.5%) to the average UK risk of dying from natural causes in the coming year.
+      </p>
+      <table>
+        <caption>Mock patient PM₂.₅ (+13.4%): risk of a natural-cause death in the next year, by age and sex</caption>
+        <thead>
+          <tr><th>Age</th><th class="num">Men: average<br>→ with this air</th><th class="num">Men: extra deaths<br>per 10,000 a year</th><th class="num">Women: average<br>→ with this air</th><th class="num">Women: extra deaths<br>per 10,000 a year</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>30</td><td class="num">0.045% → 0.051%</td><td class="num">0.6 (0.4–0.8)</td><td class="num">0.022% → 0.025%</td><td class="num">0.3 (0.2–0.4)</td></tr>
+          <tr><td>50</td><td class="num">0.33% → 0.38%</td><td class="num">4.5 (2.7–5.8)</td><td class="num">0.21% → 0.24%</td><td class="num">2.8 (1.7–3.7)</td></tr>
+          <tr><td>65</td><td class="num">1.15% → 1.31%</td><td class="num">15 (9–20)</td><td class="num">0.76% → 0.87%</td><td class="num">10 (6–13)</td></tr>
+          <tr><td>75</td><td class="num">2.9% → 3.3%</td><td class="num">39 (23–51)</td><td class="num">2.0% → 2.3%</td><td class="num">27 (16–35)</td></tr>
+          <tr><td>85</td><td class="num">9.0% → 10.2%</td><td class="num">120 (72–157)</td><td class="num">6.8% → 7.7%</td><td class="num">91 (54–118)</td></tr>
+        </tbody>
+      </table>
+      <p class="chart__source">
+        Average risk = probability of dying within a year at that exact age (q<sub>x</sub>), <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/lifeexpectancies/datasets/nationallifetablesunitedkingdomreferencetables">ONS National Life Tables, UK, 2022–2024</a>,
+        multiplied by the share of deaths in that age group from natural causes (ICD-10 A00–R99, the outcome HRAPIE-2’s RR covers):
+        59% at 15–44, 90% at 45–64, 96% at 65–74, 75–84 and 85+ (<a href="https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/deathsregisteredinenglandandwalesseriesdrreferencetables">ONS deaths registered in England and Wales, 2024</a>, Table 5; both sexes combined).
+        Extra deaths = average risk × 0.134 (CI 0.080–0.175) × 10,000. Assumes the RR is the same at every adult age, as HRAPIE-2 applies it.
+      </p>
+      <ul>
+        <li><strong>How to read it.</strong> Among 10,000 men aged 75 living long-term with air like the mock patient’s, about 39 more would die from natural causes each year than in air at the WHO guideline. It describes a population, not a prediction for one patient.</li>
+        <li><strong>These are national averages.</strong> A patient with heart or lung disease starts from a higher baseline, so the same relative risk adds more in absolute terms.</li>
+        <li><strong>Long-term exposure.</strong> The RR comes from cohorts followed over many years; it describes living with this air, not a single year of it.</li>
+      </ul>
+      <div class="quotes">
+        <blockquote class="quote">
+          <p>“For applications in HRAs, the lowest age of the (adult) target population will depend on the available population and mortality data, and the estimates (as number of attributable cases) will be determined by the background mortality.”</p>
+          <cite><a href="https://www.who.int/europe/publications/i/item/9789289062633">HRAPIE-2 (2025)</a> · §2, mortality outcomes (long-term RRs were assessed “among adults (mostly those aged 25 years and over)”)</cite>
         </blockquote>
       </div>
     </section>
@@ -1076,7 +1114,7 @@ Worked example · PM₂.₅ 9.6 µg/m³, HRAPIE-2 RR 1.10:  Δc = 4.6  →  1.10
         <li><strong>PM₁₀.</strong> Split fine/coarse bar as shown, or a note under PM₂.₅?</li>
         <li><strong>Combined figure.</strong> Show only separate percentages, or add HRAPIE-2’s adjusted PM₂.₅ + NO₂ figure (+13.1% for the mock patient)?</li>
         <li><strong>UK alignment.</strong> COMEAP still recommends 1.08 for PM₂.₅ and has not quantified long-term ozone. Note the difference on the panel, or only on this page?</li>
-        <li><strong>Absolute risk.</strong> Is a clinician-facing example by age band wanted, or does that go beyond a population relative risk?</li>
+        <li><strong>Absolute risk.</strong> Show an “extra deaths per 10,000 a year” figure for the patient’s age and sex (see <a href="#absolute">relative and absolute risk</a>), on the panel, in a tooltip, or only on this page?</li>
       </ol>
       <div class="callout callout--key">
         <p><strong>Wording for any clinical copy:</strong> “higher long-term risk across a population living with this air”, rather than “your risk”.</p>
@@ -1101,6 +1139,8 @@ Worked example · PM₂.₅ 9.6 µg/m³, HRAPIE-2 RR 1.10:  Δc = 4.6  →  1.10
         <li>Turner MC, Jerrett M, Pope CA, et al. (2016). <a href="https://doi.org/10.1164/rccm.201508-1633OC">Long-term ozone exposure and mortality in a large prospective study</a>. Am J Respir Crit Care Med 193:1134–42.</li>
         <li>Lim CC, Hayes RB, Ahn J, et al. (2019). <a href="https://doi.org/10.1164/rccm.201806-1161OC">Long-term exposure to ozone and cause-specific mortality risk in the United States</a>. Am J Respir Crit Care Med 200:1022–31.</li>
         <li>Orellano P et al. (2020). Short-term exposure to PM₁₀, PM₂.₅, NO₂ and O₃ and all-cause and cause-specific mortality: systematic review and meta-analysis. Environ Int 142:105876.</li>
+        <li>Office for National Statistics (2025). <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/lifeexpectancies/datasets/nationallifetablesunitedkingdomreferencetables">National life tables: UK, 2022 to 2024</a>. Probability of dying within a year by age and sex (q<sub>x</sub>).</li>
+        <li>Office for National Statistics (2025). <a href="https://www.ons.gov.uk/peoplepopulationandcommunity/birthsdeathsandmarriages/deaths/datasets/deathsregisteredinenglandandwalesseriesdrreferencetables">Deaths registered in England and Wales: 2024</a>, Table 5. Deaths by ICD-10 chapter and age group.</li>
         <li>Ozone peak-season comparison: AURN and Imperial / London Air station data for Honor Oak Park and Marylebone Road (2022, 2025), against the exposure service hourly nowcast (<code>weighted=true</code>).</li>
       </ul>
     </section>
