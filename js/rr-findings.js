@@ -471,8 +471,8 @@ function riskAxis() {
   </div>`;
 }
 
-function panel({ title, sub, body, legend = '', wide = false }) {
-  return `<div class="mw-panel${wide ? ' mw-panel--wide' : ''}">
+function panel({ title, sub, body, legend = '' }) {
+  return `<div class="mw-panel">
     <div class="mw-panel__title">${title}</div>
     <div class="mw-panel__sub">${sub}</div>
     ${body}
@@ -486,7 +486,7 @@ function miniLegend(items) {
 
 const WIDGET_ORDER = ['pm25', 'pm10', 'no2', 'o3'];
 
-function panelCurrent({ wide = false } = {}) {
+function panelCurrent() {
   const cols = WIDGET_ORDER.map((sp) => column({
     top: ratio(sp, MOCK[sp]),
     topColor: COLOR(sp),
@@ -499,7 +499,6 @@ function panelCurrent({ wide = false } = {}) {
     title: 'Long-term',
     sub: 'Annual mean · 2022 · × WHO guideline',
     body: `<div class="mw-cols">${whoAxis()}${cols}</div>`,
-    wide,
   });
 }
 
@@ -644,8 +643,7 @@ const RENDERERS = {
   'chart-pm10-split': chartPm10Split,
   'chart-pm10-forest': chartPm10Forest,
   'chart-no2-options': chartNo2Options,
-  'panel-current': () => panelCurrent(),
-  'panel-current-wide': () => panelCurrent({ wide: true }),
+  'panel-current': panelCurrent,
   'panel-option-a': panelOptionA,
   'panel-option-b': panelOptionB,
   'mini-o3': miniOzone,
