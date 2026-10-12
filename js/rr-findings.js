@@ -25,6 +25,17 @@ export const CRF = {
 /** mockPatientExposure() annual values; ozone treated as a peak-season value */
 const MOCK = { pm25: 18.2, pm10: 28.4, no2: 22.1, o3: 74.5 };
 
+/**
+ * Ozone µg/m³ by metric: [annual average, annual mean of daily max 8-hour, Apr–Sep peak season].
+ * Exposure-service annual average = LAEI 2022 map value; station annual average = mean of all hours.
+ */
+const O3_SITES = [
+  { section: '2022 · LAEI map year', label: 'Honor Oak Park', sub: 'background', exposure: [46.3, 61.2, 70.7], station: [51.6, 68.2, 81.3] },
+  { section: '2022 · LAEI map year', label: 'Marylebone Road', sub: 'roadside', exposure: [34.4, 49.3, 58.8], station: [28.5, 40.3, 49.3] },
+  { section: '2025 · latest full year, for comparison', label: 'Honor Oak Park', sub: 'background', exposure: [46.3, 66.5, 77.8], station: [56.6, 74.0, 85.0] },
+  { section: '2025 · latest full year, for comparison', label: 'Marylebone Road', sub: 'roadside', exposure: [34.4, 54.6, 65.9], station: [34.3, 46.4, 53.5] },
+];
+
 /** Honor Oak Park 2025 (HP1, urban background) — ozone µg/m³ */
 const HP1_2025 = { map: 46.3, exposurePeak: 77.8, stationPeak: 85.0 };
 
@@ -136,39 +147,60 @@ function forestPlot({ title, rows, min, max, ticks, labelW = 300, rowH = 40 }) {
   return `${s}</svg>`;
 }
 
-/** Vertical grouped bars with a horizontal reference line. */
-function groupedBars({ title, groups, series, max, ticks, ref, yLabel }) {
-  const padL = 54;
-  const padR = 70;
-  const padT = 14;
-  const plotH = 220;
-  const h = padT + plotH + 52;
-  const plotW = W - padL - padR;
-  const y = (v) => padT + plotH - (v / max) * plotH;
-  const groupW = plotW / groups.length;
-  const barW = Math.min(26, (groupW - 24) / series.length);
+/**
+ * Horizontal bars, one block per group, one row per metric, one bar per series within a row.
+ * groups: [{ section, label, sub, rows: [{ label, values: [..one per series] }] }]
+ * A change of `section` starts a shaded heading band across the chart.
+ */
+function pairedHBars({ title, groups, series, max, ticks, ref, axisLabel, labelW = 250, barH = 9, rowGap = 9 }) {
+  const padT = 22;
+  const padR = 40;
+  const secH = 30;
+  const headH = 22;
+  const blockGap = 10;
+  const rowH = series.length * (barH + 2) + rowGap;
+  const newSection = (g, gi) => g.section && g.section !== groups[gi - 1]?.section;
+  const plotH = groups.reduce((a, g, gi) => a + (newSection(g, gi) ? secH : 0) + headH + g.rows.length * rowH + blockGap, 0);
+  const h = padT + plotH + 34;
+  const plotW = W - labelW - padR;
+  const x = (v) => labelW + (Math.min(v, max) / max) * plotW;
 
   let s = svgOpen(h, title);
   ticks.forEach((tv) => {
-    s += `<line x1="${padL}" y1="${y(tv)}" x2="${W - padR}" y2="${y(tv)}" class="c-grid"/>`;
-    s += `<text x="${padL - 8}" y="${y(tv) + 4}" text-anchor="end" class="c-tick">${tv}</text>`;
+    s += `<line x1="${x(tv)}" y1="${padT}" x2="${x(tv)}" y2="${padT + plotH}" class="c-grid"/>`;
+    s += `<text x="${x(tv)}" y="${padT + plotH + 15}" text-anchor="middle" class="c-tick">${tv}</text>`;
   });
-  s += `<text transform="translate(14 ${padT + plotH / 2}) rotate(-90)" text-anchor="middle" class="c-axis">${yLabel}</text>`;
+  s += `<text x="${labelW + plotW / 2}" y="${h - 4}" text-anchor="middle" class="c-axis">${axisLabel}</text>`;
+  s += `<line x1="${x(ref.value)}" y1="${padT - 6}" x2="${x(ref.value)}" y2="${padT + plotH}" class="c-ref-line"/>`;
+  s += `<text x="${x(ref.value)}" y="${padT - 10}" text-anchor="middle" class="c-ref-label">${ref.label}</text>`;
 
+  let y = padT;
   groups.forEach((g, gi) => {
-    const gx = padL + gi * groupW + (groupW - barW * series.length) / 2;
-    g.values.forEach((v, si) => {
-      const bx = gx + si * barW;
-      s += `<rect x="${bx + 1}" y="${y(v)}" width="${barW - 2}" height="${padT + plotH - y(v)}" fill="${series[si].color}" rx="1.5"/>`;
-      s += `<text x="${bx + barW / 2}" y="${y(v) - 4}" text-anchor="middle" class="c-bar-val">${Math.round(v)}</text>`;
+    if (newSection(g, gi)) {
+      s += `<rect x="0" y="${y}" width="${W - padR + 8}" height="${secH - 6}" rx="4" class="c-section"/>`;
+      s += `<text x="8" y="${y + 16}" class="c-section-label">${g.section}</text>`;
+      y += secH;
+    } else if (gi) {
+      s += `<line x1="8" y1="${y - blockGap / 2}" x2="${W - padR}" y2="${y - blockGap / 2}" class="c-grid"/>`;
+    }
+    s += `<text x="8" y="${y + 14}" class="c-label">${g.label} <tspan class="c-sub">${g.sub}</tspan></text>`;
+    y += headH;
+    g.rows.forEach((r) => {
+      const barsH = series.length * (barH + 2) - 2;
+      s += `<text x="20" y="${y + barsH / 2 + 4}" class="c-sub">${r.label}</text>`;
+      r.values.forEach((v, si) => {
+        const by = y + si * (barH + 2);
+        if (v == null) {
+          s += `<text x="${labelW + 4}" y="${by + barH - 1}" class="c-bar-val">no data</text>`;
+          return;
+        }
+        s += `<rect x="${labelW}" y="${by}" width="${x(v) - labelW}" height="${barH}" fill="${series[si].color}" rx="1.5"/>`;
+        s += `<rect x="${x(v) + 2}" y="${by}" width="${fmt(v).length * 5.8 + 4}" height="${barH + 1}" fill="#fff"/>`;
+        s += `<text x="${x(v) + 4}" y="${by + barH - 1}" class="c-bar-val">${fmt(v)}</text>`;
+      });
+      y += rowH;
     });
-    s += `<text x="${padL + gi * groupW + groupW / 2}" y="${padT + plotH + 18}" text-anchor="middle" class="c-label">${g.label}</text>`;
-    s += `<text x="${padL + gi * groupW + groupW / 2}" y="${padT + plotH + 32}" text-anchor="middle" class="c-sub">${g.sub}</text>`;
-  });
-
-  s += `<line x1="${padL}" y1="${y(ref.value)}" x2="${W - padR}" y2="${y(ref.value)}" class="c-ref-line"/>`;
-  ref.label.forEach((line, i) => {
-    s += `<text x="${W - padR + 6}" y="${y(ref.value) + 4 + i * 13}" class="c-ref-label">${line}</text>`;
+    y += blockGap;
   });
   return `${s}</svg>`;
 }
@@ -202,23 +234,21 @@ function chartSlope() {
 
 function chartOzoneSites() {
   const series = [
-    { name: 'Annual map value (what we use now)', color: '#a8b0bd' },
-    { name: 'Station annual mean of all hours', color: '#b9dcf5' },
-    { name: 'Station annual mean of daily max 8-hour (HRAPIE-2 metric)', color: '#6fb6ea' },
-    { name: 'Exposure-service peak season (Apr–Sep)', color: '#0387E2' },
-    { name: 'Station peak season (Apr–Sep, WHO metric)', color: '#0b3f73' },
+    { name: 'Exposure service', color: '#0387E2' },
+    { name: 'Station', color: '#0b3f73' },
   ];
-  const groups = [
-    { label: 'Honor Oak Park', sub: '2025 · background', values: [46.3, 56.6, 74.0, 77.8, 85.0] },
-    { label: 'Marylebone Road', sub: '2025 · roadside', values: [34.4, 34.3, 46.4, 65.9, 53.5] },
-    { label: 'Honor Oak Park', sub: '2022 · background', values: [46.3, 51.6, 68.3, 70.7, 81.3] },
-    { label: 'Marylebone Road', sub: '2022 · roadside', values: [34.4, 28.5, 40.3, 58.8, 49.3] },
-  ];
-  return groupedBars({
+  const metrics = ['Annual average', 'Annual mean of daily max 8-hour (HRAPIE-2)', 'Peak season, Apr–Sep (WHO)'];
+  const groups = O3_SITES.map((g) => ({
+    section: g.section,
+    label: g.label,
+    sub: g.sub,
+    rows: metrics.map((label, i) => ({ label, values: [g.exposure[i], g.station[i]] })),
+  }));
+  return pairedHBars({
     title: 'Ozone: three metrics at two London sites',
     groups, series, max: 100, ticks: [0, 20, 40, 60, 80, 100],
-    ref: { value: 60, label: ['WHO 60', 'peak season'] },
-    yLabel: 'Ozone, µg/m³',
+    ref: { value: 60, label: 'WHO 60 (peak season)' },
+    axisLabel: 'Ozone, µg/m³',
   }) + legendHtml(series);
 }
 
@@ -543,8 +573,8 @@ function miniOzone() {
   const r = risk(sp, HP1_2025.exposurePeak);
   const rs = risk(sp, HP1_2025.stationPeak);
   const now = mini('Now',
-    soloCols(whoAxis(), column({ top: ratio(sp, HP1_2025.map, 2), topColor: COLOR(sp), track: whoTrack(whoSegments(sp, HP1_2025.map)), value: ugm(HP1_2025.map), name: LABEL[sp], note: 'annual map ÷ 60' })),
-    'Annual map value against a peak-season guideline. Reads as under WHO.');
+    soloCols(whoAxis(), column({ top: ratio(sp, HP1_2025.map, 2), topColor: COLOR(sp), track: whoTrack(whoSegments(sp, HP1_2025.map)), value: ugm(HP1_2025.map), name: LABEL[sp], note: 'exposure-service annual average' })),
+    'Exposure-service annual average against a peak-season guideline. Reads as under WHO.');
   const proposed = mini('Proposed',
     soloCols(riskAxis(), riskColumn(sp, HP1_2025.exposurePeak, 'peak season, exposure service')),
     `Peak-season value (Apr–Sep) against WHO’s 60. ${pct(r.mid)} higher respiratory mortality (95% CI ${fmt(r.lo)}–${fmt(r.hi)}%), HRAPIE-2 RR.`);
