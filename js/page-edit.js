@@ -20,6 +20,7 @@ const CSS = `
 .pe-bar button[data-act="toggle"][aria-pressed="true"] { background: #9fd0ff; color: #1a2030; }
 .pe-bar button[data-act="save"] { background: #1a7f4b; }
 .pe-bar button:disabled { opacity: 0.45; cursor: default; }
+.pe-bar .pe-fmt { min-width: 32px; padding: 6px 8px; font-family: Georgia, serif; font-size: 14px; }
 .pe-status { color: #c9d3e0; padding: 0 4px; }
 .pe-status:empty { display: none; }
 body.pe-on [contenteditable="true"] { cursor: text; border-radius: 3px; }
@@ -49,6 +50,8 @@ function init() {
   bar.className = 'pe-bar';
   bar.innerHTML = `
     <button type="button" data-act="toggle" aria-pressed="false">Edit text</button>
+    <button type="button" data-act="bold" class="pe-fmt" title="Bold selected text" hidden><strong>B</strong></button>
+    <button type="button" data-act="italic" class="pe-fmt" title="Italicise selected text" hidden><em>I</em></button>
     <span class="pe-status" role="status"></span>
     <button type="button" data-act="save" hidden disabled>Save</button>
     <button type="button" data-act="discard" hidden disabled>Discard</button>`;
@@ -76,7 +79,7 @@ function init() {
     document.body.classList.toggle('pe-on', on);
     btn('toggle').setAttribute('aria-pressed', String(on));
     btn('toggle').textContent = on ? 'Done editing' : 'Edit text';
-    btn('save').hidden = btn('discard').hidden = !on;
+    btn('save').hidden = btn('discard').hidden = btn('bold').hidden = btn('italic').hidden = !on;
     targets.forEach((el) => {
       if (on) el.setAttribute('contenteditable', 'true');
       else el.removeAttribute('contenteditable');
@@ -129,8 +132,18 @@ function init() {
     refresh();
   }
 
+  bar.addEventListener('mousedown', (e) => {
+    if (e.target.closest('.pe-fmt')) e.preventDefault();
+  });
+
   bar.addEventListener('click', (e) => {
     const act = e.target.closest('button')?.dataset.act;
+    if (act === 'bold' || act === 'italic') {
+      if (targetOf(getSelection().anchorNode)) {
+        document.execCommand('styleWithCSS', false, false);
+        document.execCommand(act);
+      } else refresh('Select some text first');
+    }
     if (act === 'toggle') setOn(!on);
     if (act === 'save') save();
     if (act === 'discard') discard();
